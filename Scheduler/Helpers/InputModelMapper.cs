@@ -1,6 +1,7 @@
 ﻿using Scheduler.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
@@ -54,7 +55,13 @@ namespace Scheduler
 
         private State CreateState()
         {
-            return new State { WorkedDaysInMonth = 0 };
+            return new State
+            {
+                TimeSlotsWorked = 0,
+                TimeSlotsWorkedToday = 0,
+                WorkedDaysInMonthCount = 0,
+                DailyWorkStartCounts = ImmutableDictionary<int, int>.Empty
+            };
         }
 
         private TimeSlotDependentCollection<bool> MapAvailabilities(List<Dto.Availability> availabilities, Calendar calendar, Range schedulePeriod)

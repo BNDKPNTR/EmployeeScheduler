@@ -12,11 +12,13 @@ namespace Scheduler
         private const double MaxValue = 1000;
         private readonly SchedulerModel _model;
         private readonly StateCalculator _stateCalculator;
+        private readonly WorkStartTimeCostFunction _workStartTimeCostFunction;
 
         private SchedulerAlgorithm(SchedulerModel model)
         {
             _model = model;
             _stateCalculator = new StateCalculator(_model.Calendar);
+            _workStartTimeCostFunction = new WorkStartTimeCostFunction(_model.Calendar);
         }
 
         public static Dto.InputModel Run(Dto.InputModel input)
@@ -38,27 +40,34 @@ namespace Scheduler
                 Parallel.ForEach(_model.People, person => _stateCalculator.RefreshState(person, timeSlot));
 
                 var availablePeople = SelectAvailablePeopleForTimeSlot();
-                var demands = SelectDemandsForTimeSlot(timeSlot);
+                var demands = SelectDemandsForTimeSlot();
 
-                var matrixSize = Math.Max(availablePeople.Count, demands.Count);
-                var costMatrix = CreateCostMatrix(matrixSize);
-                
-                for (int i = 0; i < availablePeople.Count; i++)
+                if (availablePeople.Count > 0 && demands.Count > 0)
                 {
-                    var person = availablePeople[i];
-
-                    for (int j = 0; j < demands.Count; j++)
-                    {
-                        costMatrix[i][j] = 0;
-                    }
+                    SchedulePeople(timeSlot, availablePeople, demands);
                 }
-
-                var result = JonkerVolgenantAlgorithm.RunAlgorithm(costMatrix);
-                CreateAssignments(timeSlot, costMatrix, result.copulationVerticesX, availablePeople, demands);
             }
         }
 
         private List<Person> SelectAvailablePeopleForTimeSlot() => _model.People.Where(p => p.Available).ToList();
+
+        private void SchedulePeople(int timeSlot, List<Person> people, Dictionary<int, Demand> demands)
+        {
+            var costMatrix = CreateCostMatrix(size: Math.Max(people.Count, demands.Count));
+
+            Parallel.For(0, people.Count, i =>
+            {
+                var person = people[i];
+
+                for (int j = 0; j < demands.Count; j++)
+                {
+                    costMatrix[i][j] = _workStartTimeCostFunction.CalculateCost(person, demands[j], timeSlot);
+                }
+            });
+
+            var result = JonkerVolgenantAlgorithm.RunAlgorithm(costMatrix);
+            CreateAssignments(timeSlot, costMatrix, result.copulationVerticesX, people, demands);
+        }
 
         private void CreateAssignments(int timeSlot, double[][] costMatrix, int[] copulationVerticesX, List<Person> people, Dictionary<int, Demand> demands)
         {
@@ -77,12 +86,12 @@ namespace Scheduler
             }
         }
 
-        private Dictionary<int, Demand> SelectDemandsForTimeSlot(int timeSlot)
+        private Dictionary<int, Demand> SelectDemandsForTimeSlot()
         {
             var demandsByIndex = new Dictionary<int, Demand>();
-            var demands = _model.AllDemands.Current.Where(d => d.Period.Contains(timeSlot)).ToArray();
+            var demands = _model.AllDemands.Current;
 
-            for (int i = 0; i < demands.Length; i++)
+            for (int i = 0; i < demands.Count; i++)
             {
                 for (int j = 0; j < demands[i].RequiredPeopleCount; j++)
                 {

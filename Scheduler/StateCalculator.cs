@@ -19,17 +19,30 @@ namespace Scheduler
         {
             person.Availabilities.MoveNext(timeSlot);
 
-            if (IsNewDay(timeSlot))
+            if (WorkStartedInPreviousTimeSlot(person, timeSlot))
             {
-                if (WorkedInPeriod(Range.Of(0, 0), person))
-                {
-                    person.State.WorkedDaysInMonth++;
-                }
+                var previousTimeSlotIndex = timeSlot - 1;
+                var elapsedTimeSlotsSinceDayStart = previousTimeSlotIndex - _calendar.DayStartOf(previousTimeSlotIndex);
+
+                person.State.DailyWorkStartCounts.TryGetValue(elapsedTimeSlotsSinceDayStart, out var workStartCount);
+                person.State.DailyWorkStartCounts = person.State.DailyWorkStartCounts.SetItem(elapsedTimeSlotsSinceDayStart, workStartCount + 1);
+
+                person.State.WorkedDaysInMonthCount++;
             }
+
+            person.State.TimeSlotsWorked = WorkedInPreviousTimeSlot(person, timeSlot)
+                ? person.State.TimeSlotsWorked + 1
+                : 0;
+
+            person.State.TimeSlotsWorkedToday = IsNewDay(timeSlot)
+                ? 0
+                : (WorkedInPreviousTimeSlot(person, timeSlot) ? person.State.TimeSlotsWorkedToday + 1 : person.State.TimeSlotsWorkedToday);
         }
 
         private bool IsNewDay(int timeSlot) => _calendar.DayStartOf(timeSlot) == timeSlot;
 
-        private bool WorkedInPeriod(Range period, Person person) => period.Any(timeSlot => person.Assignments.ContainsKey(timeSlot));
+        private bool WorkedInPreviousTimeSlot(Person person, int timeSlot) => person.Assignments.ContainsKey(timeSlot - 1);
+
+        private bool WorkStartedInPreviousTimeSlot(Person person, int timeSlot) => person.State.TimeSlotsWorked == 0 && WorkedInPreviousTimeSlot(person, timeSlot);
     }
 }
