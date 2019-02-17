@@ -29,7 +29,9 @@ namespace Scheduler
                 ? person.State.WorkedDaysInMonthCount 
                 : person.State.WorkedDaysInMonthCount + 1;
 
-            return mostCommonWorkStartTime / workedDaysInMonthCount < TwoThird
+            if (workedDaysInMonthCount < 3) return DefaultCost;
+
+            return mostCommonWorkStartTime / (double)workedDaysInMonthCount <= TwoThird
                 ? LessThanTwoThirdStartsAtTheSameTimeCost
                 : DefaultCost;
         }

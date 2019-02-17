@@ -43,8 +43,8 @@ namespace Scheduler
             {
                 Name = "Scheduler Algorithm Solution",
                 Result = result,
-                Cost = ResultCostCalculator.CalculateCost(result),
-                Feasible = ResultEvaluator.Evaluate(result),
+                Cost = OptimalityEvaluator.CalculateCost(result),
+                Feasible = FeasibilityEvaluator.Feasible(result),
                 Duration = sw.Elapsed
             };
         }
@@ -53,17 +53,17 @@ namespace Scheduler
         {
             var generator = new ScheduleResultGenerator(() => InputGenerator.CreateInput());
             var feasibleResults = new ConcurrentBag<AlgorithmResult>();
-            var resultNumber = 1;
+            var resultNumber = 0;
             
             Parallel.ForEach(generator.GenerateResults(), result =>
             {
-                if (ResultEvaluator.Evaluate(result))
+                if (FeasibilityEvaluator.Feasible(result))
                 {
                     feasibleResults.Add(new AlgorithmResult
                     {
                         Name = $"Timetable {Interlocked.Increment(ref resultNumber)}",
                         Result = result,
-                        Cost = ResultCostCalculator.CalculateCost(result),
+                        Cost = OptimalityEvaluator.CalculateCost(result),
                         Feasible = true
                     });
                 }

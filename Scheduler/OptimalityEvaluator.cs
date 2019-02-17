@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Scheduler
 {
-    static class ResultCostCalculator
+    static class OptimalityEvaluator
     {
         public static int CalculateCost(InputModel result)
         {
@@ -14,7 +14,7 @@ namespace Scheduler
 
             foreach (var person in result.People)
             {
-                if (person.Assignments.Count > 0)
+                if (person.Assignments.Count > 2)
                 {
                     var mostCommonWorkStartCount = person.Assignments
                         .GroupBy(a => a.Start.TimeOfDay, (key, elements) => elements.Count())

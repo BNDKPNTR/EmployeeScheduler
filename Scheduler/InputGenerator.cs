@@ -39,7 +39,7 @@ namespace Scheduler
                     Name = "Winnie the Pooh",
                     Availabilities = new List<Availability>
                     {
-                        new Availability { Start = new DateTime(2019, 2, 3), End = new DateTime(2019, 2, 4) }
+                        new Availability { Start = new DateTime(2019, 2, 1), End = new DateTime(2019, 2, 2) }
                     }
                 },
                 //new Person
@@ -66,8 +66,8 @@ namespace Scheduler
             {
                 new Demand
                 {
-                    Start = new DateTime(2019, 2, 1, 8, 0, 0),
-                    End = new DateTime(2019, 2, 1, 16, 0, 0),
+                    Start = new DateTime(2019, 2, 1, 9, 0, 0),
+                    End = new DateTime(2019, 2, 1, 17, 0, 0),
                     Activity = teaching,
                     RequiredPersonCount = 1
                 },
@@ -80,8 +80,8 @@ namespace Scheduler
                 },
                 new Demand
                 {
-                    Start = new DateTime(2019, 2, 3, 9, 0, 0),
-                    End = new DateTime(2019, 2, 3, 17, 0, 0),
+                    Start = new DateTime(2019, 2, 3, 8, 0, 0),
+                    End = new DateTime(2019, 2, 3, 16, 0, 0),
                     Activity = teaching,
                     RequiredPersonCount = 1
                 }
