@@ -1,27 +1,29 @@
-﻿using Scheduler.Models;
+﻿using Scheduler.CostFunctions;
+using Scheduler.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using InputModel = Scheduler.Dto.InputModel;
+
 namespace Scheduler
 {
     class SchedulerAlgorithm
     {
-        private const double MaxValue = 1000;
         private readonly SchedulerModel _model;
         private readonly StateCalculator _stateCalculator;
-        private readonly WorkStartTimeCostFunction _workStartTimeCostFunction;
+        private readonly CostFunctionBase _costFunction;
 
         private SchedulerAlgorithm(SchedulerModel model)
         {
             _model = model;
             _stateCalculator = new StateCalculator(_model.Calendar);
-            _workStartTimeCostFunction = new WorkStartTimeCostFunction(_model.Calendar);
+            _costFunction = CreateCompositeCostFunction();
         }
 
-        public static Dto.InputModel Run(Dto.InputModel input)
+        public static InputModel Run(InputModel input)
         {
             var model = InputModelMapper.MapToScheduleModel(input);
             var scheduler = new SchedulerAlgorithm(model);
@@ -61,7 +63,7 @@ namespace Scheduler
 
                 for (int j = 0; j < demands.Count; j++)
                 {
-                    costMatrix[i][j] = _workStartTimeCostFunction.CalculateCost(person, demands[j], timeSlot);
+                    costMatrix[i][j] = _costFunction.CalculateCost(person, demands[j], timeSlot);
                 }
             });
 
@@ -74,7 +76,7 @@ namespace Scheduler
             for (int i = 0; i < copulationVerticesX.Length; i++)
             {
                 var j = copulationVerticesX[i];
-                if (Math.Abs(costMatrix[i][j] - MaxValue) > double.Epsilon)
+                if (Math.Abs(costMatrix[i][j] - _costFunction.MaxCost) > double.Epsilon)
                 {
                     if (i < people.Count && demands.TryGetValue(j, out var demand))
                     {
@@ -112,11 +114,22 @@ namespace Scheduler
 
                 for (int j = 0; j < size; j++)
                 {
-                    costMatrix[i][j] = MaxValue;
+                    costMatrix[i][j] = _costFunction.MaxCost;
                 }
             }
 
             return costMatrix;
+        }
+
+        private CompositeCostFunction CreateCompositeCostFunction()
+        {
+            var costFunctions = new CostFunctionBase[]
+            {
+                //new AvailabilityCostFunction(),
+                new WorkStartTimeCostFunction(_model.Calendar)
+            };
+
+            return new CompositeCostFunction(costFunctions);
         }
     }
 }

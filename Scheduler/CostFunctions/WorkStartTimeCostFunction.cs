@@ -5,11 +5,10 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
-namespace Scheduler
+namespace Scheduler.CostFunctions
 {
-    class WorkStartTimeCostFunction
+    class WorkStartTimeCostFunction : CostFunctionBase
     {
-        private const double DefaultCost = 1.0;
         private const double LessThanTwoThirdStartsAtTheSameTimeCost = 2.0;
         private const double TwoThird = 2.0 / 3.0;
 
@@ -20,7 +19,7 @@ namespace Scheduler
             this.calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
         }
 
-        public double CalculateCost(Person person, Demand demand, int timeSlot)
+        public override double CalculateCost(Person person, Demand demand, int timeSlot)
         {
             if (person.State.TimeSlotsWorked > 0) return DefaultCost;
 
