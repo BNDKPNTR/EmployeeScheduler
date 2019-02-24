@@ -123,7 +123,8 @@ namespace SchedulingBenchmarks.Mappers
                 maxTotalWorkTime,
                 minConsecutiveShifts,
                 maxConsecutiveShifts,
-                minConsecutiveDayOffs);
+                minConsecutiveDayOffs,
+                1);
         }
 
         private bool[] MapShiftOnRequests(string employeeId, Range schedulePeriod)

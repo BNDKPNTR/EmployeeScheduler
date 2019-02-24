@@ -12,8 +12,9 @@ namespace SchedulingBenchmarks.Models
         public int MinConsecutiveShifts { get; }
         public int MaxConsecutiveShifts { get; }
         public int MinConsecutiveDayOffs { get; }
+        public int MaxWorkingWeekendCount { get; }
 
-        public WorkSchedule(int minRestTime, int minTotalWorkTime, int maxTotalWorkTime, int minConsecutiveShifts, int maxConsecutiveShifts, int minConsecutiveDayOffs)
+        public WorkSchedule(int minRestTime, int minTotalWorkTime, int maxTotalWorkTime, int minConsecutiveShifts, int maxConsecutiveShifts, int minConsecutiveDayOffs, int maxWorkingWeekendCount)
         {
             MinRestTime = minRestTime;
             MinTotalWorkTime = minTotalWorkTime;
@@ -21,6 +22,7 @@ namespace SchedulingBenchmarks.Models
             MinConsecutiveShifts = minConsecutiveShifts;
             MaxConsecutiveShifts = maxConsecutiveShifts;
             MinConsecutiveDayOffs = minConsecutiveDayOffs;
+            MaxWorkingWeekendCount = maxWorkingWeekendCount;
         }
     }
 }

@@ -23,7 +23,7 @@ namespace SchedulingBenchmarks.Cli
             if (ExecuteSchedulerAlgorithm) schedulerResult = RunSchedulerAlgorithm(); 
             if (ExecuteResultGenerator) generatedResults = RunResultGenerator();
 
-            CompareAndPrintResults(schedulerResult, generatedResults);
+            //CompareAndPrintResults(schedulerResult, generatedResults);
         }
 
         private static AlgorithmResult RunSchedulerAlgorithm()
@@ -39,14 +39,16 @@ namespace SchedulingBenchmarks.Cli
             var result = SchedulerAlgorithmRunner.Run(schedulingBenchmarkModel);
             sw.Stop();
 
-            return new AlgorithmResult
-            {
-                Name = "Scheduler Algorithm Solution",
-                Result = result,
-                Cost = OptimalityEvaluator.CalculateCost(result),
-                Feasible = FeasibilityEvaluator.Feasible(result),
-                Duration = sw.Elapsed
-            };
+            return null;
+
+            //return new AlgorithmResult
+            //{
+            //    Name = "Scheduler Algorithm Solution",
+            //    Result = result,
+            //    Cost = OptimalityEvaluator.CalculateCost(result),
+            //    Feasible = FeasibilityEvaluator.Feasible(result),
+            //    Duration = sw.Elapsed
+            //};
         }
 
         private static List<AlgorithmResult> RunResultGenerator()

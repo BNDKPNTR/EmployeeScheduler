@@ -110,8 +110,7 @@ namespace SchedulingBenchmarks
         {
             var costFunctions = new CostFunctionBase[]
             {
-                //new AvailabilityCostFunction(),
-                new WorkStartTimeCostFunction(_model.Calendar)
+                new AvailabilityCostFunction()
             };
 
             return new CompositeCostFunction(costFunctions);
