@@ -6,15 +6,17 @@ namespace SchedulingBenchmarks.Models
 {
     class Demand
     {
-        public Range Period { get; set; }
-        public Activity Activity { get; }
-        public int RequiredPeopleCount { get; }
+        public int Day { get; set; }
+        public string ShifId { get; set; }
+        public int MinPeopleCount { get; }
+        public int MaxPeopleCount { get; set; }
 
-        public Demand(Range period, Activity activity, int requiredPeopleCount)
+        public Demand(int day, string shiftId, int minPeopleCount, int maxPeopleCount)
         {
-            Period = period;
-            Activity = activity ?? throw new ArgumentNullException(nameof(activity));
-            RequiredPeopleCount = requiredPeopleCount;
+            Day = day;
+            ShifId = shiftId ?? throw new ArgumentNullException(nameof(shiftId));
+            MinPeopleCount = minPeopleCount;
+            MaxPeopleCount = maxPeopleCount;
         }
     }
 }

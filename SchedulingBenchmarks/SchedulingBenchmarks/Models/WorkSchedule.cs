@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SchedulingBenchmarks.Models
+{
+    class WorkSchedule
+    {
+        public int MinRestTime { get; }
+        public int MinTotalWorkTime { get; }
+        public int MaxTotalWorkTime { get; }
+        public int MinConsecutiveShifts { get; }
+        public int MaxConsecutiveShifts { get; }
+        public int MinConsecutiveDayOffs { get; }
+
+        public WorkSchedule(int minRestTime, int minTotalWorkTime, int maxTotalWorkTime, int minConsecutiveShifts, int maxConsecutiveShifts, int minConsecutiveDayOffs)
+        {
+            MinRestTime = minRestTime;
+            MinTotalWorkTime = minTotalWorkTime;
+            MaxTotalWorkTime = maxTotalWorkTime;
+            MinConsecutiveShifts = minConsecutiveShifts;
+            MaxConsecutiveShifts = maxConsecutiveShifts;
+            MinConsecutiveDayOffs = minConsecutiveDayOffs;
+        }
+    }
+}

@@ -11,12 +11,10 @@ namespace SchedulingBenchmarks.Mappers
     class SchedulingPeriodMapper
     {
         private readonly SchedulingPeriod _schedulingBenchmarkModel;
-        private readonly Dictionary<int, Activity> _activities;
 
         private SchedulingPeriodMapper(SchedulingPeriod inputModel)
         {
             _schedulingBenchmarkModel = inputModel ?? throw new ArgumentNullException(nameof(inputModel));
-            _activities = new Dictionary<int, Activity>();
         }
 
         public static SchedulerModel MapToScheduleModel(SchedulingPeriod inputModel) 
@@ -32,6 +30,7 @@ namespace SchedulingBenchmarks.Mappers
                 end: model.Calendar.DateTimeToTimeSlotIndex(_schedulingBenchmarkModel.EndDate));
 
             model.People = MapPeople(model.SchedulePeriod);
+            model.Demands = MapDemands(model.SchedulePeriod);
 
             return model;
         }
@@ -45,6 +44,7 @@ namespace SchedulingBenchmarks.Mappers
                 var person = new Person(
                     employee.Id,
                     CreateState(),
+                    MapWorkSchedule(employee.ContractIds),
                     MapAvailabilities(employee.Id, schedulePeriod),
                     MapShiftOffRequests(employee.Id, schedulePeriod),
                     MapShiftOnRequests(employee.Id, schedulePeriod));
@@ -71,7 +71,7 @@ namespace SchedulingBenchmarks.Mappers
             var availabilities = new bool[schedulePeriod.Length];
 
             var emptyShiftsOfEmployee = _schedulingBenchmarkModel.FixedAssignments
-                .Where(a => a.EmployeeId == employeeId && a.Assign.Shift == Shift.EmptyShiftId);
+                .Where(a => a.EmployeeId == employeeId && a.Assign.Shift == Shift.NoneShiftId);
 
             var notAvailable = new HashSet<int>(emptyShiftsOfEmployee.Select(a => a.Assign.Day));
 
@@ -90,6 +90,7 @@ namespace SchedulingBenchmarks.Mappers
         {
             var shiftOffRequests = new bool[schedulePeriod.Length];
 
+            // TODO: include shift types
             var requestsOfEmployee = _schedulingBenchmarkModel.ShiftOffRequests
                 .Where(x => x.EmployeeID == employeeId)
                 .Select(x => x.Day);
@@ -102,10 +103,34 @@ namespace SchedulingBenchmarks.Mappers
             return shiftOffRequests;
         }
 
+        private WorkSchedule MapWorkSchedule(string[] contractIds)
+        {
+            var minRestTime = contractIds.Contains(Contract.UniversalContractId)
+                ? _schedulingBenchmarkModel.Contracts.SingleOrDefault(c => c.ID == Contract.UniversalContractId)?.MinRestTime.Value ?? 0
+                : 0;
+
+            var contract = _schedulingBenchmarkModel.Contracts.Single(c => c.ID == contractIds[1]);
+
+            var minTotalWorkTime = contract.Workload.First(x => x.Min != null).Min.Count;
+            var maxTotalWorkTime = contract.Workload.First(x => x.Max != null).Max.Count;
+            var minConsecutiveShifts = contract.MinSeq.First(x => x.Shift == Shift.AnyShiftId).Value;
+            var maxConsecutiveShifts = contract.MaxSeq.Value;
+            var minConsecutiveDayOffs = contract.MinSeq.First(x => x.Shift == Shift.NoneShiftId).Value;
+
+            return new WorkSchedule(
+                minRestTime,
+                minTotalWorkTime,
+                maxTotalWorkTime,
+                minConsecutiveShifts,
+                maxConsecutiveShifts,
+                minConsecutiveDayOffs);
+        }
+
         private bool[] MapShiftOnRequests(string employeeId, Range schedulePeriod)
         {
             var shiftOnRequests = new bool[schedulePeriod.Length];
 
+            // TODO: include shift types
             var requestsOfEmployee = _schedulingBenchmarkModel.ShiftOnRequests
                 .Where(x => x.EmployeeID == employeeId)
                 .Select(x => x.Day);
@@ -116,6 +141,25 @@ namespace SchedulingBenchmarks.Mappers
             }
 
             return shiftOnRequests;
+        }
+
+        private Demand[] MapDemands(Range schedulePeriod)
+        {
+            var demands = new Demand[schedulePeriod.Length];
+
+            // TODO: include shift types
+            foreach (var coverRequirement in _schedulingBenchmarkModel.CoverRequirements)
+            {
+                var demand = new Demand(
+                    coverRequirement.Day,
+                    coverRequirement.Cover.Shift,
+                    coverRequirement.Cover.Min.Value,
+                    coverRequirement.Cover.Max.Value);
+
+                demands[coverRequirement.Day] = demand;
+            }
+
+            return demands;
         }
     }
 }

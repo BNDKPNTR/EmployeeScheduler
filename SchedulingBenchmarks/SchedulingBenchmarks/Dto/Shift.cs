@@ -8,7 +8,8 @@ namespace SchedulingBenchmarks.Dto
 {
     public class Shift : IXmlSerializable
     {
-        public const string EmptyShiftId = "-";
+        public const string NoneShiftId = "-";
+        public const string AnyShiftId = "$";
 
         [XmlAttribute("ID")]
         public string Id { get; set; }

@@ -25,14 +25,12 @@ namespace SchedulingBenchmarks
         {
             foreach (var timeSlot in _model.SchedulePeriod)
             {
-                _model.AllDemands.MoveNext(timeSlot);
-
                 Parallel.ForEach(_model.People, person => _stateCalculator.RefreshState(person, timeSlot));
 
                 var availablePeople = SelectAvailablePeopleForTimeSlot(timeSlot);
-                var demands = SelectDemandsForTimeSlot();
+                var demands = SelectDemandsForTimeSlot(timeSlot);
 
-                if (availablePeople.Count > 0 && demands.Count > 0)
+                if (availablePeople.Count > 0 && demands.Length > 0)
                 {
                     SchedulePeople(timeSlot, availablePeople, demands);
                 }
@@ -42,15 +40,15 @@ namespace SchedulingBenchmarks
         private List<Person> SelectAvailablePeopleForTimeSlot(int timeSlot)
             => _model.People.Where(p => p.Availabilities[timeSlot]).ToList();
 
-        private void SchedulePeople(int timeSlot, List<Person> people, Dictionary<int, Demand> demands)
+        private void SchedulePeople(int timeSlot, List<Person> people, Demand[] demands)
         {
-            var costMatrix = CreateCostMatrix(size: Math.Max(people.Count, demands.Count));
+            var costMatrix = CreateCostMatrix(size: Math.Max(people.Count, demands.Length));
 
             Parallel.For(0, people.Count, i =>
             {
                 var person = people[i];
 
-                for (int j = 0; j < demands.Count; j++)
+                for (int j = 0; j < demands.Length; j++)
                 {
                     costMatrix[i][j] = _costFunction.CalculateCost(person, demands[j], timeSlot);
                 }
@@ -60,34 +58,32 @@ namespace SchedulingBenchmarks
             CreateAssignments(timeSlot, costMatrix, result.copulationVerticesX, people, demands);
         }
 
-        private void CreateAssignments(int timeSlot, double[][] costMatrix, int[] copulationVerticesX, List<Person> people, Dictionary<int, Demand> demands)
+        private void CreateAssignments(int timeSlot, double[][] costMatrix, int[] copulationVerticesX, List<Person> people, Demand[] demands)
         {
             for (int i = 0; i < copulationVerticesX.Length; i++)
             {
                 var j = copulationVerticesX[i];
                 if (Math.Abs(costMatrix[i][j] - _costFunction.MaxCost) > double.Epsilon)
                 {
-                    if (i < people.Count && demands.TryGetValue(j, out var demand))
+                    if (i < people.Count && j < demands.Length)
                     {
                         var person = people[i];
+                        var demand = demands[j];
 
-                        person.Assignments[timeSlot] = new Assignment(person, timeSlot, demand.Activity); 
+                        person.Assignments[timeSlot] = new Assignment(person, timeSlot, demand.ShifId); 
                     }
                 }
             }
         }
 
-        private Dictionary<int, Demand> SelectDemandsForTimeSlot()
+        private Demand[] SelectDemandsForTimeSlot(int timeSlot)
         {
-            var demandsByIndex = new Dictionary<int, Demand>();
-            var demands = _model.AllDemands.Current;
+            var currentDemand = _model.Demands[timeSlot];
+            var demandsByIndex = new Demand[currentDemand.MinPeopleCount];
 
-            for (int i = 0; i < demands.Count; i++)
+            for (int i = 0; i < currentDemand.MinPeopleCount; i++)
             {
-                for (int j = 0; j < demands[i].RequiredPeopleCount; j++)
-                {
-                    demandsByIndex[i + j] = demands[i];
-                }
+                demandsByIndex[i] = currentDemand;
             }
 
             return demandsByIndex;

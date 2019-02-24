@@ -4,18 +4,15 @@ using System.Xml.Serialization;
 
 namespace SchedulingBenchmarks.Dto
 {
-    [Serializable()]
-    [DesignerCategory("code")]
-    [XmlType(AnonymousType = true)]
     public class MinSeq
     {
-        [XmlAttribute()]
+        [XmlAttribute("label")]
         public string Label { get; set; }
 
-        [XmlAttribute()]
-        public byte Value { get; set; }
+        [XmlAttribute("value")]
+        public int Value { get; set; }
 
-        [XmlAttribute()]
+        [XmlAttribute("shift")]
         public string Shift { get; set; }
     }
 }

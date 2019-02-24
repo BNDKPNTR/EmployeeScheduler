@@ -4,15 +4,12 @@ using System.Xml.Serialization;
 
 namespace SchedulingBenchmarks.Dto
 {
-    [Serializable()]
-    [DesignerCategory("code")]
-    [XmlType(AnonymousType = true)]
     public class MinRestTime
     {
-        [XmlAttribute()]
+        [XmlAttribute]
         public string Label { get; set; }
 
-        [XmlText()]
-        public ushort Value { get; set; }
+        [XmlText]
+        public int Value { get; set; }
     }
 }

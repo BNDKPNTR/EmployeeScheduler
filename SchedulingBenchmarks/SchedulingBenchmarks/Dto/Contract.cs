@@ -4,11 +4,13 @@ using System.Xml.Serialization;
 
 namespace SchedulingBenchmarks.Dto
 {
-    [Serializable()]
-    [DesignerCategory("code")]
-    [XmlType(AnonymousType = true)]
     public class Contract
     {
+        public const string UniversalContractId = "All";
+
+        [XmlAttribute]
+        public string ID { get; set; }
+
         public MaxSeq MaxSeq { get; set; }
 
         [XmlElement("MinSeq")]
@@ -22,8 +24,5 @@ namespace SchedulingBenchmarks.Dto
         public ValidShifts ValidShifts { get; set; }
 
         public MinRestTime MinRestTime { get; set; }
-
-        [XmlAttribute()]
-        public string ID { get; set; }
     }
 }

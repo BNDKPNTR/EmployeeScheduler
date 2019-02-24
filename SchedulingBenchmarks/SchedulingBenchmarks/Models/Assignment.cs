@@ -8,15 +8,15 @@ namespace SchedulingBenchmarks.Models
     {
         public Person Person { get; }
         public int TimeSlot { get; }
-        public Activity Activity { get; }
+        public string ShiftId { get; }
 
-        public Assignment(Person person, int timeSlot, Activity activity)
+        public Assignment(Person person, int timeSlot, string shiftId)
         {
             Person = person ?? throw new ArgumentNullException(nameof(person));
             TimeSlot = timeSlot;
-            Activity = activity ?? throw new ArgumentNullException(nameof(activity));
+            ShiftId = shiftId ?? throw new ArgumentNullException(nameof(shiftId));
         }
 
-        public override string ToString() => $"{TimeSlot} - {Person.Id} - {Activity.Name}";
+        public override string ToString() => $"{TimeSlot} - {Person.Id} - {ShiftId}";
     }
 }

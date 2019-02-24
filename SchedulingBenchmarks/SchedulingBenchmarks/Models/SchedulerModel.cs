@@ -9,6 +9,6 @@ namespace SchedulingBenchmarks.Models
         public Range SchedulePeriod { get; set; }
         public Calendar Calendar { get; set; }
         public List<Person> People { get; set; }
-        public TimeSlotDependentCollection<List<Demand>> AllDemands { get; set; }
+        public Demand[] Demands { get; set; }
     }
 }
