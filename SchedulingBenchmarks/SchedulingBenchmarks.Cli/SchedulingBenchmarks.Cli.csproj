@@ -9,4 +9,10 @@
     <ProjectReference Include="..\SchedulingBenchmarks\SchedulingBenchmarks.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Instances\Instance1.ros">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

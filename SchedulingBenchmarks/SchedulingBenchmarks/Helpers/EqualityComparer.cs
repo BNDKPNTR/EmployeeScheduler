@@ -6,20 +6,20 @@ namespace SchedulingBenchmarks
 {
     public class EqualityComparer<T> : IEqualityComparer<T>
     {
-        private readonly Func<T, T, bool> _equalityComparerFunc;
+        private readonly Func<T, T, bool> _equalsFunc;
+        private readonly Func<T, int> _getHashCodeFunc;
 
-        public EqualityComparer(Func<T, T, bool> equalityComparerFunc)
+        public EqualityComparer(Func<T, T, bool> equalsFunc, Func<T, int> getHashCodeFunc)
         {
-            _equalityComparerFunc = equalityComparerFunc ?? throw new ArgumentNullException(nameof(equalityComparerFunc));
+            _equalsFunc = equalsFunc ?? throw new ArgumentNullException(nameof(equalsFunc));
+            _getHashCodeFunc = getHashCodeFunc;
         }
 
-        public bool Equals(T x, T y) => _equalityComparerFunc(x, y);
+        public static EqualityComparer<T> Create(Func<T, T, bool> equalsFunc, Func<T, int> getHashCodeFunc) 
+            => new EqualityComparer<T>(equalsFunc, getHashCodeFunc);
 
-        public int GetHashCode(T obj) => 0;
-    }
+        public bool Equals(T x, T y) => _equalsFunc(x, y);
 
-    public static class EqualityComparer
-    {
-        public static EqualityComparer<T> Create<T>(Func<T, T, bool> equalityComparerFunc) => new EqualityComparer<T>(equalityComparerFunc);
+        public int GetHashCode(T obj) => _getHashCodeFunc(obj);
     }
 }

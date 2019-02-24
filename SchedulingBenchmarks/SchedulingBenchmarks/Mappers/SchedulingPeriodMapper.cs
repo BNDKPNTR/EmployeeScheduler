@@ -18,7 +18,8 @@ namespace SchedulingBenchmarks
             _activities = new Dictionary<int, Activity>();
         }
 
-        public static SchedulerModel MapToScheduleModel(Dto.SchedulingPeriod inputModel) => new SchedulingPeriodMapper(inputModel).MapToScheduleModel();
+        public static SchedulerModel MapToScheduleModel(Dto.SchedulingPeriod inputModel) 
+            => new SchedulingPeriodMapper(inputModel).MapToScheduleModel();
 
         private SchedulerModel MapToScheduleModel()
         {

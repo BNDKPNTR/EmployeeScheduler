@@ -13,7 +13,7 @@ namespace SchedulingBenchmarks.Cli
     class Program
     {
         private static readonly bool ExecuteSchedulerAlgorithm = true;
-        private static readonly bool ExecuteResultGenerator = true;
+        private static readonly bool ExecuteResultGenerator = false;
 
         static void Main(string[] args)
         {
@@ -28,7 +28,7 @@ namespace SchedulingBenchmarks.Cli
 
         private static AlgorithmResult RunSchedulerAlgorithm()
         {
-            SchedulingPeriod input = null;
+            var input = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber: 1);
             var sw = new Stopwatch();
 
             GC.Collect();
