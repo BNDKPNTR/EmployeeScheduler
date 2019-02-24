@@ -17,6 +17,6 @@ namespace SchedulingBenchmarks.Models
             Activity = activity ?? throw new ArgumentNullException(nameof(activity));
         }
 
-        public override string ToString() => $"{TimeSlot} - {Person.Name} - {Activity.Name}";
+        public override string ToString() => $"{TimeSlot} - {Person.Id} - {Activity.Name}";
     }
 }

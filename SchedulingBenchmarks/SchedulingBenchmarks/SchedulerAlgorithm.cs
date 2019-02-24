@@ -8,30 +8,20 @@ using System.Threading.Tasks;
 
 namespace SchedulingBenchmarks
 {
-    public class SchedulerAlgorithm
+    class SchedulerAlgorithm
     {
         private readonly SchedulerModel _model;
         private readonly StateCalculator _stateCalculator;
         private readonly CostFunctionBase _costFunction;
 
-        private SchedulerAlgorithm(SchedulerModel model)
+        public SchedulerAlgorithm(SchedulerModel model)
         {
             _model = model;
             _stateCalculator = new StateCalculator(_model.Calendar);
             _costFunction = CreateCompositeCostFunction();
         }
 
-        public static Dto.SchedulingPeriod Run(Dto.SchedulingPeriod input)
-        {
-            var model = SchedulingPeriodMapper.MapToScheduleModel(input);
-            var scheduler = new SchedulerAlgorithm(model);
-
-            scheduler.RunInternal();
-
-            return SchedulerModelMapper.MapToInputModel(model, input);
-        }
-
-        private void RunInternal()
+        public void Run()
         {
             foreach (var timeSlot in _model.SchedulePeriod)
             {
@@ -39,7 +29,7 @@ namespace SchedulingBenchmarks
 
                 Parallel.ForEach(_model.People, person => _stateCalculator.RefreshState(person, timeSlot));
 
-                var availablePeople = SelectAvailablePeopleForTimeSlot();
+                var availablePeople = SelectAvailablePeopleForTimeSlot(timeSlot);
                 var demands = SelectDemandsForTimeSlot();
 
                 if (availablePeople.Count > 0 && demands.Count > 0)
@@ -49,7 +39,8 @@ namespace SchedulingBenchmarks
             }
         }
 
-        private List<Person> SelectAvailablePeopleForTimeSlot() => _model.People.Where(p => p.Available).ToList();
+        private List<Person> SelectAvailablePeopleForTimeSlot(int timeSlot)
+            => _model.People.Where(p => p.Availabilities[timeSlot]).ToList();
 
         private void SchedulePeople(int timeSlot, List<Person> people, Dictionary<int, Demand> demands)
         {

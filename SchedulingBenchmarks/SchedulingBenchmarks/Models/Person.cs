@@ -6,22 +6,24 @@ namespace SchedulingBenchmarks.Models
 {
     class Person
     {
-        public int Id { get; }
-        public string Name { get; }
+        public string Id { get; }
         public State State { get; }
-        public TimeSlotDependentCollection<bool> Availabilities { get; }
-        public bool Available => Availabilities.Current;
+        public bool[] Availabilities { get; }
+        public bool[] ShiftOffRequests { get; set; }
+        public bool[] ShiftOnRequests { get; set; }
         public Dictionary<int, Assignment> Assignments { get; }
 
-        public Person(int id, string name, State state, TimeSlotDependentCollection<bool> availabilities, Dictionary<int, Assignment> assignments)
+        public Person(string id, State state, bool[] availabilities, bool[] shiftOffRequests, bool[] shiftOnRequests)
         {
             Id = id;
-            Name = name ?? throw new ArgumentNullException(nameof(name));
             State = state ?? throw new ArgumentNullException(nameof(state));
             Availabilities = availabilities ?? throw new ArgumentNullException(nameof(availabilities));
-            Assignments = assignments ?? throw new ArgumentNullException(nameof(assignments));
+            ShiftOffRequests = shiftOffRequests ?? throw new ArgumentNullException(nameof(shiftOffRequests));
+            ShiftOnRequests = shiftOnRequests ?? throw new ArgumentNullException(nameof(shiftOnRequests));
+
+            Assignments = new Dictionary<int, Assignment>();
         }
 
-        public override string ToString() => Name;
+        public override string ToString() => Id;
     }
 }

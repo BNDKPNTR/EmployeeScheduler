@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SchedulingBenchmarks
+namespace SchedulingBenchmarks.Mappers
 {
     class SchedulerModelMapper
     {
@@ -17,10 +17,9 @@ namespace SchedulingBenchmarks
             _input = input ?? throw new ArgumentNullException(nameof(input));
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
-            _people = _model.People.ToDictionary(p => p.Id);
         }
 
-        public static Dto.SchedulingPeriod MapToInputModel(SchedulerModel model, Dto.SchedulingPeriod input) => new SchedulerModelMapper(model, input).MapToInputModel();
+        public static Dto.SchedulingPeriod MapToSchedulingBenchmarkModel(SchedulerModel model, Dto.SchedulingPeriod input) => new SchedulerModelMapper(model, input).MapToInputModel();
 
         private Dto.SchedulingPeriod MapToInputModel()
         {

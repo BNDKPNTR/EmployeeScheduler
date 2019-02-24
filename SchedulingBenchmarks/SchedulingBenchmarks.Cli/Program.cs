@@ -28,7 +28,7 @@ namespace SchedulingBenchmarks.Cli
 
         private static AlgorithmResult RunSchedulerAlgorithm()
         {
-            var input = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber: 1);
+            var schedulingBenchmarkModel = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber: 1);
             var sw = new Stopwatch();
 
             GC.Collect();
@@ -36,7 +36,7 @@ namespace SchedulingBenchmarks.Cli
             GC.Collect();
 
             sw.Start();
-            var result = SchedulerAlgorithm.Run(input);
+            var result = SchedulerAlgorithmRunner.Run(schedulingBenchmarkModel);
             sw.Stop();
 
             return new AlgorithmResult

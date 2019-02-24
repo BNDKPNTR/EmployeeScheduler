@@ -17,8 +17,6 @@ namespace SchedulingBenchmarks
 
         public void RefreshState(Person person, int timeSlot)
         {
-            person.Availabilities.MoveNext(timeSlot);
-
             if (WorkStartedInPreviousTimeSlot(person, timeSlot))
             {
                 var previousTimeSlotIndex = timeSlot - 1;
