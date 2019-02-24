@@ -8,62 +8,23 @@ namespace SchedulingBenchmarks
 {
     public class ScheduleResultGenerator
     {
-        private readonly Func<InputModel> _inputFactory;
+        private readonly Func<SchedulingPeriod> _inputFactory;
 
-        public ScheduleResultGenerator(Func<InputModel> inputFactory)
+        public ScheduleResultGenerator(Func<SchedulingPeriod> inputFactory)
         {
             _inputFactory = inputFactory ?? throw new ArgumentNullException(nameof(inputFactory));
         }
 
-        public IEnumerable<InputModel> GenerateResults()
+        public IEnumerable<SchedulingPeriod> GenerateResults()
         {
             foreach (var product in CartesianProduct(GenerateCartesianProductSequences()))
             {
                 var input = _inputFactory();
 
-                foreach (var person in input.People)
-                {
-                    person.Assignments = new List<Assignment>();
-                }
-
-                var demands = DemandFactory(input.Demands).ToList();
-
-                var copulationVerticesY = product.ToArray();
-                for (int i = 0; i < copulationVerticesY.Length; i++)
-                {
-                    var personIndex = copulationVerticesY[i];
-                    var demandIndex = i;
-
-                    var person = input.People[personIndex];
-                    var demand = demands[demandIndex];
-
-                    person.Assignments.Add(CreateAssignment(person, demand));
-                }
+                throw new NotImplementedException();
 
                 yield return input;
             }
-        }
-
-        private IEnumerable<Demand> DemandFactory(List<Demand> demands)
-        {
-            foreach (var demand in demands)
-            {
-                for (int i = 0; i < demand.RequiredPersonCount; i++)
-                {
-                    yield return demand;
-                }
-            }
-        }
-
-        private Assignment CreateAssignment(Person person, Demand demand)
-        {
-            return new Assignment
-            {
-                Start = demand.Start,
-                End = demand.End,
-                Person = person,
-                Activity = demand.Activity
-            };
         }
 
         private IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
@@ -84,10 +45,7 @@ namespace SchedulingBenchmarks
         /// </summary>
         private int[][] GenerateCartesianProductSequences()
         {
-            var input = _inputFactory();
-            var personIndexArray = Enumerable.Range(0, input.People.Count).Select(i => i).ToArray();
-
-            return Enumerable.Range(0, input.Demands.Sum(d => d.RequiredPersonCount)).Select(_ => personIndexArray).ToArray();
+            throw new NotImplementedException();
         }
     }
 }

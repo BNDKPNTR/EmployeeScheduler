@@ -28,7 +28,7 @@ namespace SchedulingBenchmarks.Cli
 
         private static AlgorithmResult RunSchedulerAlgorithm()
         {
-            var input = InputGenerator.CreateInput();
+            SchedulingPeriod input = null;
             var sw = new Stopwatch();
 
             GC.Collect();
@@ -51,7 +51,7 @@ namespace SchedulingBenchmarks.Cli
 
         private static List<AlgorithmResult> RunResultGenerator()
         {
-            var generator = new ScheduleResultGenerator(() => InputGenerator.CreateInput());
+            var generator = new ScheduleResultGenerator(() => null);
             var feasibleResults = new ConcurrentBag<AlgorithmResult>();
             var resultNumber = 0;
             
@@ -129,77 +129,20 @@ namespace SchedulingBenchmarks.Cli
             Console.WriteLine(separator);
         }
 
-        private static string CreateFormattedString(InputModel result)
+        private static string CreateFormattedString(SchedulingPeriod result)
         {
-            const string dateFormat = "yyyy.MM.dd HH:mm";
-            var builder = new StringBuilder();
-
-            foreach (var person in result.People)
-            {
-                builder.AppendLine(person.Name);
-
-                foreach (var assignment in person.Assignments)
-                {
-                    builder.AppendLine($"\t{assignment.Start.ToString(dateFormat)} - {assignment.End.ToString(dateFormat)}: {assignment.Activity.Name}");
-                }
-
-                builder.AppendLine();
-            }
-
-            return builder.ToString();
+            throw new NotImplementedException();
         }
 
-        private static bool CompareResults(InputModel x, InputModel y)
+        private static bool CompareResults(SchedulingPeriod x, SchedulingPeriod y)
         {
-            var assignmentComparer = EqualityComparer.Create<Assignment>((a, b) =>
-                a.Start == b.Start
-                && a.End == b.End
-                && a.Activity.Id == b.Activity.Id
-                && a.Person.Id == b.Person.Id);
-
-            var personCount = x.People.Count;
-            var equal = true;
-
-            Parallel.For(0, personCount, (i, state) =>
-            {
-                var a = x.People[i].Assignments;
-                var b = y.People[i].Assignments;
-
-                if (a.Count != b.Count)
-                {
-                    equal = false;
-                    state.Break();
-                }
-
-                var assignments = new HashSet<Assignment>(a, assignmentComparer);
-
-                if (assignments.Count != b.Count)
-                {
-                    equal = false;
-                    state.Break();
-                }
-
-                foreach (var assignment in b)
-                {
-                    if (assignments.Contains(assignment))
-                    {
-                        assignments.Remove(assignment);
-                    }
-                    else
-                    {
-                        equal = false;
-                        state.Break();
-                    }
-                }
-            });
-
-            return equal;
+            throw new NotImplementedException();
         }
 
         private class AlgorithmResult
         {
             public string Name { get; set; }
-            public InputModel Result { get; set; }
+            public SchedulingPeriod Result { get; set; }
             public int Cost { get; set; }
             public bool Feasible { get; set; }
             public TimeSpan Duration { get; set; }

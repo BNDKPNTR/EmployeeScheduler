@@ -6,8 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using InputModel = SchedulingBenchmarks.Dto.InputModel;
-
 namespace SchedulingBenchmarks
 {
     public class SchedulerAlgorithm
@@ -23,9 +21,9 @@ namespace SchedulingBenchmarks
             _costFunction = CreateCompositeCostFunction();
         }
 
-        public static InputModel Run(InputModel input)
+        public static Dto.SchedulingPeriod Run(Dto.SchedulingPeriod input)
         {
-            var model = InputModelMapper.MapToScheduleModel(input);
+            var model = SchedulingPeriodMapper.MapToScheduleModel(input);
             var scheduler = new SchedulerAlgorithm(model);
 
             scheduler.RunInternal();
