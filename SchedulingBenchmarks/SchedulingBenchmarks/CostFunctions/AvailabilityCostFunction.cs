@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Scheduler.Models;
+using SchedulingBenchmarks.Models;
 
-namespace Scheduler.CostFunctions
+namespace SchedulingBenchmarks.CostFunctions
 {
     class AvailabilityCostFunction : CostFunctionBase
     {

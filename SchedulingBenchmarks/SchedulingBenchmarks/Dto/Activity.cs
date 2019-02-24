@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Scheduler.Dto
+namespace SchedulingBenchmarks.Dto
 {
     public class Activity
     {

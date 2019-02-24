@@ -1,12 +1,12 @@
-﻿using Scheduler.Dto;
+﻿using SchedulingBenchmarks.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Scheduler
+namespace SchedulingBenchmarks
 {
-    static class OptimalityEvaluator
+    public static class OptimalityEvaluator
     {
         public static int CalculateCost(InputModel result)
         {

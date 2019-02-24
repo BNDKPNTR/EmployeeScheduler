@@ -1,12 +1,12 @@
-﻿using Scheduler.Dto;
+﻿using SchedulingBenchmarks.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Scheduler
+namespace SchedulingBenchmarks
 {
-    static class InputGenerator
+    public static class InputGenerator
     {
         public static InputModel CreateInput()
         {

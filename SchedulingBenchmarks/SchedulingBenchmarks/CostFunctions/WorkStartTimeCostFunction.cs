@@ -1,11 +1,11 @@
-﻿using Scheduler.Models;
+﻿using SchedulingBenchmarks.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
-namespace Scheduler.CostFunctions
+namespace SchedulingBenchmarks.CostFunctions
 {
     class WorkStartTimeCostFunction : CostFunctionBase
     {

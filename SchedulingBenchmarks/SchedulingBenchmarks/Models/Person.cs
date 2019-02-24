@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Scheduler.Models
+namespace SchedulingBenchmarks.Models
 {
     class Person
     {

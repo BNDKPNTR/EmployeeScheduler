@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scheduler
+namespace SchedulingBenchmarks
 {
     public struct Range : IEnumerable<int>
     {

@@ -1,16 +1,16 @@
-﻿using Scheduler.CostFunctions;
-using Scheduler.Models;
+﻿using SchedulingBenchmarks.CostFunctions;
+using SchedulingBenchmarks.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using InputModel = Scheduler.Dto.InputModel;
+using InputModel = SchedulingBenchmarks.Dto.InputModel;
 
-namespace Scheduler
+namespace SchedulingBenchmarks
 {
-    class SchedulerAlgorithm
+    public class SchedulerAlgorithm
     {
         private readonly SchedulerModel _model;
         private readonly StateCalculator _stateCalculator;

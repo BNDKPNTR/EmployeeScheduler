@@ -1,9 +1,9 @@
-﻿using Scheduler.Models;
+﻿using SchedulingBenchmarks.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Scheduler.CostFunctions
+namespace SchedulingBenchmarks.CostFunctions
 {
     abstract class CostFunctionBase
     {

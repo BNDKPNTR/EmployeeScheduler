@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scheduler.Models
+namespace SchedulingBenchmarks.Models
 {
     public class Calendar
     {

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace Scheduler
+namespace SchedulingBenchmarks
 {
     static class JonkerVolgenantAlgorithm
     {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Scheduler
+namespace SchedulingBenchmarks
 {
-    class EqualityComparer<T> : IEqualityComparer<T>
+    public class EqualityComparer<T> : IEqualityComparer<T>
     {
         private readonly Func<T, T, bool> _equalityComparerFunc;
 
@@ -18,7 +18,7 @@ namespace Scheduler
         public int GetHashCode(T obj) => 0;
     }
 
-    static class EqualityComparer
+    public static class EqualityComparer
     {
         public static EqualityComparer<T> Create<T>(Func<T, T, bool> equalityComparerFunc) => new EqualityComparer<T>(equalityComparerFunc);
     }

@@ -1,4 +1,4 @@
-﻿using Scheduler.Dto;
+﻿using SchedulingBenchmarks.Dto;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Scheduler
+namespace SchedulingBenchmarks.Cli
 {
     class Program
     {
