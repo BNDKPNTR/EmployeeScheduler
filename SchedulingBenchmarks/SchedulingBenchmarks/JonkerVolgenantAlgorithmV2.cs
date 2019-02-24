@@ -2,7 +2,7 @@
 
 namespace SchedulingBenchmarks
 {
-    static class JonkerVolgenantAlgorithm
+    static class JonkerVolgenantAlgorithmV2
     {
         public static (int[] copulationVerticesX, int[] copulationVerticesY) RunAlgorithm(double[][] costGraph)
         {

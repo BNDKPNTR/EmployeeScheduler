@@ -7,9 +7,9 @@ namespace SchedulingBenchmarks.Models
 {
     class State
     {
-        public int TimeSlotsWorked { get; set; }
-        public int TimeSlotsWorkedToday { get; set; }
-        public int WorkedDaysInMonthCount { get; set; }
-        public ImmutableDictionary<int, int> DailyWorkStartCounts { get; set; }
+        public int TotalWorkTime { get; set; }
+        public int ConsecutiveShiftCount { get; set; }
+        public int DayOffCount { get; set; }
+        public bool WorkedOnWeeked { get; set; }
     }
 }

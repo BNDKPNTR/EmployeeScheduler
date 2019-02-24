@@ -59,10 +59,10 @@ namespace SchedulingBenchmarks.Mappers
         {
             return new State
             {
-                TimeSlotsWorked = 0,
-                TimeSlotsWorkedToday = 0,
-                WorkedDaysInMonthCount = 0,
-                DailyWorkStartCounts = ImmutableDictionary<int, int>.Empty
+                TotalWorkTime = 0,
+                ConsecutiveShiftCount = 0,
+                DayOffCount = int.MaxValue / 2,
+                WorkedOnWeeked = false
             };
         }
 

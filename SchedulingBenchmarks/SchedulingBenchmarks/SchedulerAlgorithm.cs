@@ -38,7 +38,9 @@ namespace SchedulingBenchmarks
         }
 
         private List<Person> SelectAvailablePeopleForTimeSlot(int timeSlot)
-            => _model.People.Where(p => p.Availabilities[timeSlot]).ToList();
+            => _model.People
+            //.Where(p => p.Availabilities[timeSlot])
+            .ToList();
 
         private void SchedulePeople(int timeSlot, List<Person> people, Demand[] demands)
         {
@@ -54,7 +56,8 @@ namespace SchedulingBenchmarks
                 }
             });
 
-            var result = JonkerVolgenantAlgorithm.RunAlgorithm(costMatrix);
+            //DumpCostMatrix(costMatrix);
+            var result = JonkerVolgenantAlgorithmV2.RunAlgorithm(costMatrix);
             CreateAssignments(timeSlot, costMatrix, result.copulationVerticesX, people, demands);
         }
 
@@ -110,10 +113,24 @@ namespace SchedulingBenchmarks
         {
             var costFunctions = new CostFunctionBase[]
             {
-                new AvailabilityCostFunction()
+                new AvailabilityCostFunction(),
+                //new WeekendWorkCostFunction(),
+                new TotalWorkTimeCostFunction(),
+                new ShiftRequestCostFunction(),
+                new ConsecutiveShiftCostFunction(),
+                new DayOffCostFunction()
             };
 
             return new CompositeCostFunction(costFunctions);
+        }
+
+        private static void DumpCostMatrix(double[][] costMatrix)
+        {
+            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(double[][]));
+            using (var stream = System.IO.File.Create("costMatrix.xml"))
+            {
+                serializer.Serialize(stream, costMatrix);
+            }
         }
     }
 }

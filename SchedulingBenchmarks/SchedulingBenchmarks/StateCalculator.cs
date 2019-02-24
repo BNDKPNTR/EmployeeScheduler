@@ -17,30 +17,50 @@ namespace SchedulingBenchmarks
 
         public void RefreshState(Person person, int timeSlot)
         {
-            if (WorkStartedInPreviousTimeSlot(person, timeSlot))
-            {
-                var previousTimeSlotIndex = timeSlot - 1;
-                var elapsedTimeSlotsSinceDayStart = previousTimeSlotIndex - _calendar.DayStartOf(previousTimeSlotIndex);
-
-                person.State.DailyWorkStartCounts.TryGetValue(elapsedTimeSlotsSinceDayStart, out var workStartCount);
-                person.State.DailyWorkStartCounts = person.State.DailyWorkStartCounts.SetItem(elapsedTimeSlotsSinceDayStart, workStartCount + 1);
-
-                person.State.WorkedDaysInMonthCount++;
-            }
-
-            person.State.TimeSlotsWorked = WorkedInPreviousTimeSlot(person, timeSlot)
-                ? person.State.TimeSlotsWorked + 1
-                : 0;
-
-            person.State.TimeSlotsWorkedToday = IsNewDay(timeSlot)
-                ? 0
-                : (WorkedInPreviousTimeSlot(person, timeSlot) ? person.State.TimeSlotsWorkedToday + 1 : person.State.TimeSlotsWorkedToday);
+            person.State.WorkedOnWeeked = CalculateWorkedOnWeekend(person, timeSlot);
+            person.State.TotalWorkTime = CalculateTotalWorkTime(person, timeSlot);
+            person.State.ConsecutiveShiftCount = CalculateConsecutiveShiftCount(person, timeSlot);
+            person.State.DayOffCount = CalculateDayOffCount(person, timeSlot);
         }
 
-        private bool IsNewDay(int timeSlot) => _calendar.DayStartOf(timeSlot) == timeSlot;
+        private int CalculateDayOffCount(Person person, int timeSlot)
+        {
+            return person.Assignments.ContainsKey(timeSlot - 1)
+                ? 0
+                : person.State.DayOffCount + 1;
+        }
 
-        private bool WorkedInPreviousTimeSlot(Person person, int timeSlot) => person.Assignments.ContainsKey(timeSlot - 1);
+        private int CalculateConsecutiveShiftCount(Person person, int timeSlot)
+        {
+            return person.Assignments.ContainsKey(timeSlot - 1)
+                ? person.State.ConsecutiveShiftCount + 1
+                : 0;
+        }
 
-        private bool WorkStartedInPreviousTimeSlot(Person person, int timeSlot) => person.State.TimeSlotsWorked == 0 && WorkedInPreviousTimeSlot(person, timeSlot);
+        private int CalculateTotalWorkTime(Person person, int timeSlot)
+        {
+            if (person.Assignments.ContainsKey(timeSlot - 1))
+            {
+                return person.State.TotalWorkTime + WorkSchedule.ShiftLengthInMinutes;
+            }
+
+            return person.State.TotalWorkTime;
+        }
+
+        private bool CalculateWorkedOnWeekend(Person person, int timeSlot)
+        {
+            if (person.State.WorkedOnWeeked) return true;
+
+            return IsSundayOrMonday(timeSlot)
+                ? person.Assignments.ContainsKey(timeSlot - 1)
+                : person.State.WorkedOnWeeked;
+        }
+
+        private bool IsSundayOrMonday(int timeSlot)
+        {
+            var dayOfWeek = timeSlot % 7;
+
+            return dayOfWeek == 6 || dayOfWeek == 0;
+        }
     }
 }
