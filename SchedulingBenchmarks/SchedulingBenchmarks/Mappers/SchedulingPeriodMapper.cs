@@ -62,7 +62,8 @@ namespace SchedulingBenchmarks.Mappers
                 TotalWorkTime = 0,
                 ConsecutiveShiftCount = 0,
                 DayOffCount = int.MaxValue / 2,
-                WorkedOnWeeked = false
+                WorkedOnWeeked = false,
+                WorkedWeekendCount = 0
             };
         }
 

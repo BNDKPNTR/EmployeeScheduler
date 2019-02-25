@@ -29,6 +29,8 @@ namespace SchedulingBenchmarks.CostFunctions
             for (int i = 0; i < _costFunctions.Length; i++)
             {
                 var cost = _costFunctions[i].CalculateCost(person, demand, timeSlot);
+
+                // TODO: cost <-> multiplier, nem ugyanaz a mertekegyseg?
                 if (cost == MaxCost) return MaxCost;
 
                 product *= cost;

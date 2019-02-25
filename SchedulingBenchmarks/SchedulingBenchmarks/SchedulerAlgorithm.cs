@@ -114,7 +114,7 @@ namespace SchedulingBenchmarks
             var costFunctions = new CostFunctionBase[]
             {
                 new AvailabilityCostFunction(),
-                //new WeekendWorkCostFunction(),
+                new WeekendWorkCostFunction(),
                 new TotalWorkTimeCostFunction(),
                 new ShiftRequestCostFunction(),
                 new ConsecutiveShiftCostFunction(),

@@ -21,6 +21,16 @@ namespace SchedulingBenchmarks
             person.State.TotalWorkTime = CalculateTotalWorkTime(person, timeSlot);
             person.State.ConsecutiveShiftCount = CalculateConsecutiveShiftCount(person, timeSlot);
             person.State.DayOffCount = CalculateDayOffCount(person, timeSlot);
+            person.State.WorkedWeekendCount = CalculateWorkedWeekendCount(person, timeSlot);
+        }
+
+        private int CalculateWorkedWeekendCount(Person person, int timeSlot)
+        {
+            if (!IsMonday(timeSlot)) return person.State.WorkedWeekendCount;
+
+            return person.Assignments.ContainsKey(timeSlot - 2) || person.Assignments.ContainsKey(timeSlot - 1)
+                ? person.State.WorkedWeekendCount + 1
+                : person.State.WorkedWeekendCount;
         }
 
         private int CalculateDayOffCount(Person person, int timeSlot)
@@ -54,6 +64,13 @@ namespace SchedulingBenchmarks
             return IsSundayOrMonday(timeSlot)
                 ? person.Assignments.ContainsKey(timeSlot - 1)
                 : person.State.WorkedOnWeeked;
+        }
+
+        private bool IsMonday(int timeSlot)
+        {
+            var dayOfWeek = timeSlot % 7;
+
+            return dayOfWeek == 0;
         }
 
         private bool IsSundayOrMonday(int timeSlot)

@@ -11,7 +11,7 @@ namespace SchedulingBenchmarks.CostFunctions
         {
             if (!IsWeekend(timeSlot)) return DefaultCost;
 
-            return person.State.WorkedOnWeeked ? MaxCost : DefaultCost;
+            return person.State.WorkedWeekendCount >= person.WorkSchedule.MaxWorkingWeekendCount ? MaxCost : DefaultCost;
         }
 
         private bool IsWeekend(int timeSlot)

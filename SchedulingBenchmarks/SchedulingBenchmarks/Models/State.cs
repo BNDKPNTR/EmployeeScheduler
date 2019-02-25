@@ -11,5 +11,6 @@ namespace SchedulingBenchmarks.Models
         public int ConsecutiveShiftCount { get; set; }
         public int DayOffCount { get; set; }
         public bool WorkedOnWeeked { get; set; }
+        public int WorkedWeekendCount { get; set; }
     }
 }
