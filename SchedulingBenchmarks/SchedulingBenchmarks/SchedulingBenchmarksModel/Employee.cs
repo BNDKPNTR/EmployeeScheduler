@@ -10,6 +10,6 @@ namespace SchedulingBenchmarks.SchedulingBenchmarksModel
         public Contract Contract { get; set; }
         public ShiftRequest[] ShiftOffRequests { get; set; }
         public ShiftRequest[] ShiftOnRequests { get; set; }
-        public int[] DayOffs { get; set; }
+        public HashSet<int> DayOffs { get; set; }
     }
 }

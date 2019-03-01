@@ -1,4 +1,5 @@
 ﻿using SchedulingBenchmarks.Dto;
+using SchedulingBenchmarks.Mappers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -28,7 +29,8 @@ namespace SchedulingBenchmarks.Cli
 
         private static AlgorithmResult RunSchedulerAlgorithm()
         {
-            var schedulingBenchmarkModel = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber: 1);
+            var dto = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber: 1);
+            var schedulingBenchmarkModel = DtoToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(dto);
             var sw = new Stopwatch();
 
             GC.Collect();

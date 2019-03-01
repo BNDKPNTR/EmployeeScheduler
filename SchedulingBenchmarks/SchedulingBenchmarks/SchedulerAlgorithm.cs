@@ -18,7 +18,7 @@ namespace SchedulingBenchmarks
         public SchedulerAlgorithm(SchedulerModel model)
         {
             _model = model;
-            _stateCalculator = new StateCalculator(_model.Calendar);
+            _stateCalculator = new StateCalculator();
             _costFunction = CreateCompositeCostFunction();
         }
 

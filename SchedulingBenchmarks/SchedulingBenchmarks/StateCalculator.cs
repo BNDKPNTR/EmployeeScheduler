@@ -8,13 +8,6 @@ namespace SchedulingBenchmarks
 {
     class StateCalculator
     {
-        private readonly Calendar _calendar;
-
-        public StateCalculator(Calendar calendar)
-        {
-            _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
-        }
-
         public void RefreshState(Person person, int timeSlot)
         {
             person.State.WorkedOnWeeked = CalculateWorkedOnWeekend(person, timeSlot);

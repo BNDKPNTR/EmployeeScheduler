@@ -1,6 +1,6 @@
-﻿using SchedulingBenchmarks.Dto;
-using SchedulingBenchmarks.Mappers;
+﻿using SchedulingBenchmarks.Mappers;
 using SchedulingBenchmarks.Models;
+using SchedulingBenchmarks.SchedulingBenchmarksModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +10,9 @@ namespace SchedulingBenchmarks
 {
     public static class SchedulerAlgorithmRunner
     {
-        public static SchedulingPeriod Run(SchedulingPeriod schedulingBenchmarkModel)
+        public static SchedulingBenchmarkModel Run(SchedulingBenchmarkModel schedulingBenchmarkModel)
         {
-            var schedulerModel = SchedulingPeriodMapper.MapToScheduleModel(schedulingBenchmarkModel);
+            var schedulerModel = SchedulingBenchmarkModelToSchedulerModelMapper.MapToScheduleModel(schedulingBenchmarkModel);
             var algorithm = new SchedulerAlgorithm(schedulerModel);
 
             algorithm.Run();
