@@ -19,6 +19,8 @@ namespace SchedulingBenchmarks
 
             Console.WriteLine(AssignmentsToString(schedulerModel));
 
+            var res = ToRosterViewerFormat(schedulerModel);
+
             return schedulingBenchmarkModel;
             //return SchedulerModelMapper.MapToSchedulingBenchmarkModel(schedulerModel, schedulingBenchmarkModel);
         }
@@ -82,6 +84,30 @@ namespace SchedulingBenchmarks
             {
                 var infeasibleDemandCount = schedulerModel.Demands[day].MinPeopleCount - assignmentsOnDays[day];
                 builder.Append(infeasibleDemandCount < 10 ? $"{infeasibleDemandCount}  " : $"{infeasibleDemandCount} ");
+            }
+
+            return builder.ToString();
+        }
+
+        private static string ToRosterViewerFormat(SchedulerModel schedulerModel)
+        {
+            var builder = new StringBuilder();
+
+            foreach (var person in schedulerModel.People)
+            {
+                foreach (var day in schedulerModel.SchedulePeriod)
+                {
+                    if (person.Assignments.TryGetValue(day, out var assignment))
+                    {
+                        builder.Append($"{assignment.ShiftId}\t");
+                    }
+                    else
+                    {
+                        builder.Append("\t");
+                    }
+                }
+
+                builder.AppendLine();
             }
 
             return builder.ToString();
