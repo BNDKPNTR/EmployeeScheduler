@@ -9,7 +9,7 @@ namespace SchedulingBenchmarks.Dto
     [XmlType(AnonymousType = true)]
     public class ValidShifts
     {
-        [XmlAttribute()]
+        [XmlAttribute("shift")]
         public string Shift { get; set; }
     }
 }

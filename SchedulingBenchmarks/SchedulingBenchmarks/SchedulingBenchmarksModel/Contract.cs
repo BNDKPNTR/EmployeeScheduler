@@ -12,5 +12,8 @@ namespace SchedulingBenchmarks.SchedulingBenchmarksModel
         public int MinConsecutiveShifts { get; set; }
         public int MaxConsecutiveShifts { get; set; }
         public int MinConsecutiveDayOffs { get; set; }
+        public int MaxWorkingWeekendCount { get; set; }
+        public HashSet<string> ValidShiftIds { get; set; }
+        public Dictionary<string, int> MaxShifts { get; set; }
     }
 }

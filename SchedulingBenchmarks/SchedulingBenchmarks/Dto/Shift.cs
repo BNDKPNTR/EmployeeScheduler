@@ -14,7 +14,6 @@ namespace SchedulingBenchmarks.Dto
         [XmlAttribute]
         public string ID { get; set; }
         
-        [XmlIgnore]
         public string StartTime { get; set; }
 
         public int Duration { get; set; }

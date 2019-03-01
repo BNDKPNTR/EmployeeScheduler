@@ -62,7 +62,8 @@ namespace SchedulingBenchmarks.Mappers
                 ConsecutiveShiftCount = 0,
                 DayOffCount = int.MaxValue / 2,
                 WorkedOnWeeked = false,
-                WorkedWeekendCount = 0
+                WorkedWeekendCount = 0,
+                ShiftWorkedCount = new Dictionary<string, int>()
             };
         }
 
@@ -103,7 +104,9 @@ namespace SchedulingBenchmarks.Mappers
                 contract.MinConsecutiveShifts,
                 contract.MaxConsecutiveShifts,
                 contract.MinConsecutiveDayOffs,
-                1);
+                contract.MaxWorkingWeekendCount,
+                contract.ValidShiftIds,
+                contract.MaxShifts.ToDictionary(x => x.Key, x => x.Value));
         }
 
         private bool[] MapShiftOnRequests(Employee employee, Range schedulePeriod)
@@ -119,17 +122,11 @@ namespace SchedulingBenchmarks.Mappers
             return shiftOnRequests;
         }
 
-        private SchedulerDemand[] MapDemands(Range schedulePeriod)
+        private Dictionary<int, SchedulerDemand[]> MapDemands(Range schedulePeriod)
         {
-            var demands = new SchedulerDemand[schedulePeriod.Length];
+            return _schedulingBenchmarkModel.Demands.ToDictionary(x => x.Key, x => x.Value.Select(d => MapDemand(d)).ToArray());
 
-            // TODO: include shift types
-            foreach (var demand in _schedulingBenchmarkModel.Demands)
-            {
-                demands[demand.Day] = new SchedulerDemand(demand.Day, demand.ShiftId, demand.MinEmployeeCount, demand.MaxEmployeeCount);
-            }
-
-            return demands;
+            SchedulerDemand MapDemand(Demand demand) => new SchedulerDemand(demand.Day, demand.ShiftId, demand.MinEmployeeCount, demand.MaxEmployeeCount);
         }
     }
 }

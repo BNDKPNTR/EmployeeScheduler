@@ -15,6 +15,17 @@ namespace SchedulingBenchmarks
             person.State.ConsecutiveShiftCount = CalculateConsecutiveShiftCount(person, timeSlot);
             person.State.DayOffCount = CalculateDayOffCount(person, timeSlot);
             person.State.WorkedWeekendCount = CalculateWorkedWeekendCount(person, timeSlot);
+            person.State.ShiftWorkedCount = CalculateShiftWorkedCount(person, timeSlot);
+        }
+
+        private Dictionary<string, int> CalculateShiftWorkedCount(Person person, int timeSlot)
+        {
+            if (!person.Assignments.TryGetValue(timeSlot - 1, out var previousAssignment)) return person.State.ShiftWorkedCount;
+
+            person.State.ShiftWorkedCount.TryGetValue(previousAssignment.ShiftId, out var shiftWorkedCount);
+            person.State.ShiftWorkedCount[previousAssignment.ShiftId] = shiftWorkedCount + 1;
+
+            return person.State.ShiftWorkedCount;
         }
 
         private int CalculateWorkedWeekendCount(Person person, int timeSlot)

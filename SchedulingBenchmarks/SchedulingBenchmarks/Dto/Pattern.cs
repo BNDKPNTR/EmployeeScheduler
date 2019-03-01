@@ -4,10 +4,7 @@ using System.Xml.Serialization;
 
 namespace SchedulingBenchmarks.Dto
 {
-    [Serializable()]
-    [DesignerCategory("code")]
-    [XmlType(AnonymousType = true)]
-    public class PatternsMatchPattern
+    public class Pattern
     {
         public string StartDay { get; set; }
 

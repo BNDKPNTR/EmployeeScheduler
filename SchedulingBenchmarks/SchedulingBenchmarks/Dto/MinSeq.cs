@@ -6,9 +6,6 @@ namespace SchedulingBenchmarks.Dto
 {
     public class MinSeq
     {
-        [XmlAttribute("label")]
-        public string Label { get; set; }
-
         [XmlAttribute("value")]
         public int Value { get; set; }
 

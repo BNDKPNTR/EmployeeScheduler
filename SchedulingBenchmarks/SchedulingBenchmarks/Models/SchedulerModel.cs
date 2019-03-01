@@ -8,6 +8,6 @@ namespace SchedulingBenchmarks.Models
     {
         public Range SchedulePeriod { get; set; }
         public List<Person> People { get; set; }
-        public Demand[] Demands { get; set; }
+        public Dictionary<int, Demand[]> Demands { get; set; }
     }
 }

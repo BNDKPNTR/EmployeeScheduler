@@ -1,10 +1,11 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Collections.Generic;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace SchedulingBenchmarks.Dto
 {
-    public class MaxSeq
+    public class MaxTot
     {
         [XmlAttribute("value")]
         public int Value { get; set; }

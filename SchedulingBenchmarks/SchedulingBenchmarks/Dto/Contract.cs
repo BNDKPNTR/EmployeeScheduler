@@ -11,12 +11,15 @@ namespace SchedulingBenchmarks.Dto
         [XmlAttribute]
         public string ID { get; set; }
 
+        [XmlElement("MaxTot")]
+        public MaxTot[] MaxTot { get; set; }
+
         public MaxSeq MaxSeq { get; set; }
 
         [XmlElement("MinSeq")]
         public MinSeq[] MinSeq { get; set; }
 
-        [XmlArrayItem("TimeUnits", IsNullable = false)]
+        [XmlArrayItem("TimeUnits")]
         public TimeUnits[] Workload { get; set; }
 
         public Patterns Patterns { get; set; }

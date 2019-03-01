@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 namespace SchedulingBenchmarks.Dto
 {
-    public class DateSpecificCoverCoverMin
+    public class CoverMin
     {
         [XmlAttribute("weight")]
         public int Weight { get; set; }

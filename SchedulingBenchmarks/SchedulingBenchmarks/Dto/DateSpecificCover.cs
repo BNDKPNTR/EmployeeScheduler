@@ -8,6 +8,7 @@ namespace SchedulingBenchmarks.Dto
     {
         public int Day { get; set; }
 
-        public DateSpecificCoverCover Cover { get; set; }
+        [XmlElement("Cover")]
+        public Cover[] Cover { get; set; }
     }
 }

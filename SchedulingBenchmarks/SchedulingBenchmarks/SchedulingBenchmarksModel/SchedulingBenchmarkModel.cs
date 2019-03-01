@@ -10,6 +10,6 @@ namespace SchedulingBenchmarks.SchedulingBenchmarksModel
 
         public Shift[] Shifts { get; set; }
         public Employee[] Employees { get; set; }
-        public Demand[] Demands { get; set; }
+        public Dictionary<int, Demand[]> Demands { get; set; }
     }
 }

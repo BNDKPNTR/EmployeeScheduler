@@ -58,7 +58,8 @@ namespace SchedulingBenchmarks
             });
 
             //DumpCostMatrix(costMatrix);
-            var result = JonkerVolgenantAlgorithmV2.RunAlgorithm(costMatrix);
+            //var result = JonkerVolgenantAlgorithmV2.RunAlgorithm(costMatrix);
+            var result = EgervaryAlgorithmV2.RunAlgorithm(costMatrix, _costFunction.MaxCost);
             CreateAssignments(timeSlot, costMatrix, result.copulationVerticesX, people, demands);
         }
 
@@ -82,12 +83,17 @@ namespace SchedulingBenchmarks
 
         private Demand[] SelectDemandsForTimeSlot(int timeSlot)
         {
-            var currentDemand = _model.Demands[timeSlot];
-            var demandsByIndex = new Demand[currentDemand.MinPeopleCount];
+            var demands = _model.Demands[timeSlot];
+            var demandsByIndex = new Demand[demands.Sum(d => d.MaxPeopleCount)];
 
-            for (int i = 0; i < currentDemand.MinPeopleCount; i++)
+            for (int i = 0; i < demands.Length; i++)
             {
-                demandsByIndex[i] = currentDemand;
+                var demand = demands[i];
+
+                for (int j = 0; j < demand.MaxPeopleCount; j++)
+                {
+                    demandsByIndex[i + j] = demand;
+                }
             }
 
             return demandsByIndex;
@@ -119,7 +125,9 @@ namespace SchedulingBenchmarks
                 new TotalWorkTimeCostFunction(),
                 new ShiftRequestCostFunction(),
                 new ConsecutiveShiftCostFunction(),
-                new DayOffCostFunction()
+                new DayOffCostFunction(),
+                new ValidShiftCostFunction(),
+                new MaxShiftCostFunction()
             };
 
             return new CompositeCostFunction(costFunctions);

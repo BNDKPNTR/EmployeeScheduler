@@ -82,7 +82,7 @@ namespace SchedulingBenchmarks
             builder.Append(new string(' ', personRowWidth));
             foreach (var day in schedulerModel.SchedulePeriod)
             {
-                var infeasibleDemandCount = schedulerModel.Demands[day].MinPeopleCount - assignmentsOnDays[day];
+                var infeasibleDemandCount = schedulerModel.Demands[day].Sum(d => d.MinPeopleCount) - assignmentsOnDays[day];
                 builder.Append(infeasibleDemandCount < 10 ? $"{infeasibleDemandCount}  " : $"{infeasibleDemandCount} ");
             }
 

@@ -77,17 +77,17 @@ namespace SchedulingBenchmarks.Mappers
             return employees.ToArray();
         }
 
-        private Demand[] MapDemands()
+        private Dictionary<int, Demand[]> MapDemands()
         {
-            return _schedulingPeriod.CoverRequirements.Select(dto => new Demand
+            return _schedulingPeriod.CoverRequirements.ToDictionary(dto => dto.Day, dto => dto.Cover.Select(cover => new Demand
             {
                 Day = dto.Day,
-                ShiftId = dto.Cover.Shift,
-                MinEmployeeCount = dto.Cover.Min.Value,
-                MaxEmployeeCount = dto.Cover.Max.Value,
-                UnderMinEmployeeCountPenalty = dto.Cover.Min.Weight,
-                OverMaxEmployeeCountPenalty = dto.Cover.Max.Weight
-            }).ToArray();
+                ShiftId = cover.Shift,
+                MinEmployeeCount = cover.Min.Value,
+                MaxEmployeeCount = cover.Max.Value,
+                UnderMinEmployeeCountPenalty = cover.Min.Weight,
+                OverMaxEmployeeCountPenalty = cover.Max.Weight
+            }).ToArray());
         }
 
         private Dictionary<string, HashSet<int>> MapDayOffs()
@@ -161,7 +161,7 @@ namespace SchedulingBenchmarks.Mappers
             {
                 var minTotalWorkTime = dto.Workload.Single(x => x.Min != null).Min.Count;
                 var maxTotalWorkTime = dto.Workload.Single(x => x.Max != null).Max.Count;
-                var minConsecutiveShifts = dto.MinSeq.Single(x => x.Shift == ShiftDto.AnyShiftId).Value;
+                var minConsecutiveShifts = dto.MinSeq.SingleOrDefault(x => x.Shift == ShiftDto.AnyShiftId)?.Value ?? 0;
                 var maxConsecutiveShifts = dto.MaxSeq.Value;
                 var minConsecutiveDayOffs = dto.MinSeq.Single(x => x.Shift == ShiftDto.NoneShiftId).Value;
 
@@ -172,11 +172,21 @@ namespace SchedulingBenchmarks.Mappers
                     MaxTotalWorkTime = maxTotalWorkTime,
                     MinConsecutiveShifts = minConsecutiveShifts,
                     MaxConsecutiveShifts = maxConsecutiveShifts,
-                    MinConsecutiveDayOffs = minConsecutiveDayOffs
+                    MinConsecutiveDayOffs = minConsecutiveDayOffs,
+                    MaxWorkingWeekendCount = dto.Patterns.Match.Max.Count,
+                    ValidShiftIds = new HashSet<string>(dto.ValidShifts.Shift.Split(',').Where(x => !string.IsNullOrEmpty(x))),
+                    MaxShifts = MapMaxShifts(dto)
                 };
             }
 
             return contracts;
+
+            Dictionary<string, int> MapMaxShifts(ContractDto dto)
+            {
+                if (dto.MaxTot is null) return new Dictionary<string, int>(0);
+
+                return dto.MaxTot.ToDictionary(x => x.Shift, x => x.Value);
+            }
         }
     }
 }

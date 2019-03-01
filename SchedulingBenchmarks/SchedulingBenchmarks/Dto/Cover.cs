@@ -4,12 +4,12 @@ using System.Xml.Serialization;
 
 namespace SchedulingBenchmarks.Dto
 {
-    public class DateSpecificCoverCover
+    public class Cover
     {
         public string Shift { get; set; }
 
-        public DateSpecificCoverCoverMin Min { get; set; }
+        public CoverMin Min { get; set; }
 
-        public DateSpecificCoverCoverMax Max { get; set; }
+        public CoverMax Max { get; set; }
     }
 }

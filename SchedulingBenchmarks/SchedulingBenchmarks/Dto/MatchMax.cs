@@ -4,10 +4,7 @@ using System.Xml.Serialization;
 
 namespace SchedulingBenchmarks.Dto
 {
-    [Serializable()]
-    [DesignerCategory("code")]
-    [XmlType(AnonymousType = true)]
-    public class PatternsMatchMax
+    public class MatchMax
     {
         public byte Count { get; set; }
 
