@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace SchedulingBenchmarks
+namespace SchedulingBenchmarks.LapAlgorithms
 {
     static class JonkerVolgenantAlgorithmV2
     {

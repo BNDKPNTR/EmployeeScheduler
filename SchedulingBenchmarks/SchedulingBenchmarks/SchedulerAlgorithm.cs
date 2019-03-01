@@ -1,4 +1,5 @@
 ﻿using SchedulingBenchmarks.CostFunctions;
+using SchedulingBenchmarks.LapAlgorithms;
 using SchedulingBenchmarks.Models;
 using System;
 using System.Collections.Generic;

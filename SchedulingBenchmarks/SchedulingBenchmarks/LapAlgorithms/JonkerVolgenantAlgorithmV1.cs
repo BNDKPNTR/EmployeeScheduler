@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SchedulingBenchmarks
+namespace SchedulingBenchmarks.LapAlgorithms
 {
     static class JonkerVolgenantAlgorithmV1
     {
