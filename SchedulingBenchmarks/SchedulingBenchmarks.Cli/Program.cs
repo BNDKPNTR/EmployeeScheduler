@@ -29,7 +29,7 @@ namespace SchedulingBenchmarks.Cli
 
         private static AlgorithmResult RunSchedulerAlgorithm()
         {
-            var dto = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber: 1);
+            var dto = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber: 24);
             var schedulingBenchmarkModel = DtoToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(dto);
             var sw = new Stopwatch();
 
@@ -55,6 +55,12 @@ namespace SchedulingBenchmarks.Cli
             else
             {
                 Console.WriteLine("Result is feasible");
+            }
+
+            var penalty = OptimalityEvaluator.CalculatePenalty(result);
+            if (penalty > 0)
+            {
+                Console.WriteLine($"Penalty: {penalty}");
             }
 
             return null;
