@@ -86,13 +86,14 @@ namespace SchedulingBenchmarks
             var demands = _model.Demands[timeSlot];
             var demandsByIndex = new Demand[demands.Sum(d => d.MaxPeopleCount)];
 
+            var k = 0;
             for (int i = 0; i < demands.Length; i++)
             {
                 var demand = demands[i];
 
                 for (int j = 0; j < demand.MaxPeopleCount; j++)
                 {
-                    demandsByIndex[i + j] = demand;
+                    demandsByIndex[k++] = demand;
                 }
             }
 
