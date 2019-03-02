@@ -27,7 +27,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
         [Fact]
         public void AssertFeasibility()
         {
-            var (actualFeasibility, _) = FeasibilityEvaluator.Feasible(_result);
+            var actualFeasibility = FeasibilityEvaluator.EvaluateQuickly(_result);
 
             Assert.Equal(ExpectedFeasibility, actualFeasibility);
         }

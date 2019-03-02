@@ -16,6 +16,7 @@ namespace SchedulingBenchmarks.Cli
     {
         private static readonly bool ExecuteSchedulerAlgorithm = true;
         private static readonly bool ExecuteResultGenerator = false;
+        private static readonly int InstanceNumber = 1;
 
         static void Main(string[] args)
         {
@@ -30,7 +31,7 @@ namespace SchedulingBenchmarks.Cli
 
         private static AlgorithmResult RunSchedulerAlgorithm()
         {
-            var dto = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber: 1);
+            var dto = SchedulingBenchmarkInstanceReader.FromXml(InstanceNumber);
             var schedulingBenchmarkModel = DtoToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(dto);
             var sw = new Stopwatch();
 
@@ -44,7 +45,7 @@ namespace SchedulingBenchmarks.Cli
 
             Clipboard.Copy(ToRosterViewerFormat(result));
 
-            var (feasible, messages) = FeasibilityEvaluator.Feasible(result);
+            var (feasible, messages) = FeasibilityEvaluator.Evaluate(result);
 
             return new AlgorithmResult
             {
@@ -88,25 +89,29 @@ namespace SchedulingBenchmarks.Cli
 
         private static List<AlgorithmResult> RunResultGenerator()
         {
-            var generator = new ScheduleResultGenerator(() => null);
+            var dto = SchedulingBenchmarkInstanceReader.FromXml(InstanceNumber);
+
+            var generator = new ScheduleResultGenerator(() => DtoToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(dto));
             var feasibleResults = new ConcurrentBag<AlgorithmResult>();
             var resultNumber = 0;
             
-            Parallel.ForEach(generator.GenerateResults(), result =>
+            Parallel.ForEach(generator.GenerateResults(ReportProgress), result =>
             {
-                //if (FeasibilityEvaluator.Feasible(result))
-                //{
-                //    feasibleResults.Add(new AlgorithmResult
-                //    {
-                //        Name = $"Timetable {Interlocked.Increment(ref resultNumber)}",
-                //        Result = result,
-                //        Cost = OptimalityEvaluator.CalculateCost(result),
-                //        Feasible = true
-                //    });
-                //}
+                if (FeasibilityEvaluator.EvaluateQuickly(result))
+                {
+                    feasibleResults.Add(new AlgorithmResult
+                    {
+                        Name = $"Timetable {Interlocked.Increment(ref resultNumber)}",
+                        Result = result,
+                        Penalty = OptimalityEvaluator.CalculatePenalty(result),
+                        Feasible = true
+                    });
+                }
             });
 
             return feasibleResults.ToList();
+
+            void ReportProgress(int generatedResultCount) => Console.WriteLine(generatedResultCount);
         }
 
         private static void CompareAndPrintResults(AlgorithmResult schedulerResult, List<AlgorithmResult> generatedResults)
@@ -186,7 +191,7 @@ namespace SchedulingBenchmarks.Cli
             var shiftLengths = schedulingBenchmarkModel.Shifts.ToDictionary(s => s.Id, s => s.Duration);
             var builder = new StringBuilder();
 
-            var personRowWidth = 3;
+            var personRowWidth = schedulingBenchmarkModel.Employees.Max(e => e.Id.Length) + 2;
 
             builder.Append(new string(' ', personRowWidth));
             foreach (var day in Enumerable.Range(0, schedulingBenchmarkModel.Duration))
@@ -194,7 +199,7 @@ namespace SchedulingBenchmarks.Cli
                 builder.Append(day < 10 ? $"{day}  " : $"{day} ");
             }
             builder.AppendLine();
-            builder.AppendLine($"   {new string('_', schedulingBenchmarkModel.Duration * 3)}");
+            builder.AppendLine($"{new string(' ', personRowWidth)}{new string('_', schedulingBenchmarkModel.Duration * 3)}");
 
             var assignmentsOnDays = new int[schedulingBenchmarkModel.Duration];
 
@@ -211,7 +216,7 @@ namespace SchedulingBenchmarks.Cli
                     }
                     else
                     {
-                        builder.Append("   ");
+                        builder.Append(new string(' ', personRowWidth));
                     }
                 }
 
@@ -235,7 +240,7 @@ namespace SchedulingBenchmarks.Cli
                 builder.AppendLine();
             }
 
-            builder.AppendLine($"  |{new string('_', schedulingBenchmarkModel.Duration * 3)}|");
+            builder.AppendLine($"{new string(' ', personRowWidth - 1)}|{new string('_', schedulingBenchmarkModel.Duration * 3)}|");
             builder.Append(new string(' ', personRowWidth));
             foreach (var day in Enumerable.Range(0, schedulingBenchmarkModel.Duration))
             {
@@ -248,7 +253,22 @@ namespace SchedulingBenchmarks.Cli
 
         private static bool CompareResults(SchedulingBenchmarkModel x, SchedulingBenchmarkModel y)
         {
-            throw new NotImplementedException();
+            var yEmployees = y.Employees.ToDictionary(e => e.Id);
+
+            foreach (var xEmployee in x.Employees)
+            {
+                var yEmployee = yEmployees[xEmployee.Id];
+
+                if (xEmployee.Assignments.Count != yEmployee.Assignments.Count) return false;
+
+                foreach (var xAssignment in xEmployee.Assignments.Values)
+                {
+                    if (!yEmployee.Assignments.TryGetValue(xAssignment.Day, out var yAssignment)) return false;
+                    if (xAssignment.ShiftId != yAssignment.ShiftId) return false;
+                }
+            }
+
+            return true;
         }
 
         private class AlgorithmResult

@@ -10,26 +10,33 @@ namespace SchedulingBenchmarks
 {
     public class FeasibilityEvaluator
     {
+        private readonly bool _evaluateQuickly;
         private readonly SchedulingBenchmarkModel _schedulingBenchmarkModel;
         private bool _feasible;
         private readonly ConcurrentBag<string> _messages;
         private readonly Dictionary<string, TimeSpan> _shiftLengths;
 
-        public FeasibilityEvaluator(SchedulingBenchmarkModel schedulingBenchmarkModel)
+        public FeasibilityEvaluator(SchedulingBenchmarkModel schedulingBenchmarkModel, bool evaluateQuickly)
         {
+            _evaluateQuickly = evaluateQuickly;
             _schedulingBenchmarkModel = schedulingBenchmarkModel ?? throw new ArgumentNullException(nameof(schedulingBenchmarkModel));
             _feasible = true;
             _messages = new ConcurrentBag<string>();
             _shiftLengths = _schedulingBenchmarkModel.Shifts.ToDictionary(s => s.Id, s => s.Duration);
         }
 
-        public static (bool feasible, List<string> messages) Feasible(SchedulingBenchmarkModel schedulingBenchmarkModel)
-            => new FeasibilityEvaluator(schedulingBenchmarkModel).Feasible();
+        public static (bool feasible, List<string> messages) Evaluate(SchedulingBenchmarkModel schedulingBenchmarkModel)
+            => new FeasibilityEvaluator(schedulingBenchmarkModel, evaluateQuickly: false).Feasible();
+
+        public static bool EvaluateQuickly(SchedulingBenchmarkModel schedulingBenchmarkModel)
+            => new FeasibilityEvaluator(schedulingBenchmarkModel, evaluateQuickly: true).Feasible().feasible;
 
         private (bool feasible, List<string> messages) Feasible()
         {
-            Parallel.ForEach(_schedulingBenchmarkModel.Employees, employee =>
+            Parallel.ForEach(_schedulingBenchmarkModel.Employees, (employee, state) =>
             {
+                if (_evaluateQuickly && !_feasible) state.Stop();
+
                 MaxAllowedNumberOfShiftsNotExceeded(employee);
                 MinAndMaxTotalMinutesNotExceeded(employee);
                 MinAndMaxConsecutiveShiftsNotExceeded(employee);
@@ -49,6 +56,8 @@ namespace SchedulingBenchmarks
             {
                 if (shiftCounts.TryGetValue(maxShift.Key, out var shiftCount) && shiftCount > maxShift.Value)
                 {
+                    if (_evaluateQuickly) return;
+
                     _feasible = false;
                     _messages.Add($"{employee.Id} has {shiftCount} assigned shifts of type {maxShift.Key} instead of the maximum allowed {maxShift.Value}");
                 }
@@ -78,12 +87,16 @@ namespace SchedulingBenchmarks
             {
                 if (consecutiveShiftCount < employee.Contract.MinConsecutiveShifts)
                 {
+                    if (_evaluateQuickly) return;
+
                     _feasible = false;
                     _messages.Add($"{employee.Id} works {consecutiveShiftCount} number of days in a row instead of the minimum required {employee.Contract.MinConsecutiveShifts}");
                 }
 
                 if (consecutiveShiftCount > employee.Contract.MaxConsecutiveShifts)
                 {
+                    if (_evaluateQuickly) return;
+
                     _feasible = false;
                     _messages.Add($"{employee.Id} works {consecutiveShiftCount} number of days in a row instead of the maximum allowed {employee.Contract.MaxConsecutiveShifts}");
                 }
@@ -129,6 +142,8 @@ namespace SchedulingBenchmarks
             {
                 if (consecutiveDayOffCount < employee.Contract.MinConsecutiveDayOffs)
                 {
+                    if (_evaluateQuickly) return;
+
                     _feasible = false;
                     _messages.Add($"{employee.Id} has {consecutiveDayOffCount} consecutive days off instead of the minimum required {employee.Contract.MinConsecutiveDayOffs}");
                 }
@@ -189,6 +204,8 @@ namespace SchedulingBenchmarks
             {
                 if (employee.Assignments.ContainsKey(dayOff))
                 {
+                    if (_evaluateQuickly) return;
+
                     _feasible = false;
                     _messages.Add($"{employee.Id} has assignment on day {dayOff} instead of having a day off");
                 }
