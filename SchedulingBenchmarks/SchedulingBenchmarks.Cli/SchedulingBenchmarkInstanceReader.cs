@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace SchedulingBenchmarks.Cli
 {
-    static class SchedulingBenchmarkInstanceReader
+    public static class SchedulingBenchmarkInstanceReader
     {
         public static SchedulingPeriod FromXml(int instanceNumber)
         {
