@@ -21,8 +21,7 @@ namespace SchedulingBenchmarks
 
             var res = ToRosterViewerFormat(schedulerModel);
 
-            return schedulingBenchmarkModel;
-            //return SchedulerModelMapper.MapToSchedulingBenchmarkModel(schedulerModel, schedulingBenchmarkModel);
+            return SchedulerModelToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(schedulerModel, schedulingBenchmarkModel);
         }
 
         private static string AssignmentsToString(SchedulerModel schedulerModel)

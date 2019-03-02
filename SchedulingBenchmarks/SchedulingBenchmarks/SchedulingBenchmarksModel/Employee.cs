@@ -11,5 +11,6 @@ namespace SchedulingBenchmarks.SchedulingBenchmarksModel
         public ShiftRequest[] ShiftOffRequests { get; set; }
         public ShiftRequest[] ShiftOnRequests { get; set; }
         public HashSet<int> DayOffs { get; set; }
+        public SortedDictionary<int, Assignment> Assignments { get; set; }
     }
 }

@@ -11,6 +11,8 @@ using Employee = SchedulingBenchmarks.SchedulingBenchmarksModel.Employee;
 using EmployeeDto = SchedulingBenchmarks.Dto.Employee;
 using Contract = SchedulingBenchmarks.SchedulingBenchmarksModel.Contract;
 using ContractDto = SchedulingBenchmarks.Dto.Contract;
+using Assignment = SchedulingBenchmarks.SchedulingBenchmarksModel.Assignment;
+using AssignmentDto = SchedulingBenchmarks.Dto.Assignment;
 
 namespace SchedulingBenchmarks.Mappers
 {
@@ -68,7 +70,8 @@ namespace SchedulingBenchmarks.Mappers
                     DayOffs = _dayOffs.TryGetValue(dto.Id, out var dayOffs) ? dayOffs : new HashSet<int>(),
                     ShiftOffRequests = _shiftOffRequests.TryGetValue(dto.Id, out var shiftOffRequests) ? shiftOffRequests.ToArray() : new ShiftRequest[] { },
                     ShiftOnRequests = _shiftOnRequests.TryGetValue(dto.Id, out var shiftOnRequests) ? shiftOnRequests.ToArray() : new ShiftRequest[] { },
-                    Contract = _contracts[dto.ContractIds.Single(x => x != ContractDto.UniversalContractId)]
+                    Contract = _contracts[dto.ContractIds.Single(x => x != ContractDto.UniversalContractId)],
+                    Assignments = new SortedDictionary<int, Assignment>()
                 };
 
                 employees.Add(employee);

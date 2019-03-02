@@ -41,6 +41,22 @@ namespace SchedulingBenchmarks.Cli
             var result = SchedulerAlgorithmRunner.Run(schedulingBenchmarkModel);
             sw.Stop();
 
+            var (feasible, messages) = FeasibilityEvaluator.Feasible(result);
+
+            if (!feasible)
+            {
+                Console.WriteLine("Result is not feasible. Reasons:");
+
+                foreach (var message in messages)
+                {
+                    Console.WriteLine(message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Result is feasible");
+            }
+
             return null;
 
             //return new AlgorithmResult
@@ -61,16 +77,16 @@ namespace SchedulingBenchmarks.Cli
             
             Parallel.ForEach(generator.GenerateResults(), result =>
             {
-                if (FeasibilityEvaluator.Feasible(result))
-                {
-                    feasibleResults.Add(new AlgorithmResult
-                    {
-                        Name = $"Timetable {Interlocked.Increment(ref resultNumber)}",
-                        Result = result,
-                        Cost = OptimalityEvaluator.CalculateCost(result),
-                        Feasible = true
-                    });
-                }
+                //if (FeasibilityEvaluator.Feasible(result))
+                //{
+                //    feasibleResults.Add(new AlgorithmResult
+                //    {
+                //        Name = $"Timetable {Interlocked.Increment(ref resultNumber)}",
+                //        Result = result,
+                //        Cost = OptimalityEvaluator.CalculateCost(result),
+                //        Feasible = true
+                //    });
+                //}
             });
 
             return feasibleResults.ToList();
