@@ -19,7 +19,7 @@ namespace SchedulingBenchmarks
 
             Console.WriteLine(AssignmentsToString(schedulerModel));
 
-            var res = ToRosterViewerFormat(schedulerModel);
+            Clipboard.Copy(ToRosterViewerFormat(schedulerModel));
 
             return SchedulerModelToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(schedulerModel, schedulingBenchmarkModel);
         }
@@ -92,8 +92,10 @@ namespace SchedulingBenchmarks
         {
             var builder = new StringBuilder();
 
-            foreach (var person in schedulerModel.People)
+            for (var i = 0; i < schedulerModel.People.Count; i++)
             {
+                var person = schedulerModel.People[i];
+
                 foreach (var day in schedulerModel.SchedulePeriod)
                 {
                     if (person.Assignments.TryGetValue(day, out var assignment))
@@ -106,7 +108,10 @@ namespace SchedulingBenchmarks
                     }
                 }
 
-                builder.AppendLine();
+                if (i < schedulerModel.People.Count - 1)
+                {
+                    builder.AppendLine(); 
+                }
             }
 
             return builder.ToString();

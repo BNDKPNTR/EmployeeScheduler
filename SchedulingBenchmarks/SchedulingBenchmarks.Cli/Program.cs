@@ -29,7 +29,7 @@ namespace SchedulingBenchmarks.Cli
 
         private static AlgorithmResult RunSchedulerAlgorithm()
         {
-            var dto = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber: 24);
+            var dto = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber: 1);
             var schedulingBenchmarkModel = DtoToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(dto);
             var sw = new Stopwatch();
 
