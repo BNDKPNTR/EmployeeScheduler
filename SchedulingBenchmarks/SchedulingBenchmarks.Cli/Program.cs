@@ -43,7 +43,7 @@ namespace SchedulingBenchmarks.Cli
             var result = SchedulerAlgorithmRunner.Run(schedulingBenchmarkModel);
             sw.Stop();
 
-            Clipboard.Copy(ToRosterViewerFormat(result));
+            Clipboard.Copy(result.ToRosterViewerFormat());
 
             var (feasible, messages) = FeasibilityEvaluator.Evaluate(result);
 
@@ -56,35 +56,6 @@ namespace SchedulingBenchmarks.Cli
                 FeasibilityMessages = messages,
                 Duration = sw.Elapsed
             };
-        }
-
-        private static string ToRosterViewerFormat(SchedulingBenchmarkModel schedulingBenchmarkModel)
-        {
-            var builder = new StringBuilder();
-
-            for (var i = 0; i < schedulingBenchmarkModel.Employees.Length; i++)
-            {
-                var person = schedulingBenchmarkModel.Employees[i];
-
-                foreach (var day in Enumerable.Range(0, schedulingBenchmarkModel.Duration))
-                {
-                    if (person.Assignments.TryGetValue(day, out var assignment))
-                    {
-                        builder.Append($"{assignment.ShiftId}\t");
-                    }
-                    else
-                    {
-                        builder.Append("\t");
-                    }
-                }
-
-                if (i < schedulingBenchmarkModel.Employees.Length - 1)
-                {
-                    builder.AppendLine();
-                }
-            }
-
-            return builder.ToString();
         }
 
         private static List<AlgorithmResult> RunResultGenerator()
@@ -171,7 +142,7 @@ namespace SchedulingBenchmarks.Cli
             }
 
             Console.WriteLine();
-            Console.WriteLine(CreateFormattedString(algorithmResult.Result));
+            algorithmResult.Result.PrintToConsole();
 
             if (algorithmResult.FeasibilityMessages?.Count > 0)
             {
@@ -184,71 +155,6 @@ namespace SchedulingBenchmarks.Cli
             }
 
             Console.WriteLine(separator);
-        }
-
-        private static string CreateFormattedString(SchedulingBenchmarkModel schedulingBenchmarkModel)
-        {
-            var shiftLengths = schedulingBenchmarkModel.Shifts.ToDictionary(s => s.Id, s => s.Duration);
-            var builder = new StringBuilder();
-
-            var personRowWidth = schedulingBenchmarkModel.Employees.Max(e => e.Id.Length) + 2;
-
-            builder.Append(new string(' ', personRowWidth));
-            foreach (var day in Enumerable.Range(0, schedulingBenchmarkModel.Duration))
-            {
-                builder.Append(day < 10 ? $"{day}  " : $"{day} ");
-            }
-            builder.AppendLine();
-            builder.AppendLine($"{new string(' ', personRowWidth)}{new string('_', schedulingBenchmarkModel.Duration * 3)}");
-
-            var assignmentsOnDays = new int[schedulingBenchmarkModel.Duration];
-
-            foreach (var person in schedulingBenchmarkModel.Employees)
-            {
-                builder.Append($"{person.Id} |");
-
-                foreach (var day in Enumerable.Range(0, schedulingBenchmarkModel.Duration))
-                {
-                    if (person.Assignments.TryGetValue(day, out var assignment))
-                    {
-                        builder.Append($"{assignment.ShiftId}  ");
-                        assignmentsOnDays[day]++;
-                    }
-                    else
-                    {
-                        builder.Append(new string(' ', personRowWidth));
-                    }
-                }
-
-                var workedMinutes = person.Assignments.Values.Sum(a => shiftLengths[a.ShiftId].TotalMinutes);
-                var formattedWorkedMinutes = string.Empty;
-                if (person.Contract.MinTotalWorkTime <= workedMinutes && workedMinutes <= person.Contract.MaxTotalWorkTime)
-                {
-                    formattedWorkedMinutes = "0";
-                }
-                else if (workedMinutes < person.Contract.MinTotalWorkTime)
-                {
-                    formattedWorkedMinutes = $"-{person.Contract.MinTotalWorkTime - workedMinutes}";
-                }
-                else if (workedMinutes > person.Contract.MaxTotalWorkTime)
-                {
-                    formattedWorkedMinutes = $"+{workedMinutes - person.Contract.MaxTotalWorkTime}";
-                }
-
-                builder.Append($"| {formattedWorkedMinutes}");
-
-                builder.AppendLine();
-            }
-
-            builder.AppendLine($"{new string(' ', personRowWidth - 1)}|{new string('_', schedulingBenchmarkModel.Duration * 3)}|");
-            builder.Append(new string(' ', personRowWidth));
-            foreach (var day in Enumerable.Range(0, schedulingBenchmarkModel.Duration))
-            {
-                var infeasibleDemandCount = schedulingBenchmarkModel.Demands[day].Sum(d => d.MinEmployeeCount) - assignmentsOnDays[day];
-                builder.Append(infeasibleDemandCount < 10 ? $"{infeasibleDemandCount}  " : $"{infeasibleDemandCount} ");
-            }
-
-            return builder.ToString();
         }
 
         private static bool CompareResults(SchedulingBenchmarkModel x, SchedulingBenchmarkModel y)
@@ -269,16 +175,6 @@ namespace SchedulingBenchmarks.Cli
             }
 
             return true;
-        }
-
-        private class AlgorithmResult
-        {
-            public string Name { get; set; }
-            public SchedulingBenchmarkModel Result { get; set; }
-            public int Penalty { get; set; }
-            public bool Feasible { get; set; }
-            public List<string> FeasibilityMessages { get; set; }
-            public TimeSpan Duration { get; set; }
         }
     }
 }
