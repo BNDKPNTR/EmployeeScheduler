@@ -75,7 +75,7 @@ namespace SchedulingBenchmarks
                         var person = people[i];
                         var demand = demands[j];
 
-                        person.Assignments[timeSlot] = new Assignment(person, timeSlot, demand.ShifId); 
+                        person.Assignments[timeSlot] = new Assignment(person, timeSlot, demand.Shift); 
                     }
                 }
             }

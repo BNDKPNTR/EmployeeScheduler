@@ -15,10 +15,10 @@ namespace SchedulingBenchmarks.Models
         public int MaxConsecutiveShifts { get; }
         public int MinConsecutiveDayOffs { get; }
         public int MaxWorkingWeekendCount { get; }
-        public HashSet<string> ValidShifts { get; }
-        public Dictionary<string, int> MaxShifts { get; }
+        public HashSet<Shift> ValidShifts { get; }
+        public Dictionary<Shift, int> MaxShifts { get; }
 
-        public WorkSchedule(int minRestTime, int minTotalWorkTime, int maxTotalWorkTime, int minConsecutiveShifts, int maxConsecutiveShifts, int minConsecutiveDayOffs, int maxWorkingWeekendCount, HashSet<string> validShifts, Dictionary<string, int> maxShifts)
+        public WorkSchedule(int minRestTime, int minTotalWorkTime, int maxTotalWorkTime, int minConsecutiveShifts, int maxConsecutiveShifts, int minConsecutiveDayOffs, int maxWorkingWeekendCount, HashSet<Shift> validShifts, Dictionary<Shift, int> maxShifts)
         {
             MinRestTime = minRestTime;
             MinTotalWorkTime = minTotalWorkTime;

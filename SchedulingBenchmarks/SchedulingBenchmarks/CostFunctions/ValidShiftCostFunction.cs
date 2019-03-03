@@ -9,7 +9,7 @@ namespace SchedulingBenchmarks.CostFunctions
     {
         public override double CalculateCost(Person person, Demand demand, int timeSlot)
         {
-            return person.WorkSchedule.ValidShifts.Contains(demand.ShifId) ? DefaultCost : MaxCost;
+            return person.WorkSchedule.ValidShifts.Contains(demand.Shift) ? DefaultCost : MaxCost;
         }
     }
 }

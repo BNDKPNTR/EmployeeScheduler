@@ -38,7 +38,7 @@ namespace SchedulingBenchmarks.Mappers
                     var assignment = new Assignment
                     {
                         Day = schedulerAssignment.TimeSlot,
-                        ShiftId = schedulerAssignment.ShiftId,
+                        ShiftId = schedulerAssignment.Shift.Id,
                         PersonId = schedulerAssignment.Person.Id
                     };
 

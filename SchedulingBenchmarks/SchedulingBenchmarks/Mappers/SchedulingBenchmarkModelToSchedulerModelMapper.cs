@@ -8,16 +8,21 @@ using System.Text;
 
 using SchedulerDemand = SchedulingBenchmarks.Models.Demand;
 using Demand = SchedulingBenchmarks.SchedulingBenchmarksModel.Demand;
+using SchedulerShift = SchedulingBenchmarks.Models.Shift;
+using Shift = SchedulingBenchmarks.SchedulingBenchmarksModel.Shift;
 
 namespace SchedulingBenchmarks.Mappers
 {
     class SchedulingBenchmarkModelToSchedulerModelMapper
     {
         private readonly SchedulingBenchmarkModel _schedulingBenchmarkModel;
+        private readonly Dictionary<string, SchedulerShift> _shifts;
 
         private SchedulingBenchmarkModelToSchedulerModelMapper(SchedulingBenchmarkModel schedulingBenchmarkModel)
         {
             _schedulingBenchmarkModel = schedulingBenchmarkModel ?? throw new ArgumentNullException(nameof(schedulingBenchmarkModel));
+
+            _shifts = MapShifts();
         }
 
         public static SchedulerModel MapToScheduleModel(SchedulingBenchmarkModel schedulingBenchmarkModel) 
@@ -63,7 +68,7 @@ namespace SchedulingBenchmarks.Mappers
                 DayOffCount = int.MaxValue / 2,
                 WorkedOnWeeked = false,
                 WorkedWeekendCount = 0,
-                ShiftWorkedCount = new Dictionary<string, int>()
+                ShiftWorkedCount = new Dictionary<SchedulerShift, int>()
             };
         }
 
@@ -105,8 +110,8 @@ namespace SchedulingBenchmarks.Mappers
                 contract.MaxConsecutiveShifts,
                 contract.MinConsecutiveDayOffs,
                 contract.MaxWorkingWeekendCount,
-                contract.ValidShiftIds,
-                contract.MaxShifts.ToDictionary(x => x.Key, x => x.Value));
+                new HashSet<SchedulerShift>(contract.ValidShiftIds.Select(id => _shifts[id])),
+                contract.MaxShifts.ToDictionary(x => _shifts[x.Key], x => x.Value));
         }
 
         private bool[] MapShiftOnRequests(Employee employee, Range schedulePeriod)
@@ -126,7 +131,21 @@ namespace SchedulingBenchmarks.Mappers
         {
             return _schedulingBenchmarkModel.Demands.ToDictionary(x => x.Key, x => x.Value.Select(d => MapDemand(d)).ToArray());
 
-            SchedulerDemand MapDemand(Demand demand) => new SchedulerDemand(demand.Day, demand.ShiftId, demand.MinEmployeeCount, demand.MaxEmployeeCount);
+            SchedulerDemand MapDemand(Demand demand) => new SchedulerDemand(demand.Day, _shifts[demand.ShiftId], demand.MinEmployeeCount, demand.MaxEmployeeCount);
+        }
+
+        private Dictionary<string, SchedulerShift> MapShifts()
+        {
+            var shifts = new Dictionary<string, SchedulerShift>();
+
+            for (int i = 0; i < _schedulingBenchmarkModel.Shifts.Length; i++)
+            {
+                var shift = _schedulingBenchmarkModel.Shifts[i];
+
+                shifts[shift.Id] = new SchedulerShift(i, shift.Id);
+            }
+
+            return shifts;
         }
     }
 }

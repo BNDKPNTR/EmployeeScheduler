@@ -9,9 +9,9 @@ namespace SchedulingBenchmarks.CostFunctions
     {
         public override double CalculateCost(Person person, Demand demand, int timeSlot)
         {
-            if (!person.WorkSchedule.MaxShifts.TryGetValue(demand.ShifId, out var maxShiftCount)) return DefaultCost;
+            if (!person.WorkSchedule.MaxShifts.TryGetValue(demand.Shift, out var maxShiftCount)) return DefaultCost;
 
-            person.State.ShiftWorkedCount.TryGetValue(demand.ShifId, out var shiftWorkedCount);
+            person.State.ShiftWorkedCount.TryGetValue(demand.Shift, out var shiftWorkedCount);
 
             return shiftWorkedCount + 1 > maxShiftCount ? MaxCost : DefaultCost;
         }
