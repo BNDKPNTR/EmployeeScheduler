@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SchedulingBenchmarks.Mappers;
+using SchedulingBenchmarks.SchedulingBenchmarksModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,18 +28,7 @@ namespace SchedulingBenchmarks.Cli
             top.Add(win);
 
             // Creates a menubar, the item "New" has a help menu.
-            var menu = new MenuBar(new MenuBarItem[] {
-            new MenuBarItem ("_File", new MenuItem [] {
-                new MenuItem ("_New", "Creates new file", null),
-                new MenuItem ("_Close", "", () => { }),
-                new MenuItem ("_Quit", "", () => {  })
-            }),
-            new MenuBarItem ("_Edit", new MenuItem [] {
-                new MenuItem ("_Copy", "", null),
-                new MenuItem ("C_ut", "", null),
-                new MenuItem ("_Paste", "", null)
-            })
-        });
+            var menu = CreateMenuBar();
             top.Add(menu);
 
             var login = new Label("Login: ") { X = 3, Y = 2 };
@@ -60,13 +51,13 @@ namespace SchedulingBenchmarks.Cli
                 Width = Dim.Width(loginText)
             };
 
-            var tableView = new ScheduleTableView(60, 20)
-            {
-                X = Pos.Center(),
-                Y = Pos.Center(),
-                Width = Dim.Fill(),
-                Height = Dim.Fill()
-            };
+            //var tableView = new ScheduleTableView(60, 20)
+            //{
+            //    X = Pos.Center(),
+            //    Y = Pos.Center(),
+            //    Width = Dim.Fill(),
+            //    Height = Dim.Fill()
+            //};
 
             //var button = new Button(10, 5, "headfasdfuidhsfgihadfgiuergnjerdgfheadfasdfuidhsfgihadfgiuergnjerdgfheadfasdfuidhsfgihadfgiuergnjerdgfheadfasdfuidhsfgihadfgiuergnjerdgfheadfasdfuidhsfgihadfgiuergnjerdgfheadfasdfuidhsfgihadfgiuergnjerdgf");
 
@@ -84,7 +75,7 @@ namespace SchedulingBenchmarks.Cli
             //scrollView.Add(button);
 
             // Add some controls, 
-            win.Add(
+            //win.Add(
                 // The ones with my favorite layout system
                 //login, password, loginText, passText,
 
@@ -95,34 +86,191 @@ namespace SchedulingBenchmarks.Cli
                 //    new Button(10, 14, "Cancel"),
                 //    new Label(3, 18, "Press ESC and 9 to activate the menubar"),
                     
-                tableView);
+                //tableView);
 
             Application.Run();
+        }
+
+        private static MenuBar CreateMenuBar()
+        {
+            var menu = new MenuBar(new MenuBarItem[] {
+            new MenuBarItem ("_File", new MenuItem [] {
+                new MenuItem ("_New", "Creates new file", null),
+                new MenuItem ("_Close", "", () => { }),
+                new MenuItem ("_Quit", "", () => {  })
+            }),
+            new MenuBarItem ("_Instances", new MenuItem [] {
+                new MenuItem ("_1", "", () => OnInstanceSelected(17, Application.Top)),
+                //new MenuItem ("C_ut", "", null),
+                //new MenuItem ("_Paste", "", null)
+            })
+            });
+
+            return menu;
+        }
+
+        private static void OnInstanceSelected(int instanceNumber, Toplevel top)
+        {
+            var viewModel = new ScheduleTableViewModel(instanceNumber);
+            var view = new ScheduleTableView(viewModel)
+            {
+                X = 2,
+                Y = 2,
+                Width = Dim.Fill(),
+                Height = Dim.Fill()
+            };
+
+            var newTop = new Toplevel(top.Frame);
+            var window = new Window($"Instance {instanceNumber}")
+            {
+                X = 0,
+                Y = 1,
+                Width = Dim.Fill(),
+                Height = Dim.Fill()
+            };
+
+            window.Add(view);
+
+            newTop.Add(CreateMenuBar(), window);
+            Application.Run(newTop);
+        }
+    }
+
+    class ScheduleTableViewModel
+    {
+        private readonly int _instanceNumber;
+        private readonly SchedulingBenchmarkModel _schedulingBenchmarkModel;
+        private readonly ScheduleBenchmarkModelFrameStringPrinter _printer;
+        private readonly AlgorithmResult _result;
+
+        public int DayColumnWidth => _printer.DayColumnWidth;
+        public int DayCount => _schedulingBenchmarkModel.Duration;
+        public int EmployeeCount => _schedulingBenchmarkModel.Employees.Length;
+        public int PersonColumnWidth => _printer.PersonColumnWidth;
+
+        public ScheduleTableViewModel(int instanceNumber)
+        {
+            _instanceNumber = instanceNumber;
+            var dto = SchedulingBenchmarkInstanceReader.FromXml(_instanceNumber);
+            _schedulingBenchmarkModel = DtoToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(dto);
+            _printer = new ScheduleBenchmarkModelFrameStringPrinter(_schedulingBenchmarkModel);
+            _result = AlgorithmRunner.GetResult(_instanceNumber);
+        }
+
+        public string GetFrame()
+        {
+            _printer.Print();
+            return _printer.ToString();
+        }
+
+        public string Run()
+        {
+            var printer = new ScheduleBenchmarkModelStringPrinter(_result.Result);
+            printer.Print();
+            return printer.ToString();
+        }
+
+        public string[][] GetAssignmentsForDays()
+        {
+            var result = new string[_schedulingBenchmarkModel.Duration][];
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = new string[_schedulingBenchmarkModel.Employees.Length];
+
+                for (int j = 0; j < _schedulingBenchmarkModel.Employees.Length; j++)
+                {
+                    if (_result.Result.Employees[j].Assignments.TryGetValue(i, out var assignment))
+                    {
+                        result[i][j] = assignment.ShiftId;
+                    }
+                    else
+                    {
+                        result[i][j] = " ";
+                    }
+                }
+            }
+
+            //for (int i = 0; i < _result.Result.Employees.Length; i++)
+            //{
+            //    var employee = _result.Result.Employees[i];
+
+            //    foreach (var assignment in employee.Assignments.Values)
+            //    {
+            //        result[assignment.Day][i] = assignment.ShiftId;
+            //    }
+            //}
+
+            return result;
+        }
+    }
+
+    class BasicScheduleTableView : View
+    {
+        private readonly ScheduleTableViewModel _viewModel;
+        private string[] _buffer;
+
+        public BasicScheduleTableView(ScheduleTableViewModel viewModel)
+        {
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            _buffer = _viewModel.GetFrame().Split(Environment.NewLine);
+        }
+
+        public override bool ProcessColdKey(KeyEvent keyEvent)
+        {
+            if (keyEvent.Key == Key.Space)
+            {
+                var result = _viewModel.Run();
+
+                _buffer = result.Split(Environment.NewLine);
+
+                SetNeedsDisplay();
+            }
+
+            return true;
+        }
+        
+        public override void Redraw(Rect region)
+        {
+            Driver.SetAttribute(ColorScheme.Normal);
+
+            for (int i = 0; i < _buffer.Length; i++)
+            {
+                Move(0, i);
+                Driver.AddStr(_buffer[i]);
+            }
         }
     }
 
     class ScheduleTableView : View
     {
+        private readonly ScheduleTableViewModel _viewModel;
         private readonly Random _random;
-        private char[][] _buffer;
-        private readonly int _width;
-        private readonly int _height;
+        private char[][] _charBuffer;
+        private readonly int _tableWidth;
+        private readonly int _tableHeight;
+        private readonly int _tableX;
+        private readonly int _tableY;
         private int _fixedColumns = 0;
+        private string[] _buffer;
 
-        public ScheduleTableView(int width, int height)
+        public ScheduleTableView(ScheduleTableViewModel viewModel)
         {
-            _width = width;
-            _height = height;
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            _tableX = _viewModel.PersonColumnWidth;
+            _tableY = 2;
+            _tableHeight = _tableY + _viewModel.EmployeeCount;
+            _tableWidth = _tableX + _viewModel.DayColumnWidth * _viewModel.DayCount;
             _random = new Random();
 
-            _buffer = CreateBuffer();
+            _charBuffer = CreateBuffer();
 
             var token = Application.MainLoop.AddTimeout(TimeSpan.FromMilliseconds(1000 / 25), _ =>
             {
-                var _10Percent = ((_width - _fixedColumns) * _height) / 10;
+                var _10Percent = ((_tableWidth - _fixedColumns) * _tableHeight) / 10;
                 for (int i = 0; i < _10Percent; i++)
                 {
-                    _buffer[_random.Next(_height)][_random.Next(_fixedColumns, _width)] = (char)_random.Next(32, 127);
+                    _charBuffer[_random.Next(_tableY, _tableHeight)][_random.Next(_tableX + _fixedColumns, _tableWidth)] = (char)_random.Next(32, 127);
                 }
 
                 SetNeedsDisplay();
@@ -131,25 +279,47 @@ namespace SchedulingBenchmarks.Cli
         }
 
         public override void Redraw(Rect region)
-        {            
+        {
+            if (_buffer != null)
+            {
+                DrawFinalTable();
+                return;
+            }
+
             Driver.SetAttribute(ColorScheme.Normal);
 
-            for (int i = 0; i < _height; i++)
+            for (int i = 0; i < _charBuffer.Length; i++)
             {
                 Move(0, i);
-                Driver.AddStr(new string(_buffer[i]));
+                Driver.AddStr(new string(_charBuffer[i]));
             }
         }
 
+        private void DrawFinalTable()
+        {
+            Driver.SetAttribute(ColorScheme.Normal);
+
+            for (int i = 0; i < _buffer.Length; i++)
+            {
+                Move(0, i);
+                Driver.AddStr(_buffer[i]);
+            }
+        }
+
+
         private char[][] CreateBuffer()
         {
-            var buffer = new char[_height][];
+            var frame = _viewModel.GetFrame().Split(Environment.NewLine);
+            var buffer = new char[frame.Length][];
 
-            for (int i = 0; i < _height; i++)
+            for (int i = 0; i < frame.Length; i++)
             {
-                buffer[i] = new char[_width];
+                buffer[i] = frame[i].ToCharArray();
+            }
 
-                for (int j = 0; j < _width; j++)
+            for (int i = _tableY; i < _tableHeight; i++)
+            {
+                for (int j = _tableX; j < _tableWidth; j++)
                 {
                     buffer[i][j] = (char)_random.Next(32, 127);
                 }
@@ -158,9 +328,23 @@ namespace SchedulingBenchmarks.Cli
             return buffer;
         }
 
-        public void SetColumn(char[] values, int columnIndex)
+        public void SetColumn(string[] values, int day)
         {
-            if (columnIndex >= _width) return;
+
+            //_fixedColumns++;
+
+            //for (int i = _tableY; i < _tableHeight; i++)
+            //{
+            //    for (int j = 0; j < _viewModel.DayColumnWidth; j++)
+            //    {
+            //        var shift = values[i - _tableY];
+            //        _charBuffer[i][_tableX + j] = j < shift.Length ? shift[j] : ' ';
+            //    }
+            //}
+
+
+
+            if (day >= _tableWidth) return;
 
             _fixedColumns++;
             var animationLength = 1000 / 60;
@@ -170,17 +354,48 @@ namespace SchedulingBenchmarks.Cli
             {
                 if (animationCount > animationLength)
                 {
-                    for (int i = 0; i < _height; i++)
+                    //for (int i = _tableY; i < _tableHeight; i++)
+                    //{
+                    //    int j = 0;
+                    //    while (j < values[i].Length)
+                    //    {
+                    //        _charBuffer[i][_tableX + day * j] = values[i - _tableY][j];
+                    //        j++;
+                    //    }
+
+                    //    while (j < _viewModel.DayColumnWidth)
+                    //    {
+                    //        _charBuffer[i][_tableX + day * j] = ' ';
+                    //    }
+                    //}
+
+                    for (int i = _tableY; i < _tableHeight; i++)
                     {
-                        _buffer[i][columnIndex] = values[i];
+                        for (int j = 0; j < _viewModel.DayColumnWidth; j++)
+                        {
+                            var shift = values[i - _tableY];
+                            _charBuffer[i][_tableX + j * day] = j < shift.Length ? shift[j] : ' ';
+                        }
                     }
 
-                    //mainLoop.RemoveTimeout(token);
                     return false;
                 }
 
-                var rowIndex = _random.Next(_height);
-                _buffer[rowIndex][columnIndex] = values[rowIndex];
+                //var rowIndex = _random.Next(_tableY, _tableHeight);
+                ////_charBuffer[rowIndex][day] = values[rowIndex];
+
+                //int k = 0;
+                //while (k < values[rowIndex].Length)
+                //{
+                //    _charBuffer[rowIndex][_tableX + day * k] = values[rowIndex - _tableY][k];
+                //    k++;
+                //}
+
+                //while (k < _viewModel.DayColumnWidth)
+                //{
+                //    _charBuffer[rowIndex][_tableX + day * k] = ' ';
+                //}
+
                 animationCount++;
 
                 return true;
@@ -191,27 +406,49 @@ namespace SchedulingBenchmarks.Cli
         {
             if (keyEvent.Key == Key.Space)
             {
-                System.Threading.ThreadPool.QueueUserWorkItem(Foo);
+
+                var result = _viewModel.Run();
+
+                _buffer = result.Split(Environment.NewLine);
+
+                SetNeedsDisplay();
+
+
+                //System.Threading.ThreadPool.QueueUserWorkItem(LoadAssignments);
                 return false;
             }
 
             return true;
         }
 
+        private void LoadAssignments(object arg)
+        {
+            var assignmentsByDay = _viewModel.GetAssignmentsForDays();
+
+            //for (int i = 0; i < assignmentsByDay.Length; i++)
+            //{
+            //    System.Threading.Thread.Sleep(_random.Next(20, 35));
+
+            //    Application.MainLoop.Invoke(() => SetColumn(assignmentsByDay[i], i));
+            //}
+
+            Application.MainLoop.Invoke(() => SetColumn(assignmentsByDay[0], 0));
+        }
+
         private void Foo(object arg)
         {
-            for (int j = 0; j < _width; j++)
+            for (int j = 0; j < _viewModel.DayCount; j++)
             {
-                var values = new char[_height];
+                var values = new string[_viewModel.EmployeeCount];
 
-                for (int i = 0; i < _height; i++)
+                for (int i = 0; i < _viewModel.EmployeeCount; i++)
                 {
                     var rand = _random.NextDouble();
                     var rounded = Math.Round(rand);
                     var isZero = 1.0 - rounded > double.Epsilon;
 
 
-                    values[i] = isZero ? ' ' : 'D';
+                    values[i] = isZero ? " " : "D";
                 }
 
                 Application.MainLoop.Invoke(() => SetColumn(values, j));

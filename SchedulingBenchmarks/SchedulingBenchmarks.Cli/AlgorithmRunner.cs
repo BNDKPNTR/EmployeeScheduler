@@ -75,9 +75,14 @@ namespace SchedulingBenchmarks.Cli
             CompareAndPrintResults(schedulerResult, generatedResults);
         }
 
-        private static AlgorithmResult RunSchedulerAlgorithm()
+        public static AlgorithmResult GetResult(int instanceNumber)
         {
-            var dto = SchedulingBenchmarkInstanceReader.FromXml(InstanceNumber);
+            return RunSchedulerAlgorithm(instanceNumber);
+        }
+
+        private static AlgorithmResult RunSchedulerAlgorithm(int? instanceNumber = null)
+        {
+            var dto = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber ?? InstanceNumber);
             var schedulingBenchmarkModel = DtoToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(dto);
             var sw = new Stopwatch();
 
