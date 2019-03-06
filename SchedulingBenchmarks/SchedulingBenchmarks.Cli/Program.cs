@@ -3,6 +3,8 @@ using SchedulingBenchmarks.SchedulingBenchmarksModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Terminal.Gui;
 
@@ -15,95 +17,37 @@ namespace SchedulingBenchmarks.Cli
             Application.Init();
             var top = Application.Top;
 
-            // Creates the top-level window to show
             var win = new Window("MyApp")
             {
                 X = 0,
-                Y = 1, // Leave one row for the toplevel menu
-
-                // By using Dim.Fill(), it will automatically resize without manual intervention
+                Y = 1,
                 Width = Dim.Fill(),
                 Height = Dim.Fill()
             };
             top.Add(win);
 
-            // Creates a menubar, the item "New" has a help menu.
             var menu = CreateMenuBar();
             top.Add(menu);
-
-            var login = new Label("Login: ") { X = 3, Y = 2 };
-            var password = new Label("Password: ")
-            {
-                X = Pos.Left(login),
-                Y = Pos.Top(login) + 1
-            };
-            var loginText = new TextField("")
-            {
-                X = Pos.Right(password),
-                Y = Pos.Top(login),
-                Width = 40
-            };
-            var passText = new TextField("")
-            {
-                Secret = true,
-                X = Pos.Left(loginText),
-                Y = Pos.Top(password),
-                Width = Dim.Width(loginText)
-            };
-
-            //var tableView = new ScheduleTableView(60, 20)
-            //{
-            //    X = Pos.Center(),
-            //    Y = Pos.Center(),
-            //    Width = Dim.Fill(),
-            //    Height = Dim.Fill()
-            //};
-
-            //var button = new Button(10, 5, "headfasdfuidhsfgihadfgiuergnjerdgfheadfasdfuidhsfgihadfgiuergnjerdgfheadfasdfuidhsfgihadfgiuergnjerdgfheadfasdfuidhsfgihadfgiuergnjerdgfheadfasdfuidhsfgihadfgiuergnjerdgfheadfasdfuidhsfgihadfgiuergnjerdgf");
-
-            //var scrollView = new ScrollView(new Rect(0, 0, 90, 25))
-            //{
-            //    X = 3,
-            //    Y = 0,
-            //    Width = 80,
-            //    Height = 20
-            //};
-
-            //scrollView.ShowVerticalScrollIndicator = true;
-            //scrollView.ShowHorizontalScrollIndicator = true;
-
-            //scrollView.Add(button);
-
-            // Add some controls, 
-            //win.Add(
-                // The ones with my favorite layout system
-                //login, password, loginText, passText,
-
-                //    // The ones laid out like an australopithecus, with absolute positions:
-                //    new CheckBox(3, 6, "Remember me"),
-                //    new RadioGroup(3, 8, new[] { "_Personal", "_Company" }),
-                //    new Button(3, 14, "Ok"),
-                //    new Button(10, 14, "Cancel"),
-                //    new Label(3, 18, "Press ESC and 9 to activate the menubar"),
-                    
-                //tableView);
 
             Application.Run();
         }
 
         private static MenuBar CreateMenuBar()
         {
+            var menuitems = new MenuItem[24];
+            for (int i = 0; i < menuitems.Length; i++)
+            {
+                int j = i + 1;
+                menuitems[i] = new MenuItem($"_{j}", "", () => OnInstanceSelected(j, Application.Top));
+            }
+
             var menu = new MenuBar(new MenuBarItem[] {
             new MenuBarItem ("_File", new MenuItem [] {
                 new MenuItem ("_New", "Creates new file", null),
                 new MenuItem ("_Close", "", () => { }),
                 new MenuItem ("_Quit", "", () => {  })
             }),
-            new MenuBarItem ("_Instances", new MenuItem [] {
-                new MenuItem ("_1", "", () => OnInstanceSelected(17, Application.Top)),
-                //new MenuItem ("C_ut", "", null),
-                //new MenuItem ("_Paste", "", null)
-            })
+            new MenuBarItem ("_Instances", menuitems)
             });
 
             return menu;
@@ -129,6 +73,20 @@ namespace SchedulingBenchmarks.Cli
                 Height = Dim.Fill()
             };
 
+            //var frame = new Rect(top.Frame.X, top.Frame.Y, top.Frame.Width - 10, top.Frame.Height - 10);
+
+            //var scrollViewer = new ScrollView(frame)
+            //{
+            //    X = 0,
+            //    Y = 0,
+            //    Width = Dim.Fill() - 10,
+            //    Height = Dim.Fill() - 10
+            //};
+
+            //scrollViewer.ShowHorizontalScrollIndicator = true;
+            //scrollViewer.ShowVerticalScrollIndicator = true;
+            //scrollViewer.Add(view);
+
             window.Add(view);
 
             newTop.Add(CreateMenuBar(), window);
@@ -147,6 +105,8 @@ namespace SchedulingBenchmarks.Cli
         public int DayCount => _schedulingBenchmarkModel.Duration;
         public int EmployeeCount => _schedulingBenchmarkModel.Employees.Length;
         public int PersonColumnWidth => _printer.PersonColumnWidth;
+
+        public AlgorithmResult AlgorithmResult => _result;
 
         public ScheduleTableViewModel(int instanceNumber)
         {
@@ -190,16 +150,6 @@ namespace SchedulingBenchmarks.Cli
                     }
                 }
             }
-
-            //for (int i = 0; i < _result.Result.Employees.Length; i++)
-            //{
-            //    var employee = _result.Result.Employees[i];
-
-            //    foreach (var assignment in employee.Assignments.Values)
-            //    {
-            //        result[assignment.Day][i] = assignment.ShiftId;
-            //    }
-            //}
 
             return result;
         }
@@ -267,10 +217,12 @@ namespace SchedulingBenchmarks.Cli
 
             var token = Application.MainLoop.AddTimeout(TimeSpan.FromMilliseconds(1000 / 25), _ =>
             {
-                var _10Percent = ((_tableWidth - _fixedColumns) * _tableHeight) / 10;
+                var _10Percent = (((_tableWidth - _tableX) - _fixedColumns) * (_tableHeight - _tableY)) / 10;
                 for (int i = 0; i < _10Percent; i++)
                 {
-                    _charBuffer[_random.Next(_tableY, _tableHeight)][_random.Next(_tableX + _fixedColumns, _tableWidth)] = (char)_random.Next(32, 127);
+                    var j = _random.Next(_tableY, _tableHeight);
+                    var k = _random.Next(_tableX + _fixedColumns, _tableWidth);
+                    _charBuffer[j][k] = (char)_random.Next(32, 127);
                 }
 
                 SetNeedsDisplay();
@@ -330,91 +282,51 @@ namespace SchedulingBenchmarks.Cli
 
         public void SetColumn(string[] values, int day)
         {
-
-            //_fixedColumns++;
-
-            //for (int i = _tableY; i < _tableHeight; i++)
-            //{
-            //    for (int j = 0; j < _viewModel.DayColumnWidth; j++)
-            //    {
-            //        var shift = values[i - _tableY];
-            //        _charBuffer[i][_tableX + j] = j < shift.Length ? shift[j] : ' ';
-            //    }
-            //}
-
-
-
             if (day >= _tableWidth) return;
 
-            _fixedColumns++;
+            Interlocked.Add(ref _fixedColumns, _viewModel.DayColumnWidth);
+            
             var animationLength = 1000 / 60;
             var animationCount = 0;
 
-            var token = Application.MainLoop.AddTimeout(TimeSpan.FromMilliseconds(animationLength), mainLoop =>
+            while (animationCount < animationLength)
             {
-                if (animationCount > animationLength)
+                Thread.Sleep(5);
+                string shiftId;
+                string shift;
+
+                if (animationCount == animationLength - 1)
                 {
-                    //for (int i = _tableY; i < _tableHeight; i++)
-                    //{
-                    //    int j = 0;
-                    //    while (j < values[i].Length)
-                    //    {
-                    //        _charBuffer[i][_tableX + day * j] = values[i - _tableY][j];
-                    //        j++;
-                    //    }
-
-                    //    while (j < _viewModel.DayColumnWidth)
-                    //    {
-                    //        _charBuffer[i][_tableX + day * j] = ' ';
-                    //    }
-                    //}
-
                     for (int i = _tableY; i < _tableHeight; i++)
                     {
-                        for (int j = 0; j < _viewModel.DayColumnWidth; j++)
+                        shiftId = values[i - _tableY];
+                        shift = $"{shiftId}{new string(' ', _viewModel.DayColumnWidth - shiftId.Length)}";
+                        for (int j = 0; j < shift.Length; j++)
                         {
-                            var shift = values[i - _tableY];
-                            _charBuffer[i][_tableX + j * day] = j < shift.Length ? shift[j] : ' ';
+                            _charBuffer[i][_tableX + (day * _viewModel.DayColumnWidth) + j] = shift[j];
                         }
                     }
 
-                    return false;
+                    return;
                 }
 
-                //var rowIndex = _random.Next(_tableY, _tableHeight);
-                ////_charBuffer[rowIndex][day] = values[rowIndex];
-
-                //int k = 0;
-                //while (k < values[rowIndex].Length)
-                //{
-                //    _charBuffer[rowIndex][_tableX + day * k] = values[rowIndex - _tableY][k];
-                //    k++;
-                //}
-
-                //while (k < _viewModel.DayColumnWidth)
-                //{
-                //    _charBuffer[rowIndex][_tableX + day * k] = ' ';
-                //}
+                var rowIndex = _random.Next(_tableY, _tableHeight);
+                shiftId = values[rowIndex - _tableY];
+                shift = $"{shiftId}{new string(' ', _viewModel.DayColumnWidth - shiftId.Length)}";
+                for (int j = 0; j < shift.Length; j++)
+                {
+                    _charBuffer[rowIndex][_tableX + (day * _viewModel.DayColumnWidth) + j] = shift[j];
+                }
 
                 animationCount++;
-
-                return true;
-            });
+            }
         }
 
         public override bool ProcessColdKey(KeyEvent keyEvent)
         {
             if (keyEvent.Key == Key.Space)
             {
-
-                var result = _viewModel.Run();
-
-                _buffer = result.Split(Environment.NewLine);
-
-                SetNeedsDisplay();
-
-
-                //System.Threading.ThreadPool.QueueUserWorkItem(LoadAssignments);
+                ThreadPool.QueueUserWorkItem(LoadAssignments);
                 return false;
             }
 
@@ -425,36 +337,64 @@ namespace SchedulingBenchmarks.Cli
         {
             var assignmentsByDay = _viewModel.GetAssignmentsForDays();
 
-            //for (int i = 0; i < assignmentsByDay.Length; i++)
-            //{
-            //    System.Threading.Thread.Sleep(_random.Next(20, 35));
+            for (int i = 0; i < assignmentsByDay.Length; i++)
+            {
+                SetColumn(assignmentsByDay[i], i);
+            }
 
-            //    Application.MainLoop.Invoke(() => SetColumn(assignmentsByDay[i], i));
-            //}
-
-            Application.MainLoop.Invoke(() => SetColumn(assignmentsByDay[0], 0));
+            Application.MainLoop.Invoke(() =>
+            {
+                //var result = _viewModel.Run();
+                var result = PrintResultToConsole(_viewModel.AlgorithmResult);
+                _buffer = result.Split(Environment.NewLine);
+                this.Clear();
+                SetNeedsDisplay();
+            });
         }
 
-        private void Foo(object arg)
+        private static string PrintResultToConsole(AlgorithmResult algorithmResult, params string[] additionalInformation)
         {
-            for (int j = 0; j < _viewModel.DayCount; j++)
+            var builder = new StringBuilder();
+            var separator = new string('-', 80);
+            var res = algorithmResult.Result.ToFormattedString();
+            builder.Append(res);
+            builder.AppendLine();
+            builder.AppendLine();
+
+            builder.AppendLine($"Name: {algorithmResult.Name}");
+            builder.AppendLine($"Penalty: {algorithmResult.Penalty}");
+
+            if (!algorithmResult.Feasible)
             {
-                var values = new string[_viewModel.EmployeeCount];
-
-                for (int i = 0; i < _viewModel.EmployeeCount; i++)
-                {
-                    var rand = _random.NextDouble();
-                    var rounded = Math.Round(rand);
-                    var isZero = 1.0 - rounded > double.Epsilon;
-
-
-                    values[i] = isZero ? " " : "D";
-                }
-
-                Application.MainLoop.Invoke(() => SetColumn(values, j));
-
-                System.Threading.Thread.Sleep(20);
+                builder.AppendLine("Feasibility: INFEASIBLE");
             }
+
+            if (algorithmResult.Duration != default)
+            {
+                builder.AppendLine($"Duration: {algorithmResult.Duration}");
+            }
+
+            if (additionalInformation.Length > 0)
+            {
+                foreach (var text in additionalInformation.Where(x => !string.IsNullOrEmpty(x)))
+                {
+                    builder.AppendLine(text);
+                }
+            }
+
+            builder.AppendLine();
+
+            if (algorithmResult.FeasibilityMessages?.Count > 0)
+            {
+                builder.AppendLine();
+
+                foreach (var message in algorithmResult.FeasibilityMessages)
+                {
+                    builder.AppendLine(message);
+                }
+            }
+
+            return builder.ToString();
         }
     }
 }
