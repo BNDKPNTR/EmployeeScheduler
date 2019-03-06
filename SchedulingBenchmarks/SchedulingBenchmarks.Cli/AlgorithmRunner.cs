@@ -94,7 +94,7 @@ namespace SchedulingBenchmarks.Cli
             var result = SchedulerAlgorithmRunner.Run(schedulingBenchmarkModel);
             sw.Stop();
 
-            Clipboard.Copy(result.ToRosterViewerFormat());
+            //Clipboard.Copy(result.ToRosterViewerFormat());
 
             var (feasible, messages) = FeasibilityEvaluator.Evaluate(result);
 

@@ -12,10 +12,53 @@ namespace SchedulingBenchmarks.Cli
 {
     class Program
     {
+        public const string Logo = @"
+    ______                __                                  
+   / ____/___ ___  ____  / /___  __  _____  ___               
+  / __/ / __ `__ \/ __ \/ / __ \/ / / / _ \/ _ \              
+ / /___/ / / / / / /_/ / / /_/ / /_/ /  __/  __/              
+/_____/_/ /_/ /_/ .___/_/\____/\__, /\___/\___/               
+               /_/            /____/                          
+   _____      __             __      __             ____ _____
+  / ___/_____/ /_  ___  ____/ /_  __/ /__  _____   / __ \__  /
+  \__ \/ ___/ __ \/ _ \/ __  / / / / / _ \/ ___/  / /_/ //_ < 
+ ___/ / /__/ / / /  __/ /_/ / /_/ / /  __/ /      \__, /__/ / 
+/____/\___/_/ /_/\___/\__,_/\__,_/_/\___/_/      /____/____/  ";
+
         static void Main(string[] args)
         {
             Application.Init();
             var top = Application.Top;
+
+            var win = new Window("")
+            {
+                X = 0,
+                Y = 0,
+                Width = Dim.Fill(),
+                Height = Dim.Fill()
+            };
+
+            var splashView = new SplashView()
+            {
+                X = Pos.Center(),
+                Y = Pos.Center(),
+                Width = 62,
+                Height = 12
+            };
+            win.Add(splashView);
+
+            top.Add(win);
+
+            //var menu = CreateMenuBar();
+            //top.Add(menu);
+
+            Application.Run();
+        }
+
+        private static void MainView()
+        {
+            //Application.Init();
+            var newTop = new Toplevel(Application.Top.Frame);
 
             var win = new Window("MyApp")
             {
@@ -24,12 +67,40 @@ namespace SchedulingBenchmarks.Cli
                 Width = Dim.Fill(),
                 Height = Dim.Fill()
             };
-            top.Add(win);
+            newTop.Add(win);
 
             var menu = CreateMenuBar();
-            top.Add(menu);
+            newTop.Add(menu);
 
-            Application.Run();
+            Application.Run(newTop);
+        }
+
+        private class SplashView : View
+        {
+            private string[] _buffer;
+
+            public SplashView()
+            {
+                _buffer = Logo.Split(Environment.NewLine);
+
+                Application.MainLoop.AddTimeout(TimeSpan.FromSeconds(3), loop =>
+                {
+                    MainView();
+
+                    return true;
+                });
+            }
+
+            public override void Redraw(Rect region)
+            {
+                Driver.SetAttribute(ColorScheme.Focus);
+
+                for (int i = 0; i < _buffer.Length; i++)
+                {
+                    Move(0, i);
+                    Driver.AddStr(_buffer[i]);
+                }
+            }
         }
 
         private static MenuBar CreateMenuBar()
