@@ -7,16 +7,16 @@ namespace SchedulingBenchmarks.Models
     class Assignment
     {
         public Person Person { get; }
-        public int TimeSlot { get; }
+        public int Day { get; }
         public Shift Shift { get; }
 
-        public Assignment(Person person, int timeSlot, Shift shift)
+        public Assignment(Person person, int day, Shift shift)
         {
             Person = person ?? throw new ArgumentNullException(nameof(person));
-            TimeSlot = timeSlot;
+            Day = day;
             Shift = shift ?? throw new ArgumentNullException(nameof(shift));
         }
 
-        public override string ToString() => $"{TimeSlot} - {Person.Id} - {Shift.Id}";
+        public override string ToString() => $"{Day} - {Person.Id} - {Shift.Id}";
     }
 }

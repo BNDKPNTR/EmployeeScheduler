@@ -47,7 +47,7 @@ namespace SchedulingBenchmarks.Mappers
             {
                 var person = new Person(
                     employee.Id,
-                    CreateState(),
+                    new State(),
                     MapWorkSchedule(employee.Contract),
                     MapAvailabilities(employee, schedulePeriod),
                     MapShiftOffRequests(employee, schedulePeriod),
@@ -57,19 +57,6 @@ namespace SchedulingBenchmarks.Mappers
             }
 
             return people;
-        }
-
-        private State CreateState()
-        {
-            return new State
-            {
-                TotalWorkTime = 0,
-                ConsecutiveShiftCount = 0,
-                DayOffCount = int.MaxValue / 2,
-                WorkedOnWeeked = false,
-                WorkedWeekendCount = 0,
-                ShiftWorkedCount = new Dictionary<SchedulerShift, int>()
-            };
         }
 
         private bool[] MapAvailabilities(Employee employee, Range schedulePeriod)

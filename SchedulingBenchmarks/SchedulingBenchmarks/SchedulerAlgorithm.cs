@@ -18,32 +18,31 @@ namespace SchedulingBenchmarks
         public SchedulerAlgorithm(SchedulerModel model)
         {
             _model = model;
-            _stateCalculator = new StateCalculator();
+            _stateCalculator = new StateCalculator(_model.SchedulePeriod);
             _costFunction = CreateCompositeCostFunction();
         }
 
         public void Run()
         {
-            foreach (var timeSlot in _model.SchedulePeriod)
-            {
-                Parallel.ForEach(_model.People, person => _stateCalculator.RefreshState(person, timeSlot));
+            Parallel.ForEach(_model.People, person => _stateCalculator.InitializeState(person));
 
-                var availablePeople = SelectAvailablePeopleForTimeSlot(timeSlot);
-                var demands = SelectDemandsForTimeSlot(timeSlot);
+            foreach (var day in _model.SchedulePeriod)
+            {
+                Parallel.ForEach(_model.People, person => _stateCalculator.RefreshState(person, day));
+
+                var availablePeople = SelectPeopleForDay(day);
+                var demands = SelectDemandsForDay(day);
 
                 if (availablePeople.Count > 0 && demands.Length > 0)
                 {
-                    SchedulePeople(timeSlot, availablePeople, demands);
+                    SchedulePeople(day, availablePeople, demands);
                 }
             }
+
+            SchedulePeopleUntilMinTotalWorkTime();
         }
 
-        private List<Person> SelectAvailablePeopleForTimeSlot(int timeSlot)
-            => _model.People
-            //.Where(p => p.Availabilities[timeSlot])
-            .ToList();
-
-        private void SchedulePeople(int timeSlot, List<Person> people, Demand[] demands)
+        private void SchedulePeople(int day, List<Person> people, Demand[] demands)
         {
             var costMatrix = CreateCostMatrix(size: Math.Max(people.Count, demands.Length));
 
@@ -53,17 +52,17 @@ namespace SchedulingBenchmarks
 
                 for (int j = 0; j < demands.Length; j++)
                 {
-                    costMatrix[i][j] = _costFunction.CalculateCost(person, demands[j], timeSlot);
+                    costMatrix[i][j] = _costFunction.CalculateCost(person, demands[j], day);
                 }
             });
 
             //DumpCostMatrix(costMatrix);
             //var result = JonkerVolgenantAlgorithmV2.RunAlgorithm(costMatrix);
             var result = EgervaryAlgorithmV2.RunAlgorithm(costMatrix, _costFunction.MaxCost);
-            CreateAssignments(timeSlot, costMatrix, result.copulationVerticesX, people, demands);
+            CreateAssignments(day, costMatrix, result.copulationVerticesX, people, demands);
         }
 
-        private void CreateAssignments(int timeSlot, double[][] costMatrix, int[] copulationVerticesX, List<Person> people, Demand[] demands)
+        private void CreateAssignments(int day, double[][] costMatrix, int[] copulationVerticesX, List<Person> people, Demand[] demands)
         {
             for (int i = 0; i < copulationVerticesX.Length; i++)
             {
@@ -75,15 +74,20 @@ namespace SchedulingBenchmarks
                         var person = people[i];
                         var demand = demands[j];
 
-                        person.Assignments[timeSlot] = new Assignment(person, timeSlot, demand.Shift); 
+                        person.Assignments[day] = new Assignment(person, day, demand.Shift); 
                     }
                 }
             }
         }
 
-        private Demand[] SelectDemandsForTimeSlot(int timeSlot)
+        private List<Person> SelectPeopleForDay(int day)
+            => _model.People
+            //.Where(p => p.Availabilities[timeSlot])
+            .ToList();
+
+        private Demand[] SelectDemandsForDay(int day)
         {
-            var demands = _model.Demands[timeSlot];
+            var demands = _model.Demands[day];
             var demandsByIndex = new Demand[demands.Sum(d => d.MaxPeopleCount)];
 
             var k = 0;
@@ -115,6 +119,39 @@ namespace SchedulingBenchmarks
             }
 
             return costMatrix;
+        }
+
+        private void SchedulePeopleUntilMinTotalWorkTime()
+        {
+            Parallel.ForEach(_model.People.Where(p => p.State.TotalWorkTime < p.WorkSchedule.MinTotalWorkTime), person =>
+            {
+                _stateCalculator.InitializeState(person);
+
+                foreach (var day in _model.SchedulePeriod)
+                {
+                    if (person.State.TotalWorkTime >= person.WorkSchedule.MinTotalWorkTime)
+                    {
+                        break;
+                    }
+
+                    _stateCalculator.RefreshState(person, day);
+
+                    if (person.Assignments.ContainsKey(day))
+                    {
+                        continue;
+                    }
+
+                    foreach (var demand in _model.Demands[day])
+                    {
+                        if (_costFunction.CalculateCost(person, demand, day) < _costFunction.MaxCost)
+                        {
+                            var assignment = new Assignment(person, day, demand.Shift);
+                            person.Assignments[day] = assignment;
+                            break;
+                        }
+                    }
+                }
+            });
         }
 
         private CompositeCostFunction CreateCompositeCostFunction()

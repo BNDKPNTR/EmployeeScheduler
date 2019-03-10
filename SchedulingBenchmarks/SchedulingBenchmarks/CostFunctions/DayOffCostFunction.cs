@@ -9,9 +9,26 @@ namespace SchedulingBenchmarks.CostFunctions
     {
         public override double CalculateCost(Person person, Demand demand, int timeSlot)
         {
-            return 0 < person.State.DayOffCount && person.State.DayOffCount < person.WorkSchedule.MinConsecutiveDayOffs 
-                ? MaxCost 
-                : DefaultCost;
+            // While in work
+            if (person.State.DayOffCount == 0)
+            {
+                return DefaultCost;
+            }
+
+            if (person.State.DayOffCount < person.WorkSchedule.MinConsecutiveDayOffs)
+            {
+                return MaxCost;
+            }
+
+            for (int i = 1; i <= person.WorkSchedule.MinConsecutiveDayOffs; i++)
+            {
+                if (person.Assignments.ContainsKey(timeSlot + i))
+                {
+                    return MaxCost;
+                }
+            }
+
+            return DefaultCost;
         }
     }
 }
