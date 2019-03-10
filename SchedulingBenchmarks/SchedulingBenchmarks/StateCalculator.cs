@@ -53,9 +53,9 @@ namespace SchedulingBenchmarks
 
         private int CalculateTotalWorkTime(Person person, int timeSlot)
         {
-            if (person.Assignments.ContainsKey(timeSlot - 1))
+            if (person.Assignments.TryGetValue(timeSlot - 1, out var assignment))
             {
-                return person.State.TotalWorkTime + WorkSchedule.ShiftLengthInMinutes;
+                return person.State.TotalWorkTime + assignment.Shift.Duration;
             }
 
             return person.State.TotalWorkTime;

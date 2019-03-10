@@ -15,7 +15,7 @@ namespace SchedulingBenchmarks.Cli
     {
         private static readonly bool ExecuteSchedulerAlgorithm = true;
         private static readonly bool ExecuteResultGenerator = false;
-        private static readonly int InstanceNumber = 17;
+        private static readonly int InstanceNumber = 2;
 
         public static void RunPerf()
         {
@@ -73,6 +73,7 @@ namespace SchedulingBenchmarks.Cli
             if (ExecuteResultGenerator) generatedResults = RunResultGenerator();
 
             CompareAndPrintResults(schedulerResult, generatedResults);
+            OnKeyDown(schedulerResult);
         }
 
         private static AlgorithmResult RunSchedulerAlgorithm()
@@ -193,6 +194,7 @@ namespace SchedulingBenchmarks.Cli
             if (algorithmResult.FeasibilityMessages?.Count > 0)
             {
                 Console.WriteLine();
+                Console.WriteLine();
 
                 foreach (var message in algorithmResult.FeasibilityMessages)
                 {
@@ -221,6 +223,55 @@ namespace SchedulingBenchmarks.Cli
             }
 
             return true;
+        }
+
+        private static void OnKeyDown(AlgorithmResult algorithmResult)
+        {
+            var key = Console.ReadKey();
+
+            switch (key.Key)
+            {
+                case ConsoleKey.B:
+                    DisplayBaseline(algorithmResult);
+                    OnKeyDown(algorithmResult);
+                    break;
+
+                case ConsoleKey.S:
+                    SaveAlgorithmResult(algorithmResult);
+                    OnKeyDown(algorithmResult);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private static void SaveAlgorithmResult(AlgorithmResult algorithmResult)
+        {
+            var originalName = algorithmResult.Name;
+            algorithmResult.Name = "Baseline";
+            BaselineStore.Save(InstanceNumber, algorithmResult);
+            algorithmResult.Name = originalName;
+            Console.WriteLine("Baseline saved");
+        }
+
+        private static bool _displayingBase = false;
+
+        private static void DisplayBaseline(AlgorithmResult algorithmResult)
+        {
+            if (!_displayingBase)
+            {
+                var baseline = BaselineStore.Get(InstanceNumber);
+                Console.Clear();
+                PrintResultToConsole(baseline);
+            }
+            else
+            {
+                Console.Clear();
+                PrintResultToConsole(algorithmResult);
+            }
+
+            _displayingBase = !_displayingBase;
         }
     }
 }

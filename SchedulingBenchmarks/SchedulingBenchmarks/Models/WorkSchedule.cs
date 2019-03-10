@@ -6,8 +6,6 @@ namespace SchedulingBenchmarks.Models
 {
     class WorkSchedule
     {
-        public const int ShiftLengthInMinutes = 480;
-
         public int MinRestTime { get; }
         public int MinTotalWorkTime { get; }
         public int MaxTotalWorkTime { get; }

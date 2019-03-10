@@ -142,7 +142,7 @@ namespace SchedulingBenchmarks.Mappers
             {
                 var shift = _schedulingBenchmarkModel.Shifts[i];
 
-                shifts[shift.Id] = new SchedulerShift(i, shift.Id);
+                shifts[shift.Id] = new SchedulerShift(i, shift.Id, (int)shift.StartTime.TotalMinutes, (int)shift.Duration.TotalMinutes);
             }
 
             return shifts;

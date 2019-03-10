@@ -16,7 +16,7 @@ namespace SchedulingBenchmarks.CostFunctions
 
         public override double CalculateCost(Person person, Demand demand, int timeSlot)
         {
-            if (person.State.TotalWorkTime + WorkSchedule.ShiftLengthInMinutes > person.WorkSchedule.MaxTotalWorkTime) return MaxCost;
+            if (person.State.TotalWorkTime + demand.Shift.Duration > person.WorkSchedule.MaxTotalWorkTime) return MaxCost;
             if (person.State.TotalWorkTime < person.WorkSchedule.MinTotalWorkTime) return _underMinWorkTimeCost;
 
             return DefaultCost;

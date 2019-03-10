@@ -128,7 +128,8 @@ namespace SchedulingBenchmarks
                 new ConsecutiveShiftCostFunction(),
                 new DayOffCostFunction(),
                 new ValidShiftCostFunction(),
-                new MaxShiftCostFunction()
+                new MaxShiftCostFunction(),
+                new MinRestTimeCostFunction()
             };
 
             return new CompositeCostFunction(costFunctions);
