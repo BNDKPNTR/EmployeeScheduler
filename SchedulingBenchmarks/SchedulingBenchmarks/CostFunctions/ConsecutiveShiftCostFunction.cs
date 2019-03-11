@@ -18,8 +18,15 @@ namespace SchedulingBenchmarks.CostFunctions
         {
             if (!CanWorkMinConsecutiveShiftsInFuture(person, day)) return MaxCost;
 
+            // If not working consecutively
+            if (person.State.ConsecutiveShiftCount == 0) return DefaultCost;
+
             if (person.State.ConsecutiveShiftCount + 1 > person.WorkSchedule.MaxConsecutiveShifts) return MaxCost;
-            if (person.State.ConsecutiveShiftCount < person.WorkSchedule.MinConsecutiveShifts) return _underMinConsecutiveShiftCount;
+
+            // In case of the min consecutive shifts we assume that before the schedule period there was an infinite number of shifts
+            // TODO: same assumption applies to the end of the schedule period
+            var schedulePeriodStartFilter = person.WorkSchedule.MinConsecutiveShifts;
+            if (day > schedulePeriodStartFilter && person.State.ConsecutiveShiftCount < person.WorkSchedule.MinConsecutiveShifts) return _underMinConsecutiveShiftCount;
 
             return DefaultCost;
         }

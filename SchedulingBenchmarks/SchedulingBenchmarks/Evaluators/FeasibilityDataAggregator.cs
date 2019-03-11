@@ -66,9 +66,9 @@ namespace SchedulingBenchmarks.Evaluators
             return employee.Assignments.Values.Sum(a => (int)_shiftLengths[a.ShiftId].TotalMinutes);
         }
 
-        private List<int> GetConsecutiveShiftLengths(Employee employee)
+        private List<ConsecutiveShiftLength> GetConsecutiveShiftLengths(Employee employee)
         {
-            var consecutiveShiftLengths = new List<int>();
+            var consecutiveShiftLengths = new List<ConsecutiveShiftLength>();
 
             int consecutiveShiftCount;
             int lastDayWithAssignment;
@@ -92,13 +92,13 @@ namespace SchedulingBenchmarks.Evaluators
                 }
                 else
                 {
-                    consecutiveShiftLengths.Add(consecutiveShiftCount);
+                    consecutiveShiftLengths.Add(new ConsecutiveShiftLength(lastDayWithAssignment + 1 - consecutiveShiftCount, consecutiveShiftCount));
                     lastDayWithAssignment = dayWithShift;
                     consecutiveShiftCount = 1;
                 }
             }
 
-            consecutiveShiftLengths.Add(consecutiveShiftCount);
+            consecutiveShiftLengths.Add(new ConsecutiveShiftLength(lastDayWithAssignment + 1 - consecutiveShiftCount, consecutiveShiftCount));
 
             return consecutiveShiftLengths;
         }
