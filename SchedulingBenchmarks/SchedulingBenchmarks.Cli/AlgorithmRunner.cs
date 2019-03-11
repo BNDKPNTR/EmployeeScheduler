@@ -13,9 +13,24 @@ namespace SchedulingBenchmarks.Cli
 {
     static class AlgorithmRunner
     {
-        private static readonly bool ExecuteSchedulerAlgorithm = true;
-        private static readonly bool ExecuteResultGenerator = false;
-        private static readonly int InstanceNumber = 6;
+        private static readonly int InstanceNumber = 1;
+
+        public static void ShowResults()
+        {
+            var schedulerResult = RunSchedulerAlgorithm();
+            PrintResultToConsole(schedulerResult);
+            OnKeyDown(schedulerResult);
+        }
+
+        public static void GenerateAllBaselines()
+        {
+            Parallel.For(1, 25, i =>
+            {
+                var result = RunSchedulerAlgorithm(i, copyToClipboard: false);
+                result.Name = "Baseline";
+                BaselineStore.Save(i, result);
+            });
+        }
 
         public static void RunPerf()
         {
@@ -64,28 +79,6 @@ namespace SchedulingBenchmarks.Cli
             }
         }
 
-        public static void ShowResults()
-        {
-            AlgorithmResult schedulerResult = null;
-            List<AlgorithmResult> generatedResults = null;
-
-            if (ExecuteSchedulerAlgorithm) schedulerResult = RunSchedulerAlgorithm();
-            if (ExecuteResultGenerator) generatedResults = RunResultGenerator();
-
-            CompareAndPrintResults(schedulerResult, generatedResults);
-            OnKeyDown(schedulerResult);
-        }
-
-        public static void GenerateAllBaselines()
-        {
-            Parallel.For(1, 25, i =>
-            {
-                var result = RunSchedulerAlgorithm(i, copyToClipboard: false);
-                result.Name = "Baseline";
-                BaselineStore.Save(i, result);
-            });
-        }
-
         private static AlgorithmResult RunSchedulerAlgorithm(int? instanceNumber = null, bool copyToClipboard = true)
         {
             var dto = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber ?? InstanceNumber);
@@ -120,64 +113,7 @@ namespace SchedulingBenchmarks.Cli
             };
         }
 
-        private static List<AlgorithmResult> RunResultGenerator()
-        {
-            var dto = SchedulingBenchmarkInstanceReader.FromXml(InstanceNumber);
-
-            var generator = new ScheduleResultGenerator(() => DtoToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(dto));
-            var feasibleResults = new ConcurrentBag<AlgorithmResult>();
-            var resultNumber = 0;
-
-            Parallel.ForEach(generator.GenerateResults(ReportProgress), result =>
-            {
-                if (FeasibilityEvaluator.EvaluateQuickly(result))
-                {
-                    feasibleResults.Add(new AlgorithmResult
-                    {
-                        Name = $"Timetable {Interlocked.Increment(ref resultNumber)}",
-                        Result = result,
-                        Penalty = OptimalityEvaluator.CalculatePenalty(result),
-                        Feasible = true
-                    });
-                }
-            });
-
-            return feasibleResults.ToList();
-
-            void ReportProgress(int generatedResultCount) => Console.WriteLine(generatedResultCount);
-        }
-
-        private static void CompareAndPrintResults(AlgorithmResult schedulerResult, List<AlgorithmResult> generatedResults)
-        {
-            if (ExecuteResultGenerator)
-            {
-                generatedResults = generatedResults.OrderBy(x => x.Penalty).ToList();
-            }
-
-            var equalsWithCheapest = string.Empty;
-            if (ExecuteSchedulerAlgorithm && ExecuteResultGenerator && generatedResults.Count > 0)
-            {
-                var cheapestGeneratedResult = generatedResults[0];
-                equalsWithCheapest = CompareResults(schedulerResult.Result, cheapestGeneratedResult.Result)
-                    ? $"Equals with:\t{cheapestGeneratedResult.Name}"
-                    : $"Doesn't match with {cheapestGeneratedResult.Name}";
-            }
-
-            if (ExecuteSchedulerAlgorithm)
-            {
-                PrintResultToConsole(schedulerResult, equalsWithCheapest);
-            }
-
-            if (ExecuteResultGenerator)
-            {
-                foreach (var generatedResult in generatedResults)
-                {
-                    PrintResultToConsole(generatedResult);
-                }
-            }
-        }
-
-        private static void PrintResultToConsole(AlgorithmResult algorithmResult, params string[] additionalInformation)
+        private static void PrintResultToConsole(AlgorithmResult algorithmResult)
         {
             var separator = new string('-', 80);
 
@@ -193,14 +129,6 @@ namespace SchedulingBenchmarks.Cli
             if (algorithmResult.Duration != default)
             {
                 Console.WriteLine($"Duration:\t{algorithmResult.Duration}");
-            }
-
-            if (additionalInformation.Length > 0)
-            {
-                foreach (var text in additionalInformation.Where(x => !string.IsNullOrEmpty(x)))
-                {
-                    Console.WriteLine(text);
-                }
             }
 
             Console.WriteLine();
