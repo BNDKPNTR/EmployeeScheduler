@@ -15,7 +15,7 @@ namespace SchedulingBenchmarks.Cli
     {
         private static readonly bool ExecuteSchedulerAlgorithm = true;
         private static readonly bool ExecuteResultGenerator = false;
-        private static readonly int InstanceNumber = 2;
+        private static readonly int InstanceNumber = 1;
 
         public static void RunPerf()
         {

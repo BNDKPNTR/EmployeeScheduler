@@ -56,10 +56,10 @@ namespace SchedulingBenchmarks
             {
                 if (shiftCounts.TryGetValue(maxShift.Key, out var shiftCount) && shiftCount > maxShift.Value)
                 {
-                    if (_evaluateQuickly) return;
-
                     _feasible = false;
                     _messages.Add($"{employee.Id} has {shiftCount} assigned shifts of type {maxShift.Key} instead of the maximum allowed {maxShift.Value}");
+
+                    if (_evaluateQuickly) return;
                 }
             }
         }
@@ -87,18 +87,18 @@ namespace SchedulingBenchmarks
             {
                 if (consecutiveShiftCount < employee.Contract.MinConsecutiveShifts)
                 {
-                    if (_evaluateQuickly) return;
-
                     _feasible = false;
                     _messages.Add($"{employee.Id} works {consecutiveShiftCount} number of days in a row instead of the minimum required {employee.Contract.MinConsecutiveShifts}");
+
+                    if (_evaluateQuickly) return;
                 }
 
                 if (consecutiveShiftCount > employee.Contract.MaxConsecutiveShifts)
                 {
-                    if (_evaluateQuickly) return;
-
                     _feasible = false;
                     _messages.Add($"{employee.Id} works {consecutiveShiftCount} number of days in a row instead of the maximum allowed {employee.Contract.MaxConsecutiveShifts}");
+
+                    if (_evaluateQuickly) return;
                 }
             }
 
@@ -142,10 +142,10 @@ namespace SchedulingBenchmarks
             {
                 if (consecutiveDayOffCount < employee.Contract.MinConsecutiveDayOffs)
                 {
-                    if (_evaluateQuickly) return;
-
                     _feasible = false;
                     _messages.Add($"{employee.Id} has {consecutiveDayOffCount} consecutive days off instead of the minimum required {employee.Contract.MinConsecutiveDayOffs}");
+
+                    if (_evaluateQuickly) return;
                 }
             }
 
@@ -204,10 +204,10 @@ namespace SchedulingBenchmarks
             {
                 if (employee.Assignments.ContainsKey(dayOff))
                 {
-                    if (_evaluateQuickly) return;
-
                     _feasible = false;
                     _messages.Add($"{employee.Id} has assignment on day {dayOff} instead of having a day off");
+
+                    if (_evaluateQuickly) return;
                 }
             }
         }
