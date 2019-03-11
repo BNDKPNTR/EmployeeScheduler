@@ -118,11 +118,7 @@ namespace SchedulingBenchmarks.Cli
             Console.WriteLine(separator);
             Console.WriteLine($"Name:\t\t{algorithmResult.Name}");
             Console.WriteLine($"Penalty:\t{algorithmResult.Penalty}");
-
-            if (!algorithmResult.Feasible)
-            {
-                Console.WriteLine("Feasibility:\tINFEASIBLE");
-            }
+            Console.WriteLine($"Feasibility:\t{(algorithmResult.Feasible ? "feasible" : "INFEASIBLE")}");
 
             if (algorithmResult.Duration != default)
             {
@@ -131,10 +127,10 @@ namespace SchedulingBenchmarks.Cli
 
             Console.WriteLine();
             algorithmResult.Result.PrintToConsole();
+            Console.WriteLine();
 
             if (algorithmResult.FeasibilityMessages?.Count > 0)
             {
-                Console.WriteLine();
                 Console.WriteLine();
 
                 foreach (var message in algorithmResult.FeasibilityMessages)
