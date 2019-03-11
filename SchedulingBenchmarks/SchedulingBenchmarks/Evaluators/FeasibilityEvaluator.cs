@@ -11,31 +11,29 @@ namespace SchedulingBenchmarks.Evaluators
     public class FeasibilityEvaluator
     {
         private readonly SchedulingBenchmarkModel _schedulingBenchmarkModel;
-        private readonly Dictionary<string, EmployeeFeasibilityAggregate> _aggregates;
         private bool _feasible;
         private readonly ConcurrentBag<string> _messages;
-        private readonly Dictionary<string, TimeSpan> _shiftLengths;
 
-        public FeasibilityEvaluator(SchedulingBenchmarkModel schedulingBenchmarkModel, Dictionary<string, EmployeeFeasibilityAggregate> aggregates)
+        public FeasibilityEvaluator(SchedulingBenchmarkModel schedulingBenchmarkModel)
         {
             _schedulingBenchmarkModel = schedulingBenchmarkModel ?? throw new ArgumentNullException(nameof(schedulingBenchmarkModel));
-            _aggregates = aggregates ?? throw new ArgumentNullException(nameof(aggregates));
             _feasible = true;
             _messages = new ConcurrentBag<string>();
-            _shiftLengths = _schedulingBenchmarkModel.Shifts.ToDictionary(s => s.Id, s => s.Duration);
         }
 
         public static (bool feasible, List<string> messages) Evaluate(SchedulingBenchmarkModel schedulingBenchmarkModel)
         {
-            var aggregates = FeasibilityDataAggregator.GetAggregate(schedulingBenchmarkModel).ToDictionary(a => a.EmployeeId);
-            return new FeasibilityEvaluator(schedulingBenchmarkModel, aggregates).Feasible();
+            var aggregates = FeasibilityDataAggregator.GetAggregate(schedulingBenchmarkModel);
+            return new FeasibilityEvaluator(schedulingBenchmarkModel).Feasible(aggregates);
         }
 
-        private (bool feasible, List<string> messages) Feasible()
+        private (bool feasible, List<string> messages) Feasible(IEnumerable<EmployeeFeasibilityAggregate> feasibilityAggregates)
         {
-            Parallel.ForEach(_schedulingBenchmarkModel.Employees, (employee, state) =>
+            var aggregates = feasibilityAggregates.ToDictionary(a => a.EmployeeId);
+
+            Parallel.ForEach(_schedulingBenchmarkModel.Employees, employee =>
             {
-                var aggregate = _aggregates[employee.Id];
+                var aggregate = aggregates[employee.Id];
 
                 MaxAllowedNumberOfShiftsNotExceeded(employee, aggregate);
                 MinAndMaxTotalMinutesNotExceeded(employee, aggregate);
@@ -129,8 +127,11 @@ namespace SchedulingBenchmarks.Evaluators
         {
             foreach (var restTime in aggregate.RestTimes)
             {
-                _feasible = false;
-                _messages.Add($"{employee.Id} rests only {restTime} minutes");
+                if (restTime < employee.Contract.MinRestTime)
+                {
+                    _feasible = false;
+                    _messages.Add($"{employee.Id} rests only {restTime} minutes"); 
+                }
             }
         }
     }
