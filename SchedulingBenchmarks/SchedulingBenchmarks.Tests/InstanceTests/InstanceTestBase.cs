@@ -1,4 +1,5 @@
 ﻿using SchedulingBenchmarks.Cli;
+using SchedulingBenchmarks.Evaluators;
 using SchedulingBenchmarks.Mappers;
 using SchedulingBenchmarks.SchedulingBenchmarksModel;
 using System;
@@ -27,8 +28,8 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
         [Fact]
         public void AssertFeasibility()
         {
-            var actualFeasibility = FeasibilityEvaluator.EvaluateQuickly(_result);
-
+            var (actualFeasibility, _) = FeasibilityEvaluator.Evaluate(_result);
+            
             Assert.Equal(ExpectedFeasibility, actualFeasibility);
         }
 
