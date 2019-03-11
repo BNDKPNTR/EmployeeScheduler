@@ -183,7 +183,7 @@ namespace SchedulingBenchmarks
         {
             var workedOnWeekendCount = 0;
 
-            foreach (var (saturday, sunday) in Enumerable.Range(0, _schedulingBenchmarkModel.Duration / 7).Select(i => (i * 7 + 6, i * 7 + 7)))
+            foreach (var (saturday, sunday) in Enumerable.Range(0, _schedulingBenchmarkModel.Duration / 7).Select(i => (i * 7 + 5, i * 7 + 6)))
             {
                 if (employee.Assignments.ContainsKey(saturday) || employee.Assignments.ContainsKey(sunday))
                 {

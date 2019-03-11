@@ -11,7 +11,7 @@ namespace SchedulingBenchmarks.CostFunctions
 
         public override double CalculateCost(Person person, Demand demand, int timeSlot)
         {
-            if (person.Assignments.TryGetValue(timeSlot - 1, out var assignment))
+            if (person.Assignments.AllRounds.TryGetValue(timeSlot - 1, out var assignment))
             {
                 var lastShiftEnd = assignment.Shift.StartTime + assignment.Shift.Duration;
                 var newShiftStart = OneDayInMinutes + demand.Shift.StartTime;

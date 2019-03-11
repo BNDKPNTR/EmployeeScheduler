@@ -15,7 +15,7 @@ namespace SchedulingBenchmarks.Cli
     {
         private static readonly bool ExecuteSchedulerAlgorithm = true;
         private static readonly bool ExecuteResultGenerator = false;
-        private static readonly int InstanceNumber = 1;
+        private static readonly int InstanceNumber = 6;
 
         public static void RunPerf()
         {
@@ -76,9 +76,19 @@ namespace SchedulingBenchmarks.Cli
             OnKeyDown(schedulerResult);
         }
 
-        private static AlgorithmResult RunSchedulerAlgorithm()
+        public static void GenerateAllBaselines()
         {
-            var dto = SchedulingBenchmarkInstanceReader.FromXml(InstanceNumber);
+            Parallel.For(1, 25, i =>
+            {
+                var result = RunSchedulerAlgorithm(i, copyToClipboard: false);
+                result.Name = "Baseline";
+                BaselineStore.Save(i, result);
+            });
+        }
+
+        private static AlgorithmResult RunSchedulerAlgorithm(int? instanceNumber = null, bool copyToClipboard = true)
+        {
+            var dto = SchedulingBenchmarkInstanceReader.FromXml(instanceNumber ?? InstanceNumber);
             var schedulingBenchmarkModel = DtoToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(dto);
             var sw = new Stopwatch();
 
@@ -90,9 +100,14 @@ namespace SchedulingBenchmarks.Cli
             var result = SchedulerAlgorithmRunner.Run(schedulingBenchmarkModel);
             sw.Stop();
 
-            Clipboard.Copy(result.ToRosterViewerFormat());
+            if (copyToClipboard)
+            {
+                Clipboard.Copy(result.ToRosterViewerFormat()); 
+            }
 
             var (feasible, messages) = FeasibilityEvaluator.Evaluate(result);
+
+            messages.Sort();
 
             return new AlgorithmResult
             {

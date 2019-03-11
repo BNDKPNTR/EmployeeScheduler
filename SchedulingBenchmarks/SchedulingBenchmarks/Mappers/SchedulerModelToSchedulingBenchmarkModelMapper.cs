@@ -33,7 +33,7 @@ namespace SchedulingBenchmarks.Mappers
             {
                 var person = people[employee.Id];
 
-                foreach (var schedulerAssignment in person.Assignments.Values)
+                foreach (var schedulerAssignment in person.Assignments.AllRounds.Values)
                 {
                     var assignment = new Assignment
                     {

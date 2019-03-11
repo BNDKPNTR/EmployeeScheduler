@@ -24,7 +24,11 @@ namespace SchedulingBenchmarks
 
         public void Run()
         {
-            Parallel.ForEach(_model.People, person => _stateCalculator.InitializeState(person));
+            Parallel.ForEach(_model.People, person =>
+            {
+                person.Assignments.StartNewRound();
+                _stateCalculator.InitializeState(person);
+            });
 
             foreach (var day in _model.SchedulePeriod)
             {
@@ -74,7 +78,7 @@ namespace SchedulingBenchmarks
                         var person = people[i];
                         var demand = demands[j];
 
-                        person.Assignments[day] = new Assignment(person, day, demand.Shift); 
+                        person.Assignments.Add(day, new Assignment(person, day, demand.Shift)); 
                     }
                 }
             }
@@ -125,18 +129,19 @@ namespace SchedulingBenchmarks
         {
             Parallel.ForEach(_model.People.Where(p => p.State.TotalWorkTime < p.WorkSchedule.MinTotalWorkTime), person =>
             {
+                person.Assignments.StartNewRound();
                 _stateCalculator.InitializeState(person);
 
                 foreach (var day in _model.SchedulePeriod)
                 {
+                    _stateCalculator.RefreshState(person, day);
+
                     if (person.State.TotalWorkTime >= person.WorkSchedule.MinTotalWorkTime)
                     {
                         break;
                     }
 
-                    _stateCalculator.RefreshState(person, day);
-
-                    if (person.Assignments.ContainsKey(day))
+                    if (person.Assignments.AllRounds.ContainsKey(day))
                     {
                         continue;
                     }
@@ -146,7 +151,8 @@ namespace SchedulingBenchmarks
                         if (_costFunction.CalculateCost(person, demand, day) < _costFunction.MaxCost)
                         {
                             var assignment = new Assignment(person, day, demand.Shift);
-                            person.Assignments[day] = assignment;
+                            
+                            person.Assignments.Add(day, assignment);
                             break;
                         }
                     }

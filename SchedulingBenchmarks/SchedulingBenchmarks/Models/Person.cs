@@ -12,7 +12,7 @@ namespace SchedulingBenchmarks.Models
         public bool[] Availabilities { get; }
         public bool[] ShiftOffRequests { get; }
         public bool[] ShiftOnRequests { get; }
-        public Dictionary<int, Assignment> Assignments { get; }
+        public AssignmentsCollection Assignments { get; }
 
         public Person(string id, State state, WorkSchedule workSchedule, bool[] availabilities, bool[] shiftOffRequests, bool[] shiftOnRequests)
         {
@@ -23,7 +23,7 @@ namespace SchedulingBenchmarks.Models
             ShiftOffRequests = shiftOffRequests ?? throw new ArgumentNullException(nameof(shiftOffRequests));
             ShiftOnRequests = shiftOnRequests ?? throw new ArgumentNullException(nameof(shiftOnRequests));
 
-            Assignments = new Dictionary<int, Assignment>();
+            Assignments = new AssignmentsCollection();
         }
 
         public override string ToString() => Id;
