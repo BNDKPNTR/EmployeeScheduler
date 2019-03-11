@@ -80,10 +80,16 @@ namespace SchedulingBenchmarks.Evaluators
             foreach (var consecutiveShiftCount in aggregate.ConsecutiveShiftLengths)
             {
                 // In case of the min consecutive shifts we assume that before the schedule period there was an infinite number of shifts
-                if (consecutiveShiftCount.DayStart != 0 && consecutiveShiftCount.Length < employee.Contract.MinConsecutiveShifts)
+                var schedulePeriodEndFilter = _schedulingBenchmarkModel.Duration - employee.Contract.MinConsecutiveShifts + 1;
+                var remainingDaysFromSchedulePeriod = _schedulingBenchmarkModel.Duration - 1 - consecutiveShiftCount.DayStart;
+                if (0 < consecutiveShiftCount.DayStart 
+                    && (consecutiveShiftCount.DayStart < schedulePeriodEndFilter && consecutiveShiftCount.Length == remainingDaysFromSchedulePeriod))
                 {
-                    _feasible = false;
-                    _messages.Add($"{employee.Id} works {consecutiveShiftCount.Length} number of days in a row instead of the minimum required {employee.Contract.MinConsecutiveShifts}");
+                    if (consecutiveShiftCount.Length < employee.Contract.MinConsecutiveShifts)
+                    {
+                        _feasible = false;
+                        _messages.Add($"{employee.Id} works {consecutiveShiftCount.Length} number of days in a row instead of the minimum required {employee.Contract.MinConsecutiveShifts}");
+                    }
                 }
 
                 if (consecutiveShiftCount.Length > employee.Contract.MaxConsecutiveShifts)
