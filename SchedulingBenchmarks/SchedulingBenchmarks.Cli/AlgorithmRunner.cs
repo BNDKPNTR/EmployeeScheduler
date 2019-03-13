@@ -93,7 +93,7 @@ namespace SchedulingBenchmarks.Cli
 
             if (copyToClipboard)
             {
-                Clipboard.Copy(result.ToRosterViewerFormat()); 
+               Clipboard.Copy(result.ToRosterViewerFormat()); 
             }
 
             var (feasible, messages) = FeasibilityEvaluator.Evaluate(result);

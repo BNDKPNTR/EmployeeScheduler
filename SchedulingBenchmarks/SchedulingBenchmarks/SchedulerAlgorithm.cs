@@ -13,7 +13,7 @@ namespace SchedulingBenchmarks
     {
         private readonly SchedulerModel _model;
         private readonly StateCalculator _stateCalculator;
-        private readonly CostFunctionBase _costFunction;
+        private CostFunctionBase _costFunction;
 
         public SchedulerAlgorithm(SchedulerModel model)
         {
@@ -86,7 +86,7 @@ namespace SchedulingBenchmarks
 
         private List<Person> SelectPeopleForDay(int day)
             => _model.People
-            //.Where(p => p.Availabilities[timeSlot])
+            .Where(p => p.Availabilities[day])
             .ToList();
 
         private Demand[] SelectDemandsForDay(int day)
@@ -127,6 +127,8 @@ namespace SchedulingBenchmarks
 
         private void SchedulePeopleUntilMinTotalWorkTime()
         {
+            _costFunction = CreateCompositeCostFunctionForSecondRound();
+
             Parallel.ForEach(_model.People.Where(p => p.State.TotalWorkTime < p.WorkSchedule.MinTotalWorkTime), person =>
             {
                 person.Assignments.StartNewRound();
@@ -161,6 +163,24 @@ namespace SchedulingBenchmarks
         }
 
         private CompositeCostFunction CreateCompositeCostFunction()
+        {
+            var costFunctions = new CostFunctionBase[]
+            {
+                //new AvailabilityCostFunction(),
+                new WeekendWorkCostFunction(),
+                new TotalWorkTimeCostFunction(),
+                new ShiftRequestCostFunction(),
+                new ConsecutiveShiftCostFunction(),
+                new DayOffCostFunction(),
+                new ValidShiftCostFunction(),
+                new MaxShiftCostFunction(),
+                new MinRestTimeCostFunction()
+            };
+
+            return new CompositeCostFunction(costFunctions);
+        }
+
+        private CompositeCostFunction CreateCompositeCostFunctionForSecondRound()
         {
             var costFunctions = new CostFunctionBase[]
             {
