@@ -8,10 +8,12 @@ namespace SchedulingBenchmarks.CostFunctions
     class ConsecutiveShiftCostFunction : CostFunctionBase
     {
         private readonly double _underMinConsecutiveShiftCount;
+        private readonly double _betweenMinAndMaxShiftCount;
 
         public ConsecutiveShiftCostFunction()
         {
-            _underMinConsecutiveShiftCount = DefaultCost / 9.0;
+            _underMinConsecutiveShiftCount = DefaultCost / 100.0;
+            _betweenMinAndMaxShiftCount = DefaultCost * 0.9;
         }
 
         public override double CalculateCost(Person person, Demand demand, int day)
@@ -19,7 +21,6 @@ namespace SchedulingBenchmarks.CostFunctions
             if (!CanWorkMinConsecutiveShiftsInFuture(person, day)) return MaxCost;
 
             var consecutiveShiftCount = GetConsecutiveShiftCount(person, day);
-            //var consecutiveShiftCount = person.State.ConsecutiveShiftCount + 1;
             if (consecutiveShiftCount > person.WorkSchedule.MaxConsecutiveShifts) return MaxCost;
 
             // If not working consecutively
@@ -30,7 +31,7 @@ namespace SchedulingBenchmarks.CostFunctions
             var schedulePeriodStartFilter = person.WorkSchedule.MinConsecutiveShifts;
             if (day > schedulePeriodStartFilter && person.State.ConsecutiveShiftCount < person.WorkSchedule.MinConsecutiveShifts) return _underMinConsecutiveShiftCount;
 
-            return DefaultCost;
+            return _betweenMinAndMaxShiftCount;
         }
 
         private int GetConsecutiveShiftCount(Person person, int day)

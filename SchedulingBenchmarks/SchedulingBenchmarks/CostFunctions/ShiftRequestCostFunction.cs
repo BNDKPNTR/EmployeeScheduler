@@ -13,7 +13,7 @@ namespace SchedulingBenchmarks.CostFunctions
         public ShiftRequestCostFunction()
         {
             _shiftOffRequestCost = DefaultCost * 2.0;
-            _shiftOnRequestCost = DefaultCost / 5.0;
+            _shiftOnRequestCost = DefaultCost / 2.0;
         }
 
         public override double CalculateCost(Person person, Demand demand, int timeSlot)
