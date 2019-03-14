@@ -5,10 +5,8 @@ using System.Text;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    interface IStateCalculator<out T> where T : IStateCalculatorResult
+    interface IStateCalculatorResult
     {
-        T CalculateState(Person person, int day);
-
-        T InitializeState(Person person);
+        void Apply(Person person);
     }
 }

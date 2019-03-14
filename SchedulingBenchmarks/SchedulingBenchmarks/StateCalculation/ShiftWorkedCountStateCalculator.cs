@@ -6,19 +6,34 @@ using SchedulingBenchmarks.Models;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    class ShiftWorkedCountStateCalculator : IStateCalculator<Dictionary<Shift, int>>
+    class ShiftWorkedCountStateCalculator : IStateCalculator<ShiftWorkedCountStateCalculator.Result>
     {
-        public Dictionary<Shift, int> CalculateState(Person person, int day)
+        public Result CalculateState(Person person, int day)
         {
-            if (!person.Assignments.LatestRound.TryGetValue(day - 1, out var previousAssignment)) return person.State.ShiftWorkedCount;
+            if (!person.Assignments.LatestRound.TryGetValue(day - 1, out var previousAssignment)) return new Result(person.State.ShiftWorkedCount);
 
             person.State.ShiftWorkedCount.TryGetValue(previousAssignment.Shift, out var shiftWorkedCount);
             person.State.ShiftWorkedCount[previousAssignment.Shift] = shiftWorkedCount + 1;
 
-            return person.State.ShiftWorkedCount;
+            return new Result(person.State.ShiftWorkedCount);
         }
 
-        public Dictionary<Shift, int> InitializeState(Person person) 
-            => person.Assignments.AllRounds.Values.GroupBy(a => a.Shift).ToDictionary(g => g.Key, g => g.Count());
+        public Result InitializeState(Person person) 
+            => new Result(person.Assignments.AllRounds.Values.GroupBy(a => a.Shift).ToDictionary(g => g.Key, g => g.Count()));
+
+        public class Result : IStateCalculatorResult
+        {
+            public Dictionary<Shift, int> ShiftWorkedCount { get; }
+
+            public Result(Dictionary<Shift, int> shiftWorkedCount)
+            {
+                ShiftWorkedCount = shiftWorkedCount;
+            }
+
+            public void Apply(Person person)
+            {
+                person.State.ShiftWorkedCount = ShiftWorkedCount;
+            }
+        }
     }
 }

@@ -13,5 +13,6 @@ namespace SchedulingBenchmarks.Models
         public bool WorkedOnWeeked { get; set; }
         public int WorkedWeekendCount { get; set; }
         public Dictionary<Shift, int> ShiftWorkedCount { get; set; }
+        public int NumberOfDaysCanWorkLater { get; set; }
     }
 }
