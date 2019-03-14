@@ -22,13 +22,13 @@ namespace SchedulingBenchmarks.CostFunctions
         /// <summary>
         /// Súlyfüggvények eredményének mértani közép szerinti átlagolása
         /// </summary>
-        public override double CalculateCost(Person person, Demand demand, int timeSlot)
+        public override double CalculateCost(Person person, Demand demand, int day)
         {
             var product = 1.0;
 
             for (int i = 0; i < _costFunctions.Length; i++)
             {
-                var cost = _costFunctions[i].CalculateCost(person, demand, timeSlot);
+                var cost = _costFunctions[i].CalculateCost(person, demand, day);
 
                 // TODO: cost <-> multiplier, nem ugyanaz a mertekegyseg?
                 if (cost == MaxCost) return MaxCost;

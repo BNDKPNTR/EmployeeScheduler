@@ -1,6 +1,7 @@
 ﻿using SchedulingBenchmarks.CostFunctions;
 using SchedulingBenchmarks.LapAlgorithms;
 using SchedulingBenchmarks.Models;
+using SchedulingBenchmarks.StateCalculation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace SchedulingBenchmarks
         public SchedulerAlgorithm(SchedulerModel model)
         {
             _model = model;
-            _stateCalculator = new StateCalculator(_model.SchedulePeriod);
+            _stateCalculator = new StateCalculator(_model.SchedulePeriod, _model.Calendar);
             _costFunction = CreateCompositeCostFunction();
         }
 
@@ -153,7 +154,7 @@ namespace SchedulingBenchmarks
                         if (_costFunction.CalculateCost(person, demand, day) < _costFunction.MaxCost)
                         {
                             var assignment = new Assignment(person, day, demand.Shift);
-                            
+
                             person.Assignments.Add(day, assignment);
                             break;
                         }
@@ -170,7 +171,7 @@ namespace SchedulingBenchmarks
                 new WeekendWorkCostFunction(),
                 new TotalWorkTimeCostFunction(),
                 new ShiftRequestCostFunction(),
-                new ConsecutiveShiftCostFunction(),
+                new ConsecutiveShiftCostFunction(_model.Calendar),
                 new DayOffCostFunction(),
                 new ValidShiftCostFunction(),
                 new MaxShiftCostFunction(),
@@ -188,7 +189,7 @@ namespace SchedulingBenchmarks
                 new WeekendWorkCostFunction(),
                 new TotalWorkTimeCostFunction(),
                 new ShiftRequestCostFunction(),
-                new ConsecutiveShiftCostFunction(),
+                new ConsecutiveShiftCostFunction(_model.Calendar),
                 new DayOffCostFunction(),
                 new ValidShiftCostFunction(),
                 new MaxShiftCostFunction(),

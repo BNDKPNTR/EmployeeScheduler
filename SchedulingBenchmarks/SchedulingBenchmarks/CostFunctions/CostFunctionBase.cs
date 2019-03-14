@@ -13,6 +13,6 @@ namespace SchedulingBenchmarks.CostFunctions
         public double MaxCost => maxCost;
         protected double DefaultCost => defaultCost;
 
-        public abstract double CalculateCost(Person person, Demand demand, int timeSlot);
+        public abstract double CalculateCost(Person person, Demand demand, int day);
     }
 }

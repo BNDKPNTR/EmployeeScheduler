@@ -14,7 +14,7 @@ namespace SchedulingBenchmarks.CostFunctions
             _underMinWorkTimeCost = DefaultCost / 3.0;
         }
 
-        public override double CalculateCost(Person person, Demand demand, int timeSlot)
+        public override double CalculateCost(Person person, Demand demand, int day)
         {
             if (person.State.TotalWorkTime + demand.Shift.Duration > person.WorkSchedule.MaxTotalWorkTime) return MaxCost;
             if (person.State.TotalWorkTime < person.WorkSchedule.MinTotalWorkTime) return _underMinWorkTimeCost;

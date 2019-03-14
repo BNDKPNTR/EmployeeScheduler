@@ -35,6 +35,7 @@ namespace SchedulingBenchmarks.Mappers
             model.SchedulePeriod = Range.Of(start: 0, length: _schedulingBenchmarkModel.Duration);
             model.People = MapPeople(model.SchedulePeriod);
             model.Demands = MapDemands(model.SchedulePeriod);
+            model.Calendar = new Calendar();
 
             return model;
         }

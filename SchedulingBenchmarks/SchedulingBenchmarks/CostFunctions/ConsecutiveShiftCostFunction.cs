@@ -7,11 +7,13 @@ namespace SchedulingBenchmarks.CostFunctions
 {
     class ConsecutiveShiftCostFunction : CostFunctionBase
     {
+        private readonly Calendar _calendar;
         private readonly double _underMinConsecutiveShiftCount;
         private readonly double _betweenMinAndMaxShiftCount;
 
-        public ConsecutiveShiftCostFunction()
+        public ConsecutiveShiftCostFunction(Calendar calendar)
         {
+            _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
             _underMinConsecutiveShiftCount = DefaultCost / 100.0;
             _betweenMinAndMaxShiftCount = DefaultCost * 0.9;
         }
@@ -60,7 +62,7 @@ namespace SchedulingBenchmarks.CostFunctions
                         return false;
                     }
 
-                    if (IsWeekend(i) && person.State.WorkedWeekendCount >= person.WorkSchedule.MaxWorkingWeekendCount)
+                    if ((_calendar.IsSaturday(i) || _calendar.IsSunday(i)) && person.State.WorkedWeekendCount >= person.WorkSchedule.MaxWorkingWeekendCount)
                     {
                         return false;
                     }
@@ -68,13 +70,6 @@ namespace SchedulingBenchmarks.CostFunctions
             }
 
             return true;
-        }
-
-        private bool IsWeekend(int day)
-        {
-            var dayOfWeek = day % 7;
-
-            return dayOfWeek == 5 || dayOfWeek == 6;
         }
     }
 }

@@ -16,10 +16,10 @@ namespace SchedulingBenchmarks.CostFunctions
             _shiftOnRequestCost = DefaultCost / 2.0;
         }
 
-        public override double CalculateCost(Person person, Demand demand, int timeSlot)
+        public override double CalculateCost(Person person, Demand demand, int day)
         {
-            if (person.ShiftOffRequests[timeSlot]) return _shiftOffRequestCost;
-            if (person.ShiftOnRequests[timeSlot]) return _shiftOnRequestCost;
+            if (person.ShiftOffRequests[day]) return _shiftOffRequestCost;
+            if (person.ShiftOnRequests[day]) return _shiftOnRequestCost;
 
             return DefaultCost;
         }

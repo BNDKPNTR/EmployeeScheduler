@@ -7,9 +7,9 @@ namespace SchedulingBenchmarks.CostFunctions
 {
     class WeekendWorkCostFunction : CostFunctionBase
     {
-        public override double CalculateCost(Person person, Demand demand, int timeSlot)
+        public override double CalculateCost(Person person, Demand demand, int day)
         {
-            if (!IsWeekend(timeSlot)) return DefaultCost;
+            if (!IsWeekend(day)) return DefaultCost;
 
             return person.State.WorkedWeekendCount >= person.WorkSchedule.MaxWorkingWeekendCount ? MaxCost : DefaultCost;
         }

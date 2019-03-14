@@ -9,9 +9,9 @@ namespace SchedulingBenchmarks.CostFunctions
     {
         private const int OneDayInMinutes = 24 * 60;
 
-        public override double CalculateCost(Person person, Demand demand, int timeSlot)
+        public override double CalculateCost(Person person, Demand demand, int day)
         {
-            if (person.Assignments.AllRounds.TryGetValue(timeSlot - 1, out var assignment))
+            if (person.Assignments.AllRounds.TryGetValue(day - 1, out var assignment))
             {
                 var lastShiftEnd = assignment.Shift.StartTime + assignment.Shift.Duration;
                 var newShiftStart = OneDayInMinutes + demand.Shift.StartTime;
