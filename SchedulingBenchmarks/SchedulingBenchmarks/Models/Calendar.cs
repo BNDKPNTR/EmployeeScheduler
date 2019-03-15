@@ -11,5 +11,7 @@ namespace SchedulingBenchmarks.Models
         public bool IsSunday(int day) => day % 7 == 6;
 
         public bool IsMonday(int day) => day % 7 == 0;
+
+        public bool IsWeekend(int day) => IsSaturday(day) || IsSunday(day);
     }
 }

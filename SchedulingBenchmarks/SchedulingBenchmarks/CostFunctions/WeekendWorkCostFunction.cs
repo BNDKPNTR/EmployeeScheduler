@@ -7,18 +7,38 @@ namespace SchedulingBenchmarks.CostFunctions
 {
     class WeekendWorkCostFunction : CostFunctionBase
     {
-        public override double CalculateCost(Person person, Demand demand, int day)
-        {
-            if (!IsWeekend(day)) return DefaultCost;
+        private readonly Calendar _calendar;
+        private readonly double _cantWorkOnBothDaysMultiplier;
 
-            return person.State.WorkedWeekendCount >= person.WorkSchedule.MaxWorkingWeekendCount ? MaxCost : DefaultCost;
+        public WeekendWorkCostFunction(Calendar calendar)
+        {
+            _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
+            _cantWorkOnBothDaysMultiplier = DefaultCost * 5;
         }
 
-        private bool IsWeekend(int timeSlot)
+        public override double CalculateCost(Person person, Demand demand, int day)
         {
-            var dayOfWeek = timeSlot % 7;
+            if (!_calendar.IsWeekend(day)) return DefaultCost;
 
-            return dayOfWeek == 5 || dayOfWeek == 6;
+            if (person.State.WorkedWeekendCount >= person.WorkSchedule.MaxWorkingWeekendCount) return MaxCost;
+
+            if (_calendar.IsSaturday(day))
+            {
+                if (person.State.NumberOfDaysCanWorkLater < 1)
+                {
+                    return _cantWorkOnBothDaysMultiplier;
+                }
+            }
+
+            if (_calendar.IsSunday(day))
+            {
+                if (!person.Assignments.AllRounds.ContainsKey(day - 1))
+                {
+                    return _cantWorkOnBothDaysMultiplier;
+                }
+            }
+
+            return DefaultCost;
         }
     }
 }

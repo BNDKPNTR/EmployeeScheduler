@@ -164,7 +164,7 @@ namespace SchedulingBenchmarks
         {
             var costFunctions = new CostFunctionBase[]
             {
-                new WeekendWorkCostFunction(),
+                new WeekendWorkCostFunction(_model.Calendar),
                 new TotalWorkTimeCostFunction(),
                 new ShiftRequestCostFunction(),
                 new ConsecutiveShiftCostFunction(_model.Calendar),
