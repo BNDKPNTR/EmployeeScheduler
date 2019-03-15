@@ -15,7 +15,7 @@ namespace SchedulingBenchmarks.CostFunctions
         {
             _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
             _underMinConsecutiveShiftCount = DefaultCost / 100.0;
-            _betweenMinAndMaxShiftCount = DefaultCost * 0.9;
+            _betweenMinAndMaxShiftCount = DefaultCost * 0.5;
         }
 
         public override double CalculateCost(Person person, Demand demand, int day)

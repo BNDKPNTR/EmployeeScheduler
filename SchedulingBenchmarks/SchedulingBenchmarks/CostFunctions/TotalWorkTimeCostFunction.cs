@@ -11,7 +11,7 @@ namespace SchedulingBenchmarks.CostFunctions
 
         public TotalWorkTimeCostFunction()
         {
-            _underMinWorkTimeCost = DefaultCost / 3.0;
+            _underMinWorkTimeCost = DefaultCost * 0.5;
         }
 
         public override double CalculateCost(Person person, Demand demand, int day)

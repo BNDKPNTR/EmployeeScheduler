@@ -13,7 +13,7 @@ namespace SchedulingBenchmarks.CostFunctions
         public WeekendWorkCostFunction(Calendar calendar)
         {
             _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
-            _cantWorkOnBothDaysMultiplier = DefaultCost * 5;
+            _cantWorkOnBothDaysMultiplier = DefaultCost * 2;
         }
 
         public override double CalculateCost(Person person, Demand demand, int day)
