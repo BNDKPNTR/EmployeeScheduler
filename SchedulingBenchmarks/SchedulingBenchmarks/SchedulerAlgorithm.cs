@@ -61,8 +61,6 @@ namespace SchedulingBenchmarks
                 }
             });
 
-            //DumpCostMatrix(costMatrix);
-            //var result = JonkerVolgenantAlgorithmV2.RunAlgorithm(costMatrix);
             var result = EgervaryAlgorithmV2.RunAlgorithm(costMatrix, _costFunction.MaxCost);
             CreateAssignments(day, costMatrix, result.copulationVerticesX, people, demands);
         }
@@ -175,15 +173,6 @@ namespace SchedulingBenchmarks
             };
 
             return new CompositeCostFunction(costFunctions);
-        }
-
-        private static void DumpCostMatrix(double[][] costMatrix)
-        {
-            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(double[][]));
-            using (var stream = System.IO.File.Create("costMatrix.xml"))
-            {
-                serializer.Serialize(stream, costMatrix);
-            }
         }
     }
 }
