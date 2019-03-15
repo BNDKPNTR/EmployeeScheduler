@@ -10,12 +10,14 @@ namespace SchedulingBenchmarks.CostFunctions
         private readonly Calendar _calendar;
         private readonly double _underMinConsecutiveShiftCount;
         private readonly double _betweenMinAndMaxShiftCount;
+        private readonly double _workStartMultiplier;
 
         public ConsecutiveShiftCostFunction(Calendar calendar)
         {
             _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
             _underMinConsecutiveShiftCount = DefaultCost / 100.0;
             _betweenMinAndMaxShiftCount = DefaultCost * 0.5;
+            _workStartMultiplier = 2;
         }
 
         public override double CalculateCost(Person person, Demand demand, int day)
@@ -26,7 +28,7 @@ namespace SchedulingBenchmarks.CostFunctions
             if (consecutiveShiftCount > person.WorkSchedule.MaxConsecutiveShifts) return MaxCost;
 
             // If not working consecutively
-            if (person.State.ConsecutiveWorkDayCount == 0) return DefaultCost;
+            if (person.State.ConsecutiveWorkDayCount == 0) return CalculatePossibleWorkStartMultiplier(person);
 
             // In case of the min consecutive shifts we assume that before the schedule period there was an infinite number of shifts
             // TODO: same assumption applies to the end of the schedule period
@@ -34,6 +36,13 @@ namespace SchedulingBenchmarks.CostFunctions
             if (day > schedulePeriodStartFilter && person.State.ConsecutiveWorkDayCount < person.WorkSchedule.MinConsecutiveShifts) return _underMinConsecutiveShiftCount;
 
             return _betweenMinAndMaxShiftCount;
+        }
+
+        private double CalculatePossibleWorkStartMultiplier(Person person)
+        {
+            var ratio = person.State.PossibleFutureWorkDayCount / (double)person.WorkSchedule.MaxConsecutiveShifts;
+
+            return DefaultCost + (1.0 - ratio) * _workStartMultiplier;
         }
 
         private int GetConsecutiveShiftCount(Person person, int day)
