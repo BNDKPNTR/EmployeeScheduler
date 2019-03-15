@@ -7,6 +7,6 @@ namespace SchedulingBenchmarks.StateCalculation
 {
     interface IStateCalculatorResult
     {
-        void Apply(Person person);
+        void Apply(State state);
     }
 }

@@ -10,6 +10,7 @@ using SchedulerDemand = SchedulingBenchmarks.Models.Demand;
 using Demand = SchedulingBenchmarks.SchedulingBenchmarksModel.Demand;
 using SchedulerShift = SchedulingBenchmarks.Models.Shift;
 using Shift = SchedulingBenchmarks.SchedulingBenchmarksModel.Shift;
+using System.Threading.Tasks;
 
 namespace SchedulingBenchmarks.Mappers
 {
@@ -30,14 +31,18 @@ namespace SchedulingBenchmarks.Mappers
 
         private SchedulerModel MapToScheduleModel()
         {
-            var model = new SchedulerModel();
+            var schedulePeriod = Range.Of(start: 0, length: _schedulingBenchmarkModel.Duration);
+            var people = MapPeople(schedulePeriod);
+            var demands = MapDemands(schedulePeriod);
+            var calendar = new Calendar();
+            var parallelOptions = new ParallelOptions() { MaxDegreeOfParallelism = 1 };
 
-            model.SchedulePeriod = Range.Of(start: 0, length: _schedulingBenchmarkModel.Duration);
-            model.People = MapPeople(model.SchedulePeriod);
-            model.Demands = MapDemands(model.SchedulePeriod);
-            model.Calendar = new Calendar();
-
-            return model;
+            return new SchedulerModel(
+                schedulePeriod,
+                people,
+                demands,
+                calendar,
+                parallelOptions);
         }
 
         private List<Person> MapPeople(Range schedulePeriod)

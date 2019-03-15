@@ -16,27 +16,28 @@ namespace SchedulingBenchmarks.StateCalculation
             {
                 new WorkedOnWeekedStateCalculator(calendar),
                 new TotalWorkTimeStateCalculator(),
-                new ConsecutiveShiftCountStateCalculator(),
-                new DayOffCountStateCalculator(),
+                new ConsecutiveWorkDayCountStateCalculator(),
+                new ConsecutiveDayOffCountStateCalculator(),
                 new WorkedWeekendCountStateCalculator(schedulePeriod, calendar),
                 new ShiftWorkedCountStateCalculator(),
-                new NumberOfDaysCanWorkLaterStateCalculator(schedulePeriod),
+                new PossibleFutureWorkDayCountStateCalculator(),
             };
         }
 
         public void RefreshState(Person person, int day)
         {
             var results = new List<IStateCalculatorResult>(_stateCalculators.Length);
+            var triggers = new StateTriggers(person, day);
 
             foreach (var stateCalculator in _stateCalculators)
             {
-                var result = stateCalculator.CalculateState(person, day);
+                var result = stateCalculator.CalculateState(person, triggers, day);
                 results.Add(result);
             }
 
             foreach (var result in results)
             {
-                result.Apply(person);
+                result.Apply(person.State);
             }
         }
 
@@ -52,7 +53,7 @@ namespace SchedulingBenchmarks.StateCalculation
 
             foreach (var result in results)
             {
-                result.Apply(person);
+                result.Apply(person.State);
             }
         }
     }

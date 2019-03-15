@@ -5,12 +5,12 @@ using SchedulingBenchmarks.Models;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    class ConsecutiveShiftCountStateCalculator : IStateCalculator<ConsecutiveShiftCountStateCalculator.Result>
+    class ConsecutiveWorkDayCountStateCalculator : IStateCalculator<ConsecutiveWorkDayCountStateCalculator.Result>
     {
-        public Result CalculateState(Person person, int day)
+        public Result CalculateState(Person person, StateTriggers triggers, int day)
         {
             return person.Assignments.AllRounds.ContainsKey(day - 1)
-                ? new Result(person.State.ConsecutiveShiftCount + 1)
+                ? new Result(person.State.ConsecutiveWorkDayCount + 1)
                 : new Result(0);
         }
 
@@ -18,16 +18,16 @@ namespace SchedulingBenchmarks.StateCalculation
 
         public class Result : IStateCalculatorResult
         {
-            public int ConsecutiveShiftCount { get; }
+            public int ConsecutiveWorkDayCount { get; }
 
             public Result(int consecutiveShiftCount)
             {
-                ConsecutiveShiftCount = consecutiveShiftCount;
+                ConsecutiveWorkDayCount = consecutiveShiftCount;
             }
 
-            public void Apply(Person person)
+            public void Apply(State state)
             {
-                person.State.ConsecutiveShiftCount = ConsecutiveShiftCount;
+                state.ConsecutiveWorkDayCount = ConsecutiveWorkDayCount;
             }
         }
     }

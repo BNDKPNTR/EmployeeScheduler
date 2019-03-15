@@ -24,7 +24,7 @@ namespace SchedulingBenchmarks.CostFunctions
 
             if (_calendar.IsSaturday(day))
             {
-                if (person.State.NumberOfDaysCanWorkLater < 1)
+                if (person.State.PossibleFutureWorkDayCount <= 1)
                 {
                     return _cantWorkOnBothDaysMultiplier;
                 }

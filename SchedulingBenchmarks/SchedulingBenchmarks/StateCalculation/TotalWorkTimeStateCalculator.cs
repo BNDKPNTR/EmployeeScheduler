@@ -8,7 +8,7 @@ namespace SchedulingBenchmarks.StateCalculation
 {
     class TotalWorkTimeStateCalculator : IStateCalculator<TotalWorkTimeStateCalculator.Result>
     {
-        public Result CalculateState(Person person, int day)
+        public Result CalculateState(Person person, StateTriggers triggers, int day)
         {
             if (person.Assignments.LatestRound.TryGetValue(day - 1, out var assignment))
             {
@@ -29,9 +29,9 @@ namespace SchedulingBenchmarks.StateCalculation
                 TotalWorkTime = totalWorkTime;
             }
 
-            public void Apply(Person person)
+            public void Apply(State state)
             {
-                person.State.TotalWorkTime = TotalWorkTime;
+                state.TotalWorkTime = TotalWorkTime;
             }
         }
     }

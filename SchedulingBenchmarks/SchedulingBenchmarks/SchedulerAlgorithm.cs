@@ -25,7 +25,7 @@ namespace SchedulingBenchmarks
 
         public void Run()
         {
-            Parallel.ForEach(_model.People, person =>
+            Parallel.ForEach(_model.People, _model.ParallelOptions, person =>
             {
                 person.Assignments.StartNewRound();
                 _stateCalculator.InitializeState(person);
@@ -33,7 +33,7 @@ namespace SchedulingBenchmarks
 
             foreach (var day in _model.SchedulePeriod)
             {
-                Parallel.ForEach(_model.People, person => _stateCalculator.RefreshState(person, day));
+                Parallel.ForEach(_model.People, _model.ParallelOptions, person => _stateCalculator.RefreshState(person, day));
 
                 var availablePeople = SelectPeopleForDay(day);
                 var demands = SelectDemandsForDay(day);
@@ -51,7 +51,7 @@ namespace SchedulingBenchmarks
         {
             var costMatrix = CreateCostMatrix(size: Math.Max(people.Count, demands.Length));
 
-            Parallel.For(0, people.Count, i =>
+            Parallel.For(0, people.Count, _model.ParallelOptions, i =>
             {
                 var person = people[i];
 
@@ -61,8 +61,8 @@ namespace SchedulingBenchmarks
                 }
             });
 
-            var result = EgervaryAlgorithmV2.RunAlgorithm(costMatrix, _costFunction.MaxCost);
-            CreateAssignments(day, costMatrix, result.copulationVerticesX, people, demands);
+            var (copulationVerticesX, _) = EgervaryAlgorithmV2.RunAlgorithm(costMatrix, _costFunction.MaxCost);
+            CreateAssignments(day, costMatrix, copulationVerticesX, people, demands);
         }
 
         private void CreateAssignments(int day, double[][] costMatrix, int[] copulationVerticesX, List<Person> people, Demand[] demands)
@@ -131,7 +131,7 @@ namespace SchedulingBenchmarks
 
         private void SchedulePeopleUntilMinTotalWorkTime()
         {
-            Parallel.ForEach(_model.People.Where(p => p.State.TotalWorkTime < p.WorkSchedule.MinTotalWorkTime), person =>
+            Parallel.ForEach(_model.People.Where(p => p.State.TotalWorkTime < p.WorkSchedule.MinTotalWorkTime), _model.ParallelOptions, person =>
             {
                 person.Assignments.StartNewRound();
                 _stateCalculator.InitializeState(person);

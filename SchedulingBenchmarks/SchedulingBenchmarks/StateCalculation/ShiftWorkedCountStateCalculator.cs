@@ -8,7 +8,7 @@ namespace SchedulingBenchmarks.StateCalculation
 {
     class ShiftWorkedCountStateCalculator : IStateCalculator<ShiftWorkedCountStateCalculator.Result>
     {
-        public Result CalculateState(Person person, int day)
+        public Result CalculateState(Person person, StateTriggers triggers, int day)
         {
             if (!person.Assignments.LatestRound.TryGetValue(day - 1, out var previousAssignment)) return new Result(person.State.ShiftWorkedCount);
 
@@ -30,9 +30,9 @@ namespace SchedulingBenchmarks.StateCalculation
                 ShiftWorkedCount = shiftWorkedCount;
             }
 
-            public void Apply(Person person)
+            public void Apply(State state)
             {
-                person.State.ShiftWorkedCount = ShiftWorkedCount;
+                state.ShiftWorkedCount = ShiftWorkedCount;
             }
         }
     }

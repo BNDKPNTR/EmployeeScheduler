@@ -16,7 +16,7 @@ namespace SchedulingBenchmarks.StateCalculation
             _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
         }
 
-        public Result CalculateState(Person person, int day)
+        public Result CalculateState(Person person, StateTriggers triggers, int day)
         {
             if (!_calendar.IsMonday(day)) return new Result(person.State.WorkedWeekendCount);
 
@@ -60,9 +60,9 @@ namespace SchedulingBenchmarks.StateCalculation
                 WorkedWeekendCount = workedWeekendCount;
             }
 
-            public void Apply(Person person)
+            public void Apply(State state)
             {
-                person.State.WorkedWeekendCount = WorkedWeekendCount;
+                state.WorkedWeekendCount = WorkedWeekendCount;
             }
         }
     }

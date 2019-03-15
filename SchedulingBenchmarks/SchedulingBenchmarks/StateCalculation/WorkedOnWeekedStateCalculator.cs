@@ -14,7 +14,7 @@ namespace SchedulingBenchmarks.StateCalculation
             _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
         }
 
-        public Result CalculateState(Person person, int day)
+        public Result CalculateState(Person person, StateTriggers triggers, int day)
         {
             if (person.State.WorkedOnWeeked) return new Result(true);
 
@@ -34,9 +34,9 @@ namespace SchedulingBenchmarks.StateCalculation
                 WorkedOnWeeked = workedOnWeeked;
             }
 
-            public void Apply(Person person)
+            public void Apply(State state)
             {
-                person.State.WorkedOnWeeked = WorkedOnWeeked;
+                state.WorkedOnWeeked = WorkedOnWeeked;
             }
         }
     }

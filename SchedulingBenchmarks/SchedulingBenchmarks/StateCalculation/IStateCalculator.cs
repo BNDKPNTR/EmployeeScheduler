@@ -7,7 +7,7 @@ namespace SchedulingBenchmarks.StateCalculation
 {
     interface IStateCalculator<out T> where T : IStateCalculatorResult
     {
-        T CalculateState(Person person, int day);
+        T CalculateState(Person person, StateTriggers triggers, int day);
 
         T InitializeState(Person person);
     }
