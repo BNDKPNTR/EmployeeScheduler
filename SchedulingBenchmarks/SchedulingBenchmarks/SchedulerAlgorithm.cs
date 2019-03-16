@@ -92,6 +92,7 @@ namespace SchedulingBenchmarks
         {
             if (!Available(person, day)) return false;
             if (AlreadyHasAssignmentOnDay(person, day)) return false;
+            if (WouldWorkLessThanMinConsecutiveDays(person, day)) return false;
             if (WouldWorkMoreThanMaxConsecutiveDays(person, day)) return false;
             if (WouldRestLessThanMinConsecutiveDayOff(person, day)) return false;
 
@@ -99,6 +100,22 @@ namespace SchedulingBenchmarks
 
             bool Available(Person p, int d) => p.Availabilities[d];
             bool AlreadyHasAssignmentOnDay(Person p, int d) => p.Assignments.AllRounds.ContainsKey(d);
+
+            bool WouldWorkLessThanMinConsecutiveDays(Person p, int d)
+            {
+                if (p.State.ConsecutiveWorkDayCount > 0) return false;
+                if (d == 0) return false; // We assume that the person worked infinite numbers of days before the schedule period
+
+                // TODO: check MaxTotalWorkTime
+
+                for (int i = d; i < d + p.WorkSchedule.MinConsecutiveWorkDays; i++)
+                {
+                    if (i < p.Availabilities.Length && !p.Availabilities[i]) return true;
+                    if (_model.Calendar.IsWeekend(i) && p.State.WorkedWeekendCount == p.WorkSchedule.MaxWorkingWeekendCount) return true;
+                }
+
+                return false;
+            }
 
             bool WouldWorkMoreThanMaxConsecutiveDays(Person p, int d)
             {
