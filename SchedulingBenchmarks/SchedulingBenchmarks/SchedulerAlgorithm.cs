@@ -118,6 +118,18 @@ namespace SchedulingBenchmarks
                 if (p.State.ConsecutiveWorkDayCount > 0) return false;
                 if (p.State.ConsecutiveDayOffCount < p.WorkSchedule.MinConsecutiveDayOffs) return true;
 
+                // If today's shift would be the continuation of tomorrow's shift
+                if (p.Assignments.AllRounds.ContainsKey(d + 1)) return false;
+
+                /* Today's shift would be the first in a row. Check if person could work min. consecutive days and then rest min. consecutive days before next work */
+                var firstDayOfRestPeriod = d + p.WorkSchedule.MinConsecutiveWorkDays;
+                var lastDayOfRestPeriod = firstDayOfRestPeriod + p.WorkSchedule.MinConsecutiveDayOffs;
+
+                for (int i = firstDayOfRestPeriod; i < lastDayOfRestPeriod; i++)
+                {
+                    if (p.Assignments.AllRounds.ContainsKey(i)) return true;
+                }
+
                 return false;
             }
         }

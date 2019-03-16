@@ -5,12 +5,12 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance01 : InstanceTestBase
     {
         public override int InstanceNumber => 1;
-        public override int ExpectedPenalty => 1114;
+        public override int ExpectedPenalty => 1113;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
         public override bool ExpectedMaxTotalMinsFeasibility => true;
-        public override bool ExpectedMinConsecutiveShiftsFeasibility => false;
+        public override bool ExpectedMinConsecutiveShiftsFeasibility => true;
         public override bool ExpectedMaxConsecutiveShiftsFeasibility => true;
         public override bool ExpectedMinConsecutiveDaysOffFeasibility => true;
         public override bool ExpectedMaxNumberOfWeekendsFeasibility => true;
@@ -37,12 +37,12 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance03 : InstanceTestBase
     {
         public override int InstanceNumber => 3;
-        public override int ExpectedPenalty => 2953;
+        public override int ExpectedPenalty => 2951;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
         public override bool ExpectedMaxTotalMinsFeasibility => true;
-        public override bool ExpectedMinConsecutiveShiftsFeasibility => false;
+        public override bool ExpectedMinConsecutiveShiftsFeasibility => true;
         public override bool ExpectedMaxConsecutiveShiftsFeasibility => true;
         public override bool ExpectedMinConsecutiveDaysOffFeasibility => true;
         public override bool ExpectedMaxNumberOfWeekendsFeasibility => true;
@@ -69,7 +69,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance05 : InstanceTestBase
     {
         public override int InstanceNumber => 5;
-        public override int ExpectedPenalty => 3835;
+        public override int ExpectedPenalty => 3837;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -85,7 +85,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance06 : InstanceTestBase
     {
         public override int InstanceNumber => 6;
-        public override int ExpectedPenalty => 4133;
+        public override int ExpectedPenalty => 4132;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -117,7 +117,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance08 : InstanceTestBase
     {
         public override int InstanceNumber => 8;
-        public override int ExpectedPenalty => 6470;
+        public override int ExpectedPenalty => 6469;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -133,10 +133,10 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance09 : InstanceTestBase
     {
         public override int InstanceNumber => 9;
-        public override int ExpectedPenalty => 4049;
+        public override int ExpectedPenalty => 4048;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
-        public override bool ExpectedMinTotalMinsFeasibility => true;
+        public override bool ExpectedMinTotalMinsFeasibility => false;
         public override bool ExpectedMaxTotalMinsFeasibility => true;
         public override bool ExpectedMinConsecutiveShiftsFeasibility => false;
         public override bool ExpectedMaxConsecutiveShiftsFeasibility => true;
@@ -165,7 +165,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance11 : InstanceTestBase
     {
         public override int InstanceNumber => 11;
-        public override int ExpectedPenalty => 7327;
+        public override int ExpectedPenalty => 7321;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -181,7 +181,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance12 : InstanceTestBase
     {
         public override int InstanceNumber => 12;
-        public override int ExpectedPenalty => 13247;
+        public override int ExpectedPenalty => 13143;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -197,7 +197,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance13 : InstanceTestBase
     {
         public override int InstanceNumber => 13;
-        public override int ExpectedPenalty => 17145;
+        public override int ExpectedPenalty => 17139;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -213,7 +213,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance14 : InstanceTestBase
     {
         public override int InstanceNumber => 14;
-        public override int ExpectedPenalty => 5481;
+        public override int ExpectedPenalty => 5479;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -229,7 +229,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance15 : InstanceTestBase
     {
         public override int InstanceNumber => 15;
-        public override int ExpectedPenalty => 9574;
+        public override int ExpectedPenalty => 9573;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -245,12 +245,12 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance16 : InstanceTestBase
     {
         public override int InstanceNumber => 16;
-        public override int ExpectedPenalty => 7336;
+        public override int ExpectedPenalty => 7327;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
         public override bool ExpectedMaxTotalMinsFeasibility => true;
-        public override bool ExpectedMinConsecutiveShiftsFeasibility => false;
+        public override bool ExpectedMinConsecutiveShiftsFeasibility => true;
         public override bool ExpectedMaxConsecutiveShiftsFeasibility => true;
         public override bool ExpectedMinConsecutiveDaysOffFeasibility => true;
         public override bool ExpectedMaxNumberOfWeekendsFeasibility => false;
@@ -261,7 +261,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance17 : InstanceTestBase
     {
         public override int InstanceNumber => 17;
-        public override int ExpectedPenalty => 11672;
+        public override int ExpectedPenalty => 11671;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -277,7 +277,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance18 : InstanceTestBase
     {
         public override int InstanceNumber => 18;
-        public override int ExpectedPenalty => 12266;
+        public override int ExpectedPenalty => 12257;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -293,7 +293,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance19 : InstanceTestBase
     {
         public override int InstanceNumber => 19;
-        public override int ExpectedPenalty => 16412;
+        public override int ExpectedPenalty => 16280;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -309,7 +309,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance20 : InstanceTestBase
     {
         public override int InstanceNumber => 20;
-        public override int ExpectedPenalty => 21629;
+        public override int ExpectedPenalty => 21390;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -325,7 +325,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance21 : InstanceTestBase
     {
         public override int InstanceNumber => 21;
-        public override int ExpectedPenalty => 48795;
+        public override int ExpectedPenalty => 48738;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -341,7 +341,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance22 : InstanceTestBase
     {
         public override int InstanceNumber => 22;
-        public override int ExpectedPenalty => 82339;
+        public override int ExpectedPenalty => 82077;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -357,7 +357,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance23 : InstanceTestBase
     {
         public override int InstanceNumber => 23;
-        public override int ExpectedPenalty => 69076;
+        public override int ExpectedPenalty => 69003;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
@@ -373,7 +373,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance24 : InstanceTestBase
     {
         public override int InstanceNumber => 24;
-        public override int ExpectedPenalty => 120538;
+        public override int ExpectedPenalty => 120475;
         public override bool ExpectedFeasibility => false;
         public override bool ExpectedMaxNumberOfShiftsFeasibility => true;
         public override bool ExpectedMinTotalMinsFeasibility => false;
