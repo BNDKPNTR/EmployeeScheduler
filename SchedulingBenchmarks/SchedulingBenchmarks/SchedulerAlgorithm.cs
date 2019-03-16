@@ -95,6 +95,7 @@ namespace SchedulingBenchmarks
             if (WouldWorkLessThanMinConsecutiveDays(person, day)) return false;
             if (WouldWorkMoreThanMaxConsecutiveDays(person, day)) return false;
             if (WouldRestLessThanMinConsecutiveDayOff(person, day)) return false;
+            if (WouldWorkMoreThanMaxWeekends(person, day)) return false;
 
             return true;
 
@@ -111,7 +112,7 @@ namespace SchedulingBenchmarks
                 for (int i = d; i < d + p.WorkSchedule.MinConsecutiveWorkDays; i++)
                 {
                     if (i < p.Availabilities.Length && !p.Availabilities[i]) return true;
-                    if (_model.Calendar.IsWeekend(i) && p.State.WorkedWeekendCount == p.WorkSchedule.MaxWorkingWeekendCount) return true;
+                    if (_model.Calendar.IsWeekend(i) && p.State.WorkedWeekendCount >= p.WorkSchedule.MaxWorkingWeekendCount) return true;
                 }
 
                 return false;
@@ -159,6 +160,13 @@ namespace SchedulingBenchmarks
 
                     return false;
                 }
+            }
+
+            bool WouldWorkMoreThanMaxWeekends(Person p, int d)
+            {
+                if (!_model.Calendar.IsWeekend(d)) return false;
+
+                return p.State.WorkedWeekendCount >= p.WorkSchedule.MaxWorkingWeekendCount;
             }
         }
 

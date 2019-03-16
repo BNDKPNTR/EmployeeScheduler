@@ -20,8 +20,6 @@ namespace SchedulingBenchmarks.CostFunctions
         {
             if (!_calendar.IsWeekend(day)) return DefaultCost;
 
-            if (person.State.WorkedWeekendCount >= person.WorkSchedule.MaxWorkingWeekendCount) return MaxCost;
-
             if (_calendar.IsSaturday(day))
             {
                 if (person.State.PossibleFutureWorkDayCount <= 1)
