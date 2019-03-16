@@ -11,13 +11,11 @@ namespace SchedulingBenchmarks.Evaluators
     public class FeasibilityEvaluator
     {
         private readonly SchedulingBenchmarkModel _schedulingBenchmarkModel;
-        private bool _feasible;
         private readonly ConcurrentBag<string> _messages;
 
         public FeasibilityEvaluator(SchedulingBenchmarkModel schedulingBenchmarkModel)
         {
             _schedulingBenchmarkModel = schedulingBenchmarkModel ?? throw new ArgumentNullException(nameof(schedulingBenchmarkModel));
-            _feasible = true;
             _messages = new ConcurrentBag<string>();
         }
 
@@ -27,75 +25,104 @@ namespace SchedulingBenchmarks.Evaluators
             return new FeasibilityEvaluator(schedulingBenchmarkModel).Feasible(aggregates);
         }
 
-        private (bool feasible, List<string> messages) Feasible(IEnumerable<EmployeeFeasibilityAggregate> feasibilityAggregates)
+        public (bool feasible, List<string> messages) Feasible(IEnumerable<EmployeeFeasibilityAggregate> feasibilityAggregates)
         {
+            var feasible = true;
             var aggregates = feasibilityAggregates.ToDictionary(a => a.EmployeeId);
 
             Parallel.ForEach(_schedulingBenchmarkModel.Employees, employee =>
             {
                 var aggregate = aggregates[employee.Id];
 
-                MaxAllowedNumberOfShiftsNotExceeded(employee, aggregate);
-                MinAndMaxTotalMinutesNotExceeded(employee, aggregate);
-                MinAndMaxConsecutiveShiftsNotExceeded(employee, aggregate);
-                MinConsecutiveDaysOffNotExceeded(employee, aggregate);
-                MaxNumberOfWeekendsNotExceeded(employee, aggregate);
-                DayOffsRespected(employee, aggregate);
-                MinRestTimeRespected(employee, aggregate);
+                foreach (var rule in GetRules())
+                {
+                    if (rule(employee, aggregate) == false)
+                    {
+                        feasible = false;
+                    }
+                }
             });
 
-            return (_feasible, _messages.ToList());
+            return (feasible, _messages.ToList());
         }
 
-        private void MaxAllowedNumberOfShiftsNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        private IEnumerable<Func<Employee, EmployeeFeasibilityAggregate, bool>> GetRules()
         {
+            return new Func<Employee, EmployeeFeasibilityAggregate, bool>[]
+            {
+                MaxNumberOfShiftsNotExceeded,
+                MinTotalMinutesNotExceeded,
+                MaxTotalMinutesNotExceeded,
+                MinConsecutiveShiftsNotExceeded,
+                MaxConsecutiveShiftsNotExceeded,
+                MinConsecutiveDaysOffNotExceeded,
+                MaxNumberOfWeekendsNotExceeded,
+                DayOffsRespected,
+                MinRestTimeRespected
+            };
+        }
+
+        public bool MaxNumberOfShiftsNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        {
+            var feasible = true;
+
             foreach (var maxShift in employee.Contract.MaxShifts)
             {
                 if (aggregate.ShiftCounts.TryGetValue(maxShift.Key, out var shiftCount) && shiftCount > maxShift.Value)
                 {
-                    _feasible = false;
+                    feasible = false;
                     _messages.Add($"{employee.Id} has {shiftCount} assigned shifts of type {maxShift.Key} instead of the maximum allowed {maxShift.Value}");
                 }
             }
+
+            return feasible;
         }
 
-        private void MinAndMaxTotalMinutesNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MinTotalMinutesNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
         {
+            var feasible = true;
 
             if (aggregate.TotalWorkedMinutes < employee.Contract.MinTotalWorkTime)
             {
-                _feasible = false;
+                feasible = false;
                 _messages.Add($"{employee.Id} works {aggregate.TotalWorkedMinutes} minutes instead of the minimum required {employee.Contract.MinTotalWorkTime}");
             }
 
-            if (aggregate.TotalWorkedMinutes > employee.Contract.MaxTotalWorkTime)
-            {
-                _feasible = false;
-                _messages.Add($"{employee.Id} works {aggregate.TotalWorkedMinutes} minutes instead of the maximum allowed {employee.Contract.MaxTotalWorkTime}");
-            }
+            return feasible;
         }
 
-        private void MinAndMaxConsecutiveShiftsNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MaxTotalMinutesNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
         {
+            var feasible = true;
+
+            if (aggregate.TotalWorkedMinutes > employee.Contract.MaxTotalWorkTime)
+            {
+                feasible = false;
+                _messages.Add($"{employee.Id} works {aggregate.TotalWorkedMinutes} minutes instead of the maximum allowed {employee.Contract.MaxTotalWorkTime}");
+            }
+
+            return feasible;
+        }
+
+        public bool MinConsecutiveShiftsNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        {
+            var feasible = true;
+
             foreach (var consecutiveShiftCount in aggregate.ConsecutiveShiftLengths)
             {
-                if (ConsecutiveShiftIsNotContinuationOfPreviousOrNextSchedulePeriod(consecutiveShiftCount, employee))
+                if (ConsecutiveShiftIsNotContinuationOfPreviousOrNextSchedulePeriod(consecutiveShiftCount))
                 {
                     if (consecutiveShiftCount.Length < employee.Contract.MinConsecutiveShifts)
                     {
-                        _feasible = false;
+                        feasible = false;
                         _messages.Add($"{employee.Id} works {consecutiveShiftCount.Length} number of days in a row instead of the minimum required {employee.Contract.MinConsecutiveShifts}");
                     }
                 }
-
-                if (consecutiveShiftCount.Length > employee.Contract.MaxConsecutiveShifts)
-                {
-                    _feasible = false;
-                    _messages.Add($"{employee.Id} works {consecutiveShiftCount.Length} number of days in a row instead of the maximum allowed {employee.Contract.MaxConsecutiveShifts}");
-                }
             }
 
-            bool ConsecutiveShiftIsNotContinuationOfPreviousOrNextSchedulePeriod(ConsecutiveShiftLength consecutiveShiftLength, Employee e)
+            return feasible;
+
+            bool ConsecutiveShiftIsNotContinuationOfPreviousOrNextSchedulePeriod(ConsecutiveShiftLength consecutiveShiftLength)
             {
                 if (consecutiveShiftLength.DayStart == 0) return false;
                 if (consecutiveShiftLength.DayStart + consecutiveShiftLength.Length == _schedulingBenchmarkModel.Duration) return false;
@@ -104,46 +131,78 @@ namespace SchedulingBenchmarks.Evaluators
             }
         }
 
-        private void MinConsecutiveDaysOffNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MaxConsecutiveShiftsNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
         {
+            var feasible = true;
+
+            foreach (var consecutiveShiftCount in aggregate.ConsecutiveShiftLengths)
+            {
+                if (consecutiveShiftCount.Length > employee.Contract.MaxConsecutiveShifts)
+                {
+                    feasible = false;
+                    _messages.Add($"{employee.Id} works {consecutiveShiftCount.Length} number of days in a row instead of the maximum allowed {employee.Contract.MaxConsecutiveShifts}");
+                }
+            }
+
+            return feasible;
+        }
+
+        public bool MinConsecutiveDaysOffNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        {
+            var feasible = true;
+
             foreach (var consecutiveDayOffCount in aggregate.DayOffLengths)
             {
                 if (consecutiveDayOffCount < employee.Contract.MinConsecutiveDayOffs)
                 {
-                    _feasible = false;
+                    feasible = false;
                     _messages.Add($"{employee.Id} has {consecutiveDayOffCount} consecutive days off instead of the minimum required {employee.Contract.MinConsecutiveDayOffs}");
                 }
             }
+
+            return feasible;
         }
 
-        private void MaxNumberOfWeekendsNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MaxNumberOfWeekendsNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
         {
+            var feasible = true;
+
             if (aggregate.WorkedWeekendsCount > employee.Contract.MaxWorkingWeekendCount)
             {
-                _feasible = false;
+                feasible = false;
                 _messages.Add($"{employee.Id} works on {aggregate.WorkedWeekendsCount} weekends instead of the maximum allowed {employee.Contract.MaxWorkingWeekendCount}");
             }
+
+            return feasible;
         }
 
-        private void DayOffsRespected(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool DayOffsRespected(Employee employee, EmployeeFeasibilityAggregate aggregate)
         {
+            var feasible = true;
+
             foreach (var dayOff in aggregate.DayOffsWithAssignments)
             {
-                _feasible = false;
+                feasible = false;
                 _messages.Add($"{employee.Id} has assignment on day {dayOff} instead of having a day off");
             }
+
+            return feasible;
         }
 
-        private void MinRestTimeRespected(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MinRestTimeRespected(Employee employee, EmployeeFeasibilityAggregate aggregate)
         {
+            var feasible = true;
+
             foreach (var restTime in aggregate.RestTimes)
             {
                 if (restTime < employee.Contract.MinRestTime)
                 {
-                    _feasible = false;
+                    feasible = false;
                     _messages.Add($"{employee.Id} rests only {restTime} minutes"); 
                 }
             }
+
+            return feasible;
         }
     }
 }

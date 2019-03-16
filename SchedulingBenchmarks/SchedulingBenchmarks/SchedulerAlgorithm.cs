@@ -93,11 +93,13 @@ namespace SchedulingBenchmarks
             if (!Available(person, day)) return false;
             if (AlreadyHasAssignmentOnDay(person, day)) return false;
             if (WouldWorkMoreThanMaxConsecutiveDays(person, day)) return false;
+            if (WouldRestLessThanMinConsecutiveDayOff(person, day)) return false;
 
             return true;
 
             bool Available(Person p, int d) => p.Availabilities[d];
             bool AlreadyHasAssignmentOnDay(Person p, int d) => p.Assignments.AllRounds.ContainsKey(d);
+
             bool WouldWorkMoreThanMaxConsecutiveDays(Person p, int d)
             {
                 var alreadyWorkedConsecutiveDays = p.State.ConsecutiveWorkDayCount;
@@ -109,6 +111,14 @@ namespace SchedulingBenchmarks
                 while (p.Assignments.AllRounds.ContainsKey(dayIndex) && ++consecutiveWorkDaysInFuture < p.WorkSchedule.MaxConsecutiveWorkDays) { }
 
                 return alreadyWorkedConsecutiveDays + todaysPossibleWork + consecutiveWorkDaysInFuture > p.WorkSchedule.MaxConsecutiveWorkDays;
+            }
+
+            bool WouldRestLessThanMinConsecutiveDayOff(Person p, int d)
+            {
+                if (p.State.ConsecutiveWorkDayCount > 0) return false;
+                if (p.State.ConsecutiveDayOffCount < p.WorkSchedule.MinConsecutiveDayOffs) return true;
+
+                return false;
             }
         }
 

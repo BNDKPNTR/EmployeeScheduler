@@ -35,7 +35,9 @@ namespace SchedulingBenchmarks.Mappers
             var people = MapPeople(schedulePeriod);
             var demands = MapDemands(schedulePeriod);
             var calendar = new Calendar();
-            var parallelOptions = new ParallelOptions() { MaxDegreeOfParallelism = 1 };
+            var parallelOptions = new ParallelOptions()
+                //{ MaxDegreeOfParallelism = 1 }
+            ;
 
             return new SchedulerModel(
                 schedulePeriod,
