@@ -20,9 +20,17 @@ namespace SchedulingBenchmarks.StateCalculation
         {
             if (!_calendar.IsMonday(day)) return new Result(person.State.WorkedWeekendCount);
 
-            return person.Assignments.LatestRound.ContainsKey(day - 2) || person.Assignments.LatestRound.ContainsKey(day - 1)
+            return WorkedOnWeekendInThisRound(person, day)
                 ? new Result(person.State.WorkedWeekendCount + 1)
                 : new Result(person.State.WorkedWeekendCount);
+        }
+
+        private bool WorkedOnWeekendInThisRound(Person person, int day)
+        {
+            return !person.Assignments.PreviousAssignments.ContainsKey(day - 2)
+                && !person.Assignments.PreviousAssignments.ContainsKey(day - 1)
+                && (person.Assignments.LatestRound.ContainsKey(day - 2)
+                || person.Assignments.LatestRound.ContainsKey(day - 1));
         }
 
         public Result InitializeState(Person person)
@@ -42,7 +50,7 @@ namespace SchedulingBenchmarks.StateCalculation
 
         private IEnumerable<(Assignment assignmentOnSaturday, Assignment assignmentOnSunday)> GetWeekendAssignments(AssignmentsCollection assignments)
         {
-            for (int i = _schedulePeriod.Start + 6; i < _schedulePeriod.Length; i += 7)
+            for (int i = _schedulePeriod.Start + 5; i < _schedulePeriod.Length; i += 7)
             {
                 assignments.AllRounds.TryGetValue(i, out var assignmentOnSaturday);
                 assignments.AllRounds.TryGetValue(i + 1, out var assignmentOnSunday);

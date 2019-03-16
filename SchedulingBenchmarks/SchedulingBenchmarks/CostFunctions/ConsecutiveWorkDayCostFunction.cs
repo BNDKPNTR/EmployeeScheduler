@@ -22,11 +22,6 @@ namespace SchedulingBenchmarks.CostFunctions
 
         public override double CalculateCost(Person person, Demand demand, int day)
         {
-            if (!CanWorkMinConsecutiveShiftsInFuture(person, day)) return MaxCost;
-
-            var consecutiveShiftCount = GetConsecutiveShiftCount(person, day);
-            if (consecutiveShiftCount > person.WorkSchedule.MaxConsecutiveWorkDays) return MaxCost;
-
             // If not working consecutively
             if (person.State.ConsecutiveWorkDayCount == 0) return CalculatePossibleWorkStartMultiplier(person);
 
@@ -43,42 +38,6 @@ namespace SchedulingBenchmarks.CostFunctions
             var ratio = person.State.PossibleFutureWorkDayCount / (double)person.WorkSchedule.MaxConsecutiveWorkDays;
 
             return DefaultCost + (1.0 - ratio) * _workStartMultiplier;
-        }
-
-        private int GetConsecutiveShiftCount(Person person, int day)
-        {
-            var consecutiveShiftCount = person.State.ConsecutiveWorkDayCount;
-
-            day++;
-            while (person.Assignments.AllRounds.ContainsKey(day))
-            {
-                day++;
-                consecutiveShiftCount++;
-            }
-
-            return consecutiveShiftCount + 1;
-        }
-
-        private bool CanWorkMinConsecutiveShiftsInFuture(Person person, int day)
-        {
-            if (person.State.ConsecutiveWorkDayCount == 0)
-            {
-                var length = Math.Min(day + person.WorkSchedule.MinConsecutiveWorkDays, person.Availabilities.Length);
-                for (int i = day + 1; i < length; i++)
-                {
-                    if (!person.Availabilities[i])
-                    {
-                        return false;
-                    }
-
-                    if ((_calendar.IsSaturday(i) || _calendar.IsSunday(i)) && person.State.WorkedWeekendCount >= person.WorkSchedule.MaxWorkingWeekendCount)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
         }
     }
 }

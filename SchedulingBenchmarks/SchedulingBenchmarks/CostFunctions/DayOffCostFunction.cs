@@ -11,9 +11,7 @@ namespace SchedulingBenchmarks.CostFunctions
         {
             if (!CanRestEnoughBetweenTodaysShiftAndNextShift(person, day)) return MaxCost;
 
-            return 0 < person.State.ConsecutiveDayOffCount && person.State.ConsecutiveDayOffCount < person.WorkSchedule.MinConsecutiveDayOffs
-                ? MaxCost
-                : DefaultCost;
+            return DefaultCost;
         }
 
         private bool CanRestEnoughBetweenTodaysShiftAndNextShift(Person person, int day)
