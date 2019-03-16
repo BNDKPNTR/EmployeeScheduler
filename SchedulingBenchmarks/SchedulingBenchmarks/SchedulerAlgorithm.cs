@@ -90,7 +90,26 @@ namespace SchedulingBenchmarks
 
         private bool CanWorkOnDay(Person person, int day)
         {
-            return person.Availabilities[day];
+            if (!Available(person, day)) return false;
+            if (AlreadyHasAssignmentOnDay(person, day)) return false;
+            if (WouldWorkMoreThanMaxConsecutiveDays(person, day)) return false;
+
+            return true;
+
+            bool Available(Person p, int d) => p.Availabilities[d];
+            bool AlreadyHasAssignmentOnDay(Person p, int d) => p.Assignments.AllRounds.ContainsKey(d);
+            bool WouldWorkMoreThanMaxConsecutiveDays(Person p, int d)
+            {
+                var alreadyWorkedConsecutiveDays = p.State.ConsecutiveWorkDayCount;
+                var todaysPossibleWork = 1;
+                var consecutiveWorkDaysInFuture = 0;
+
+                // Count until has assignment AND consecutive work days DO NOT exceed max. consecutive workdays
+                var dayIndex = d + 1;
+                while (p.Assignments.AllRounds.ContainsKey(dayIndex) && ++consecutiveWorkDaysInFuture < p.WorkSchedule.MaxConsecutiveWorkDays) { }
+
+                return alreadyWorkedConsecutiveDays + todaysPossibleWork + consecutiveWorkDaysInFuture > p.WorkSchedule.MaxConsecutiveWorkDays;
+            }
         }
 
         private Demand[] SelectDemandsForDay(int day)

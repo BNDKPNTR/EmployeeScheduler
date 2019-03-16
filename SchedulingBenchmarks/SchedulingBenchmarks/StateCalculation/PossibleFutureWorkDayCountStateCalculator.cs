@@ -25,7 +25,7 @@ namespace SchedulingBenchmarks.StateCalculation
         private int CalculatePossibleFutureWorkDayCount(Person person, int day)
         {
             var possibleFutureWorkDayCount = 0;
-            var length = day + person.WorkSchedule.MaxConsecutiveShifts;
+            var length = day + person.WorkSchedule.MaxConsecutiveWorkDays;
 
             for (int i = day; i < length; i++)
             {

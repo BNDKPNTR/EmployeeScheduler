@@ -12,8 +12,8 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public class Instance02 : InstanceTestBase
     {
         public override int InstanceNumber => 2;
-        public override bool ExpectedFeasibility => true;
-        public override int ExpectedPenalty => 1962;
+        public override bool ExpectedFeasibility => false;
+        public override int ExpectedPenalty => 1961;
     }
 
     public class Instance03 : InstanceTestBase
@@ -27,146 +27,146 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     {
         public override int InstanceNumber => 4;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 2895;
+        public override int ExpectedPenalty => 2894;
     }
 
     public class Instance05 : InstanceTestBase
     {
         public override int InstanceNumber => 5;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 3938;
+        public override int ExpectedPenalty => 3941;
     }
 
     public class Instance06 : InstanceTestBase
     {
         public override int InstanceNumber => 6;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 4720;
+        public override int ExpectedPenalty => 4625;
     }
 
     public class Instance07 : InstanceTestBase
     {
         public override int InstanceNumber => 7;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 3307;
+        public override int ExpectedPenalty => 3208;
     }
 
     public class Instance08 : InstanceTestBase
     {
         public override int InstanceNumber => 8;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 6574;
+        public override int ExpectedPenalty => 6470;
     }
 
     public class Instance09 : InstanceTestBase
     {
         public override int InstanceNumber => 9;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 4248;
+        public override int ExpectedPenalty => 4049;
     }
 
     public class Instance10 : InstanceTestBase
     {
         public override int InstanceNumber => 10;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 9170;
+        public override int ExpectedPenalty => 9274;
     }
 
     public class Instance11 : InstanceTestBase
     {
         public override int InstanceNumber => 11;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 7331;
+        public override int ExpectedPenalty => 7823;
     }
 
     public class Instance12 : InstanceTestBase
     {
         public override int InstanceNumber => 12;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 12123;
+        public override int ExpectedPenalty => 13438;
     }
 
     public class Instance13 : InstanceTestBase
     {
         public override int InstanceNumber => 13;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 17551;
+        public override int ExpectedPenalty => 16821;
     }
 
     public class Instance14 : InstanceTestBase
     {
         public override int InstanceNumber => 14;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 5888;
+        public override int ExpectedPenalty => 5677;
     }
 
     public class Instance15 : InstanceTestBase
     {
         public override int InstanceNumber => 15;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 9689;
+        public override int ExpectedPenalty => 9080;
     }
 
     public class Instance16 : InstanceTestBase
     {
         public override int InstanceNumber => 16;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 7654;
+        public override int ExpectedPenalty => 7222;
     }
 
     public class Instance17 : InstanceTestBase
     {
         public override int InstanceNumber => 17;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 11142;
+        public override int ExpectedPenalty => 11756;
     }
 
     public class Instance18 : InstanceTestBase
     {
         public override int InstanceNumber => 18;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 13092;
+        public override int ExpectedPenalty => 12151;
     }
 
     public class Instance19 : InstanceTestBase
     {
         public override int InstanceNumber => 19;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 15028;
+        public override int ExpectedPenalty => 14714;
     }
 
     public class Instance20 : InstanceTestBase
     {
         public override int InstanceNumber => 20;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 21417;
+        public override int ExpectedPenalty => 22057;
     }
 
     public class Instance21 : InstanceTestBase
     {
         public override int InstanceNumber => 21;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 47628;
+        public override int ExpectedPenalty => 47885;
     }
 
     public class Instance22 : InstanceTestBase
     {
         public override int InstanceNumber => 22;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 84294;
+        public override int ExpectedPenalty => 85762;
     }
 
     public class Instance23 : InstanceTestBase
     {
         public override int InstanceNumber => 23;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 69378;
+        public override int ExpectedPenalty => 69517;
     }
 
     public class Instance24 : InstanceTestBase
     {
         public override int InstanceNumber => 24;
         public override bool ExpectedFeasibility => false;
-        public override int ExpectedPenalty => 118848;
+        public override int ExpectedPenalty => 119072;
     }
 }

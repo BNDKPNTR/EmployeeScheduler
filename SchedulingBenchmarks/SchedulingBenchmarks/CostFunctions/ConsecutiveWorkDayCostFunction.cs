@@ -25,22 +25,22 @@ namespace SchedulingBenchmarks.CostFunctions
             if (!CanWorkMinConsecutiveShiftsInFuture(person, day)) return MaxCost;
 
             var consecutiveShiftCount = GetConsecutiveShiftCount(person, day);
-            if (consecutiveShiftCount > person.WorkSchedule.MaxConsecutiveShifts) return MaxCost;
+            if (consecutiveShiftCount > person.WorkSchedule.MaxConsecutiveWorkDays) return MaxCost;
 
             // If not working consecutively
             if (person.State.ConsecutiveWorkDayCount == 0) return CalculatePossibleWorkStartMultiplier(person);
 
             // In case of the min consecutive shifts we assume that before the schedule period there was an infinite number of shifts
             // TODO: same assumption applies to the end of the schedule period
-            var schedulePeriodStartFilter = person.WorkSchedule.MinConsecutiveShifts;
-            if (day > schedulePeriodStartFilter && person.State.ConsecutiveWorkDayCount < person.WorkSchedule.MinConsecutiveShifts) return _underMinConsecutiveShiftCount;
+            var schedulePeriodStartFilter = person.WorkSchedule.MinConsecutiveWorkDays;
+            if (day > schedulePeriodStartFilter && person.State.ConsecutiveWorkDayCount < person.WorkSchedule.MinConsecutiveWorkDays) return _underMinConsecutiveShiftCount;
 
             return _betweenMinAndMaxShiftCount;
         }
 
         private double CalculatePossibleWorkStartMultiplier(Person person)
         {
-            var ratio = person.State.PossibleFutureWorkDayCount / (double)person.WorkSchedule.MaxConsecutiveShifts;
+            var ratio = person.State.PossibleFutureWorkDayCount / (double)person.WorkSchedule.MaxConsecutiveWorkDays;
 
             return DefaultCost + (1.0 - ratio) * _workStartMultiplier;
         }
@@ -63,7 +63,7 @@ namespace SchedulingBenchmarks.CostFunctions
         {
             if (person.State.ConsecutiveWorkDayCount == 0)
             {
-                var length = Math.Min(day + person.WorkSchedule.MinConsecutiveShifts, person.Availabilities.Length);
+                var length = Math.Min(day + person.WorkSchedule.MinConsecutiveWorkDays, person.Availabilities.Length);
                 for (int i = day + 1; i < length; i++)
                 {
                     if (!person.Availabilities[i])
