@@ -25,6 +25,35 @@ namespace SchedulingBenchmarks
 
         public void Run()
         {
+            SchedulePeopleForMinDemands();
+            SchedulePeopleForAllDemands();
+            SchedulePeopleUntilMinTotalWorkTime();
+        }
+
+        private void SchedulePeopleForMinDemands()
+        {
+            Parallel.ForEach(_model.People, _model.ParallelOptions, person =>
+            {
+                person.Assignments.StartNewRound();
+                _stateCalculator.InitializeState(person);
+            });
+
+            foreach (var day in _model.SchedulePeriod)
+            {
+                Parallel.ForEach(_model.People, _model.ParallelOptions, person => _stateCalculator.RefreshState(person, day));
+
+                var availablePeople = SelectPeopleForMinDemands(day);
+                var demands = SelectDemandsForDay(day);
+
+                if (availablePeople.Count > 0 && demands.Length > 0 && availablePeople.Count <= demands.Length)
+                {
+                    SchedulePeople(day, availablePeople, demands);
+                }
+            }
+        }
+
+        private void SchedulePeopleForAllDemands()
+        {
             Parallel.ForEach(_model.People, _model.ParallelOptions, person =>
             {
                 person.Assignments.StartNewRound();
@@ -43,8 +72,6 @@ namespace SchedulingBenchmarks
                     SchedulePeople(day, availablePeople, demands);
                 }
             }
-
-            SchedulePeopleUntilMinTotalWorkTime();
         }
 
         private void SchedulePeople(int day, List<Person> people, Demand[] demands)
@@ -77,11 +104,16 @@ namespace SchedulingBenchmarks
                         var person = people[i];
                         var demand = demands[j];
 
-                        person.Assignments.Add(day, new Assignment(person, day, demand.Shift)); 
+                        person.Assignments.Add(day, new Assignment(person, day, demand.Shift));
                     }
                 }
             }
         }
+
+        private List<Person> SelectPeopleForMinDemands(int day)
+            => _model.People
+            .Where(p => p.Availabilities[day])
+            .ToList();
 
         private List<Person> SelectPeopleForDay(int day)
             => _model.People
@@ -135,10 +167,12 @@ namespace SchedulingBenchmarks
             {
                 if (p.State.ConsecutiveWorkDayCount > 0)
                 {
-                    for (int i = d + 1; i <= d + p.WorkSchedule.MinConsecutiveDayOffs; i++)
-                    {
-                        if (p.Assignments.AllRounds.ContainsKey(i)) return true;
-                    }
+                    //var maxConsecutiveShiftDay = day - p.State.ConsecutiveWorkDayCount + p.WorkSchedule.MaxConsecutiveWorkDays;
+
+                    //for (int i = maxConsecutiveShiftDay; i < maxConsecutiveShiftDay + p.WorkSchedule.MinConsecutiveDayOffs; i++)
+                    //{
+                    //    if (p.Assignments.AllRounds.ContainsKey(i)) return true;
+                    //}
 
                     return false;
                 }
@@ -218,7 +252,14 @@ namespace SchedulingBenchmarks
                     _stateCalculator.RefreshState(person, day);
 
                     if (!CanWorkOnDay(person, day)) continue;
-                    if (person.State.TotalWorkTime >= person.WorkSchedule.MinTotalWorkTime) break;
+                    if (person.State.TotalWorkTime >= person.WorkSchedule.MinTotalWorkTime)
+                    {
+                        if (person.State.ConsecutiveWorkDayCount >= person.WorkSchedule.MinConsecutiveWorkDays 
+                        || person.State.TotalWorkTime >= person.WorkSchedule.MaxTotalWorkTime)
+                        {
+                            break;
+                        }
+                    }
                     if (person.Assignments.AllRounds.ContainsKey(day)) continue;
 
                     foreach (var demand in _model.Demands[day])

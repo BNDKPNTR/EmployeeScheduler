@@ -27,8 +27,7 @@ namespace SchedulingBenchmarks.CostFunctions
 
             // In case of the min consecutive shifts we assume that before the schedule period there was an infinite number of shifts
             // TODO: same assumption applies to the end of the schedule period
-            var schedulePeriodStartFilter = person.WorkSchedule.MinConsecutiveWorkDays;
-            if (day > schedulePeriodStartFilter && person.State.ConsecutiveWorkDayCount < person.WorkSchedule.MinConsecutiveWorkDays) return _underMinConsecutiveShiftCount;
+            if (day != 0 && person.State.ConsecutiveWorkDayCount < person.WorkSchedule.MinConsecutiveWorkDays) return _underMinConsecutiveShiftCount;
 
             return _betweenMinAndMaxShiftCount;
         }
