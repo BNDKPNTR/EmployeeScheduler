@@ -126,7 +126,7 @@ namespace SchedulingBenchmarks
 
                 // Count until has assignment AND consecutive work days DO NOT exceed max. consecutive workdays
                 var dayIndex = d + 1;
-                while (p.Assignments.AllRounds.ContainsKey(dayIndex) && ++consecutiveWorkDaysInFuture < p.WorkSchedule.MaxConsecutiveWorkDays) { }
+                while (p.Assignments.AllRounds.ContainsKey(dayIndex++) && ++consecutiveWorkDaysInFuture < p.WorkSchedule.MaxConsecutiveWorkDays) { }
 
                 return alreadyWorkedConsecutiveDays + todaysPossibleWork + consecutiveWorkDaysInFuture > p.WorkSchedule.MaxConsecutiveWorkDays;
             }
