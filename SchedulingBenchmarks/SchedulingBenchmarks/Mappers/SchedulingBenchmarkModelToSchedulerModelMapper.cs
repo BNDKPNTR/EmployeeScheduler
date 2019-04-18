@@ -5,12 +5,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 using SchedulerDemand = SchedulingBenchmarks.Models.Demand;
 using Demand = SchedulingBenchmarks.SchedulingBenchmarksModel.Demand;
 using SchedulerShift = SchedulingBenchmarks.Models.Shift;
 using Shift = SchedulingBenchmarks.SchedulingBenchmarksModel.Shift;
-using System.Threading.Tasks;
+using SchedulerShiftRequest = SchedulingBenchmarks.Models.ShiftRequest;
+using ShiftRequest = SchedulingBenchmarks.SchedulingBenchmarksModel.ShiftRequest;
 
 namespace SchedulingBenchmarks.Mappers
 {
@@ -58,8 +60,7 @@ namespace SchedulingBenchmarks.Mappers
                     new State(),
                     MapWorkSchedule(employee.Contract),
                     MapAvailabilities(employee, schedulePeriod),
-                    MapShiftOffRequests(employee, schedulePeriod),
-                    MapShiftOnRequests(employee, schedulePeriod));
+                    MapShiftRequests(employee));
 
                 people.Add(person);
             }
@@ -82,17 +83,21 @@ namespace SchedulingBenchmarks.Mappers
             return availabilities;
         }
 
-        private bool[] MapShiftOffRequests(Employee employee, Range schedulePeriod)
+        private Dictionary<int, SchedulerShiftRequest> MapShiftRequests(Employee employee)
         {
-            var shiftOffRequests = new bool[schedulePeriod.Length];
-            
-            // TODO: include shift types
-            foreach (var request in employee.ShiftOffRequests)
+            var shiftRequests = new Dictionary<int, SchedulerShiftRequest>();
+
+            foreach (var request in employee.ShiftOnRequests)
             {
-                shiftOffRequests[request.Day] = true;
+                shiftRequests[request.Day] = new SchedulerShiftRequest(request.ShiftId, request.Penalty, RequestType.On);
             }
 
-            return shiftOffRequests;
+            foreach (var request in employee.ShiftOffRequests)
+            {
+                shiftRequests[request.Day] = new SchedulerShiftRequest(request.ShiftId, request.Penalty, RequestType.Off);
+            }
+
+            return shiftRequests;
         }
 
         private WorkSchedule MapWorkSchedule(Contract contract)
@@ -107,19 +112,6 @@ namespace SchedulingBenchmarks.Mappers
                 contract.MaxWorkingWeekendCount,
                 new HashSet<SchedulerShift>(contract.ValidShiftIds.Select(id => _shifts[id])),
                 contract.MaxShifts.ToDictionary(x => _shifts[x.Key], x => x.Value));
-        }
-
-        private bool[] MapShiftOnRequests(Employee employee, Range schedulePeriod)
-        {
-            var shiftOnRequests = new bool[schedulePeriod.Length];
-
-            // TODO: include shift types
-            foreach (var request in employee.ShiftOnRequests)
-            {
-                shiftOnRequests[request.Day] = true;
-            }
-
-            return shiftOnRequests;
         }
 
         private Dictionary<int, SchedulerDemand[]> MapDemands(Range schedulePeriod)

@@ -10,18 +10,16 @@ namespace SchedulingBenchmarks.Models
         public State State { get; }
         public WorkSchedule WorkSchedule { get; }
         public bool[] Availabilities { get; }
-        public bool[] ShiftOffRequests { get; }
-        public bool[] ShiftOnRequests { get; }
+        public Dictionary<int, ShiftRequest> ShiftRequests { get; }
         public AssignmentsCollection Assignments { get; }
 
-        public Person(string id, State state, WorkSchedule workSchedule, bool[] availabilities, bool[] shiftOffRequests, bool[] shiftOnRequests)
+        public Person(string id, State state, WorkSchedule workSchedule, bool[] availabilities, Dictionary<int, ShiftRequest> shiftRequests)
         {
             Id = id;
             State = state ?? throw new ArgumentNullException(nameof(state));
             WorkSchedule = workSchedule ?? throw new ArgumentNullException(nameof(workSchedule));
             Availabilities = availabilities ?? throw new ArgumentNullException(nameof(availabilities));
-            ShiftOffRequests = shiftOffRequests ?? throw new ArgumentNullException(nameof(shiftOffRequests));
-            ShiftOnRequests = shiftOnRequests ?? throw new ArgumentNullException(nameof(shiftOnRequests));
+            ShiftRequests = shiftRequests ?? throw new ArgumentNullException(nameof(shiftRequests));
 
             Assignments = new AssignmentsCollection();
         }

@@ -18,8 +18,15 @@ namespace SchedulingBenchmarks.CostFunctions
 
         public override double CalculateCost(Person person, Demand demand, int day)
         {
-            if (person.ShiftOffRequests[day]) return _shiftOffRequestCost;
-            if (person.ShiftOnRequests[day]) return _shiftOnRequestCost;
+            if (person.ShiftRequests.TryGetValue(day, out var request) && request.ShiftId == demand.Shift.Id)
+            {
+                switch (request.Type)
+                {
+                    case RequestType.On: return _shiftOnRequestCost * request.Weight;
+                    case RequestType.Off: return _shiftOffRequestCost * 1.0 / request.Weight;
+                    default: throw new ArgumentOutOfRangeException(nameof(RequestType));
+                }
+            }
 
             return DefaultCost;
         }
