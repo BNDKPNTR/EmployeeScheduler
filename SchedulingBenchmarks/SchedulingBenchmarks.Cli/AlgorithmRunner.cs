@@ -1,8 +1,10 @@
-﻿using SchedulingBenchmarks.Evaluators;
+﻿using Newtonsoft.Json;
+using SchedulingBenchmarks.Evaluators;
 using SchedulingBenchmarks.Mappers;
 using SchedulingBenchmarks.SchedulingBenchmarksModel;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +30,45 @@ namespace SchedulingBenchmarks.Cli
                 result.Name = "Baseline";
                 BaselineStore.Save(i, result);
             });
+        }
+
+        public static void GenerateAllExpectedTestResults()
+        {
+            Console.WriteLine("Generating expected test results based on current result of the algorithm");
+            var solutionDir = new DirectoryInfo(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName;
+            var TestsProjDir = Path.Combine(solutionDir, "SchedulingBenchmarks.Tests");
+            var outputDir = Path.Combine(TestsProjDir, "bin", "Debug", "netcoreapp2.0", "ExpectedTestResults");
+
+            if (Directory.Exists(outputDir))
+            {
+                Directory.Delete(outputDir, recursive: true);
+
+                // see https://stackoverflow.com/questions/35069311/why-sometimes-directory-createdirectory-fails
+                var retryCount = 0;
+                var maxRetryCount = 10;
+                while (Directory.Exists(outputDir) && retryCount < maxRetryCount)
+                {
+                    Thread.Sleep(100);
+                    retryCount++;
+                }
+
+                if (retryCount == maxRetryCount)
+                {
+                    throw new Exception($"Could not clean up output folder. Please delete it manually, then run again: '{outputDir}'");
+                }
+            }
+
+            Directory.CreateDirectory(outputDir);
+
+            Parallel.For(1, 25, i =>
+            {
+                var expectedTestResult = ExpectedTestResultsGenerator.RunForInstance(i);
+                var path = Path.Combine(outputDir, $"{i}.json");
+                File.WriteAllText(path, JsonConvert.SerializeObject(expectedTestResult));
+                Console.WriteLine($"Instance {i} finished");
+            });
+
+            Console.WriteLine("... Done!");
         }
 
         public static void RunPerf()
