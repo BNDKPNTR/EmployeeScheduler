@@ -89,15 +89,25 @@ namespace SchedulingBenchmarks.Mappers
 
             foreach (var request in employee.ShiftOnRequests)
             {
-                shiftRequests[request.Day] = new SchedulerShiftRequest(request.ShiftId, request.Penalty, RequestType.On);
+                AddOrThrow(request, RequestType.On);
             }
 
             foreach (var request in employee.ShiftOffRequests)
             {
-                shiftRequests[request.Day] = new SchedulerShiftRequest(request.ShiftId, request.Penalty, RequestType.Off);
+                AddOrThrow(request, RequestType.Off);
             }
 
             return shiftRequests;
+
+            void AddOrThrow(ShiftRequest request, RequestType requestType)
+            {
+                if (shiftRequests.ContainsKey(request.Day))
+                {
+                    throw new InvalidOperationException($"A shift request already exists on day {request.Day} for employee '{employee.Id}'");
+                }
+
+                shiftRequests[request.Day] = new SchedulerShiftRequest(request.ShiftId, request.Penalty, requestType);
+            }
         }
 
         private WorkSchedule MapWorkSchedule(Contract contract)
