@@ -207,20 +207,26 @@ namespace SchedulingBenchmarks
         private Demand[] SelectDemandsForDay(int day)
         {
             var demands = _model.Demands[day];
-            var demandsByIndex = new Demand[demands.Sum(d => d.MaxPeopleCount)];
+            var demandsByIndex = new List<Demand>();
+            var assignedShiftCounts = _model.People
+                .Where(p => p.Assignments.AllRounds.ContainsKey(day))
+                .Select(p => p.Assignments.AllRounds[day])
+                .GroupBy(a => a.Shift)
+                .ToDictionary(g => g.Key, g => g.Count());
 
-            var k = 0;
             for (int i = 0; i < demands.Length; i++)
             {
                 var demand = demands[i];
+                assignedShiftCounts.TryGetValue(demand.Shift, out var assignedPeopleCount);
+                var requiredPeopleCount = demand.MaxPeopleCount - assignedPeopleCount;
 
-                for (int j = 0; j < demand.MaxPeopleCount; j++)
+                for (int j = 0; j < requiredPeopleCount; j++)
                 {
-                    demandsByIndex[k++] = demand;
+                    demandsByIndex.Add(demand);
                 }
             }
 
-            return demandsByIndex;
+            return demandsByIndex.ToArray();
         }
 
         private double[][] CreateCostMatrix(int size)
