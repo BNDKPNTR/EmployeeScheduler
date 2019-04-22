@@ -8,15 +8,13 @@ namespace SchedulingBenchmarks.Models
     {
         public int Day { get; set; }
         public Shift Shift { get; set; }
-        public int MinPeopleCount { get; }
-        public int MaxPeopleCount { get; set; }
+        public int RequiredPeopleCount { get; set; }
 
-        public Demand(int day, Shift shift, int minPeopleCount, int maxPeopleCount)
+        public Demand(int day, Shift shift, int requiredPeopleCount)
         {
             Day = day;
             Shift = shift ?? throw new ArgumentNullException(nameof(shift));
-            MinPeopleCount = minPeopleCount;
-            MaxPeopleCount = maxPeopleCount;
+            RequiredPeopleCount = requiredPeopleCount;
         }
     }
 }

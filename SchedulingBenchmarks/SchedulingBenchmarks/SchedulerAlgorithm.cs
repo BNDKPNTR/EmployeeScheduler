@@ -218,7 +218,7 @@ namespace SchedulingBenchmarks
             {
                 var demand = demands[i];
                 assignedShiftCounts.TryGetValue(demand.Shift, out var assignedPeopleCount);
-                var requiredPeopleCount = demand.MaxPeopleCount - assignedPeopleCount;
+                var requiredPeopleCount = demand.RequiredPeopleCount - assignedPeopleCount;
 
                 for (int j = 0; j < requiredPeopleCount; j++)
                 {

@@ -128,7 +128,15 @@ namespace SchedulingBenchmarks.Mappers
         {
             return _schedulingBenchmarkModel.Demands.ToDictionary(x => x.Key, x => x.Value.Select(d => MapDemand(d)).ToArray());
 
-            SchedulerDemand MapDemand(Demand demand) => new SchedulerDemand(demand.Day, _shifts[demand.ShiftId], demand.MinEmployeeCount, demand.MaxEmployeeCount);
+            SchedulerDemand MapDemand(Demand demand)
+            {
+                if (demand.MinEmployeeCount != demand.MaxEmployeeCount)
+                {
+                    throw new Exception($"{nameof(Demand)}.{nameof(demand.MinEmployeeCount)} and {nameof(Demand)}.{nameof(demand.MaxEmployeeCount)} must be the same");
+                }
+
+                return new SchedulerDemand(demand.Day, _shifts[demand.ShiftId], demand.MaxEmployeeCount);
+            }
         }
 
         private Dictionary<string, SchedulerShift> MapShifts()
