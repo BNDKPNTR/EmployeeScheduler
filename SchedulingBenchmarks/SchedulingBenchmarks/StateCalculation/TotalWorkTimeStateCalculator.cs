@@ -6,33 +6,18 @@ using SchedulingBenchmarks.Models;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    class TotalWorkTimeStateCalculator : IStateCalculator<TotalWorkTimeStateCalculator.Result>
+    class TotalWorkTimeStateCalculator : IStateCalculator<int>
     {
-        public Result CalculateState(Person person, StateTriggers triggers, int day)
+        public int CalculateState(Person person, StateTriggers triggers, int day)
         {
             if (person.Assignments.LatestRound.TryGetValue(day - 1, out var assignment))
             {
-                return new Result(person.State.TotalWorkTime + assignment.Shift.Duration);
+                return person.State.TotalWorkTime + assignment.Shift.Duration;
             }
 
-            return new Result(person.State.TotalWorkTime);
+            return person.State.TotalWorkTime;
         }
 
-        public Result InitializeState(Person person) => new Result(person.Assignments.AllRounds.Values.Sum(a => a.Shift.Duration));
-
-        public class Result : IStateCalculatorResult
-        {
-            public int TotalWorkTime { get; }
-
-            public Result(int totalWorkTime)
-            {
-                TotalWorkTime = totalWorkTime;
-            }
-
-            public void Apply(State state)
-            {
-                state.TotalWorkTime = TotalWorkTime;
-            }
-        }
+        public int InitializeState(Person person) => person.Assignments.AllRounds.Values.Sum(a => a.Shift.Duration);
     }
 }

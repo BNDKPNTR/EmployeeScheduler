@@ -26,6 +26,7 @@ namespace SchedulingBenchmarks
         public void Run()
         {
             SchedulePeopleForMinDemands();
+            //SchedulePeopleForWeekends();
             SchedulePeopleForAllDemands();
             SchedulePeopleUntilMinTotalWorkTime();
         }
@@ -48,6 +49,31 @@ namespace SchedulingBenchmarks
                 if (availablePeople.Count > 0 && demands.Length > 0 && availablePeople.Count <= demands.Length)
                 {
                     SchedulePeople(day, availablePeople, demands);
+                }
+            }
+        }
+
+        private void SchedulePeopleForWeekends()
+        {
+            Parallel.ForEach(_model.People, _model.ParallelOptions, person =>
+            {
+                person.Assignments.StartNewRound();
+                _stateCalculator.InitializeState(person);
+            });
+
+            foreach (var day in _model.SchedulePeriod)
+            {
+                Parallel.ForEach(_model.People, _model.ParallelOptions, person => _stateCalculator.RefreshState(person, day));
+
+                if (_model.Calendar.IsWeekend(day))
+                {
+                    var availablePeople = SelectPeopleForDay(day);
+                    var demands = SelectDemandsForDay(day);
+
+                    if (availablePeople.Count > 0 && demands.Length > 0)
+                    {
+                        SchedulePeople(day, availablePeople, demands);
+                    }
                 }
             }
         }

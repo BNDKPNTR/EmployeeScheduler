@@ -6,34 +6,19 @@ using SchedulingBenchmarks.Models;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    class ShiftWorkedCountStateCalculator : IStateCalculator<ShiftWorkedCountStateCalculator.Result>
+    class ShiftWorkedCountStateCalculator : IStateCalculator<Dictionary<Shift, int>>
     {
-        public Result CalculateState(Person person, StateTriggers triggers, int day)
+        public Dictionary<Shift, int> CalculateState(Person person, StateTriggers triggers, int day)
         {
-            if (!person.Assignments.LatestRound.TryGetValue(day - 1, out var previousAssignment)) return new Result(person.State.ShiftWorkedCount);
+            if (!person.Assignments.LatestRound.TryGetValue(day - 1, out var previousAssignment)) return person.State.ShiftWorkedCount;
 
             person.State.ShiftWorkedCount.TryGetValue(previousAssignment.Shift, out var shiftWorkedCount);
             person.State.ShiftWorkedCount[previousAssignment.Shift] = shiftWorkedCount + 1;
 
-            return new Result(person.State.ShiftWorkedCount);
+            return person.State.ShiftWorkedCount;
         }
 
-        public Result InitializeState(Person person) 
-            => new Result(person.Assignments.AllRounds.Values.GroupBy(a => a.Shift).ToDictionary(g => g.Key, g => g.Count()));
-
-        public class Result : IStateCalculatorResult
-        {
-            public Dictionary<Shift, int> ShiftWorkedCount { get; }
-
-            public Result(Dictionary<Shift, int> shiftWorkedCount)
-            {
-                ShiftWorkedCount = shiftWorkedCount;
-            }
-
-            public void Apply(State state)
-            {
-                state.ShiftWorkedCount = ShiftWorkedCount;
-            }
-        }
+        public Dictionary<Shift, int> InitializeState(Person person) 
+            => person.Assignments.AllRounds.Values.GroupBy(a => a.Shift).ToDictionary(g => g.Key, g => g.Count());
     }
 }

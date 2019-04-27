@@ -3,6 +3,8 @@ using SchedulingBenchmarks.Evaluators;
 using SchedulingBenchmarks.Mappers;
 using SchedulingBenchmarks.SchedulingBenchmarksModel;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -30,6 +32,26 @@ namespace SchedulingBenchmarks.Cli
                 result.Name = "Baseline";
                 BaselineStore.Save(i, result);
             });
+        }
+
+        public static void CalculatePenaltyAndMissingTotalMinutes()
+        {
+            var bag = new ConcurrentBag<(int, int, int)>();
+
+            Parallel.For(1, 25, i =>
+            {
+                var result = RunSchedulerAlgorithm(i, copyToClipboard: false);
+                var penalty = OptimalityEvaluator.CalculatePenalty(result.Result);
+                var aggregates = FeasibilityDataAggregator.GetAggregate(result.Result).ToDictionary(a => a.EmployeeId);
+
+                var sumOfUnderMin = result.Result.Employees
+                    .Where(e => aggregates[e.Id].TotalWorkedMinutes < e.Contract.MinTotalWorkTime)
+                    .Sum(e => e.Contract.MinTotalWorkTime - aggregates[e.Id].TotalWorkedMinutes);
+
+                bag.Add((i, penalty, sumOfUnderMin));
+            });
+
+            var str = string.Join(Environment.NewLine, bag.OrderBy(x => x.Item1).Select(x => $"{x.Item1}\t{x.Item2}\t{x.Item3}"));
         }
 
         public static void GenerateAllExpectedTestResults()

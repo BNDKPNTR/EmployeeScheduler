@@ -5,21 +5,21 @@ using SchedulingBenchmarks.Models;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    class PossibleFutureWorkDayCountStateCalculator : IStateCalculator<PossibleFutureWorkDayCountStateCalculator.Result>
+    class PossibleFutureWorkDayCountStateCalculator : IStateCalculator<int>
     {
-        public Result CalculateState(Person person, StateTriggers triggers, int day)
+        public int CalculateState(Person person, StateTriggers triggers, int day)
         {
             if (triggers.WorkedOnPreviousDay)
             {
-                return new Result(person.State.PossibleFutureWorkDayCount - 1);
+                return person.State.PossibleFutureWorkDayCount - 1;
             }
 
-            return new Result(CalculatePossibleFutureWorkDayCount(person, day));
+            return CalculatePossibleFutureWorkDayCount(person, day);
         }
 
-        public Result InitializeState(Person person)
+        public int InitializeState(Person person)
         {
-            return new Result(CalculatePossibleFutureWorkDayCount(person, 0));
+            return CalculatePossibleFutureWorkDayCount(person, 0);
         }
 
         private int CalculatePossibleFutureWorkDayCount(Person person, int day)
@@ -47,21 +47,6 @@ namespace SchedulingBenchmarks.StateCalculation
             }
 
             return possibleFutureWorkDayCount;
-        }
-
-        public class Result : IStateCalculatorResult
-        {
-            public int PossibleFutureWorkDayCount { get; }
-
-            public Result(int numberOfDaysCanWorkLater)
-            {
-                PossibleFutureWorkDayCount = numberOfDaysCanWorkLater;
-            }
-
-            public void Apply(State state)
-            {
-                state.PossibleFutureWorkDayCount = PossibleFutureWorkDayCount;
-            }
         }
     }
 }
