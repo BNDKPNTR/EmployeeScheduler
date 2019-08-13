@@ -1,51 +1,95 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Google.OrTools.LinearSolver;
-using IPScheduer.Common;
+using IPScheduler.Models;
 using SchedulingIP.Input;
 
-namespace Scheduling.Common
+namespace IPScheduler.Common
 {
     public class IpProblemMapper
     {
-        private SchedulingIpModel model = new SchedulingIpModel();
+        
+        private SchedulingIpContext scheduleContext = new SchedulingIpContext();
 
-        public SchedulingIpModel MapToSolver(SchedulingPeriod schedulingPeriod)
+        public SchedulingIpContext MapToSolver(SchedulingPeriod schedulingPeriod)
         {
 
-            CreateGraph(schedulingPeriod);
-            return model;
+            //CreateGraph(schedulingPeriod);
+
+
+            Map(schedulingPeriod);
+            return scheduleContext;
         }
 
-        private void CreateGraph(SchedulingPeriod schedulingPeriod)
+        private void Map(SchedulingPeriod schedulingPeriod)
+        {
+            MapPersons(schedulingPeriod.Employees);
+            MapShifts(schedulingPeriod.ShiftTypes);
+            CreateAssignmentGraph();
+        }
+
+        private void MapShifts(SchedulingPeriodShift[] schedulingPeriodShiftTypes)
+        {
+            for (int i = 0; i < schedulingPeriodShiftTypes.Length; i++)
+            {
+                Shift shift = new Shift()
+                {
+                    ID = schedulingPeriodShiftTypes[i].ID,
+                    Index = i,
+                    Name = schedulingPeriodShiftTypes[i].StartTime + " - " + schedulingPeriodShiftTypes[i].EndTime + "_ " + schedulingPeriodShiftTypes[i].TimeUnits
+                };
+                scheduleContext.Shifts.Add(shift);
+            }
+        }
+
+        private void MapPersons(SchedulingPeriodEmployee[] schedulingPeriodEmployees)
+        {
+            for (int i = 0; i < schedulingPeriodEmployees.Length; i++)
+            {
+                Person person = new Person()
+                {
+                    Name =  $"CID: {schedulingPeriodEmployees[i].ContractID} ID: {schedulingPeriodEmployees[i].ID}",
+                    Index = i,
+                    ID = schedulingPeriodEmployees[i].ID,
+                    
+                };
+                scheduleContext.Persons.Add(person);
+            }
+        }
+
+        private void CreateAssignmentGraph()
         {
             int graphedges = 0;
-            int graphStarts = model.Solver.NumConstraints();
-            foreach (var shift in schedulingPeriod.ShiftTypes)
+            int graphStarts = scheduleContext.Solver.NumConstraints();
+            foreach (var shift in scheduleContext.Shifts)
             {
                 List<Variable> shiftEmployeePairs = new List<Variable>();
-                foreach (var employee in schedulingPeriod.Employees)
+                foreach (var employee in scheduleContext.Persons)
                 {
                     // Változó egy összerendelési élre
-                    Variable v = model.Solver.MakeIntVar(0.0, 1.0, $"{employee.ID}-{shift.ID}");
-                    model.Variables.Add(v);
-                    shiftEmployeePairs.Add(v);
-                    graphedges++;
+                    Variable v = scheduleContext.Solver.MakeIntVar(0.0, 1.0, $"{employee.ID}-{shift.ID}");
+                  //  scheduleContext.Variables.Add(v);
+                  Assignment assignment = new Assignment()
+                  {
+                      Index =  graphedges,
+                      assigningGraphEdge = v,
+                      Person = employee,
+                      Shift = shift
+                  };  
+                  scheduleContext.Assignments.Add(assignment);
+                  shiftEmployeePairs.Add(v);
+                  graphedges++;
                 }
                 LinearConstraint linearConstraint = new LinearConstraint();
 
                 // Megkötés, hogy egy műszako csak egy ember vihet
-                Constraint constraint = model.Solver.MakeConstraint(1.0, 1.0, $"shiftGraphConstraint: {shift.ID}");
+                Constraint constraint = scheduleContext.Solver.MakeConstraint(1.0, 1.0, $"shiftGraphConstraint: {shift.ID}");
                 foreach (var shiftEmployeePair in shiftEmployeePairs)
                 {
                     constraint.SetCoefficient(shiftEmployeePair, 1);
                 }
 
             }
-            model.GraphStartsAt = graphStarts;
-            model.GraphEdges = graphedges;
-
-
+            scheduleContext.GraphEdges = graphedges;
         }
     }
 }

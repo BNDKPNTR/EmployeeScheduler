@@ -1,8 +1,9 @@
-﻿using Google.OrTools.LinearSolver;
+﻿using System;
+using Google.OrTools.LinearSolver;
+using IPScheduler.Common;
 using Scheduling.Common;
-using System;
 
-namespace IPScheduer
+namespace IPScheduler
 {
     class Program
     {
@@ -14,12 +15,15 @@ namespace IPScheduer
             var input = XmlReader.ReadInstance(1);
 
             IpProblemMapper mapper = new IpProblemMapper();
-            var s = mapper.MapToSolver(input);
-
-            s.Solver.Maximize(s.Variables[0]);
-            Solver.ResultStatus resultStatus = s.Solver.Solve();
-
-            Console.WriteLine(s.Solver.Objective().Value());
+            
+               var s = mapper.MapToSolver(input);
+               
+               s.RunAlgo();
+//
+//            s.Solver.Maximize(s.Variables[0]);
+//            Solver.ResultStatus resultStatus = s.Solver.Solve();
+//
+//            Console.WriteLine(s.Solver.Objective().Value());
 
 
         }
