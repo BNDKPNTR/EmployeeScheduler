@@ -40,7 +40,7 @@ namespace IPScheduler.Common
             {
                 resultGraph.Persons.Add(assignment.Person);
                 resultGraph.Shifts.Add(assignment.Shift);
-                if (Math.Abs(assignment.assigningGraphEdge.SolutionValue() - 1.0) < SchedulingGlobalConstants.Epsilon)
+                if (Math.Abs(assignment.assigningGraphEdge.SolutionValue() - 1.0) < double.Epsilon)
                 {
                     if (resultGraph.Assignments.ContainsKey(assignment.Person.Index))
                     {
