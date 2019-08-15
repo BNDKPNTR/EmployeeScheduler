@@ -1,7 +1,6 @@
 ﻿using System;
 using Google.OrTools.LinearSolver;
 using IPScheduler.Common;
-using Scheduling.Common;
 
 namespace IPScheduler
 {

@@ -2,7 +2,7 @@
 using System.Xml.Serialization;
 using IPScheduler.Inputs;
 
-namespace Scheduling.Common
+namespace IPScheduler.Common
 {
     public class XmlReader
     {

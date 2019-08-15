@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Google.OrTools.LinearSolver;
 using IPScheduler.Models;
 using IPScheduler.Common;
@@ -8,12 +9,10 @@ namespace IPScheduler.Common
 {
     public class IpProblemMapper
     {
-        
         private SchedulingIpContext scheduleContext = new SchedulingIpContext();
 
         public SchedulingIpContext MapToSolver(SchedulingPeriod schedulingPeriod)
         {
-
             //CreateGraph(schedulingPeriod);
 
 
@@ -24,69 +23,84 @@ namespace IPScheduler.Common
         private void Map(SchedulingPeriod schedulingPeriod)
         {
             MapPersons(schedulingPeriod.Employees);
-            MapShifts(schedulingPeriod.ShiftTypes);
+            MapShifts(schedulingPeriod.CoverRequirements);
             CreateAssignmentGraph();
         }
 
-        private void MapShifts(SchedulingPeriodShiftTypes schedulingPeriodShiftTypes)
+        private void MapShifts(SchedulingPeriodDateSpecificCover[] schedulingPeriodDateSpecificCovers)
         {
-            //for (int i = 0; i < schedulingPeriodShiftTypes.Length; i++)
-            //{
-            //    Shift shift = new Shift()
-            //    {
-            //        ID = schedulingPeriodShiftTypes[i].ID,
-            //        Index = i,
-            //        Name = schedulingPeriodShiftTypes[i].StartTime + " - " + schedulingPeriodShiftTypes[i].EndTime + "_ " + schedulingPeriodShiftTypes[i].TimeUnits
-            //    };
-            //    scheduleContext.Shifts.Add(shift);
-            //}
+            int shiftCount = 0;
+            for (int i = 0; i < schedulingPeriodDateSpecificCovers.Length; i++)
+            {
+                for (int j = 0; j < scheduleContext.PersonCount; j++)
+                {
+                    Shift shift = new Shift()
+                    {
+                        Index = shiftCount,
+                        Name = schedulingPeriodDateSpecificCovers[i].Cover.Shift + "(" +
+                               schedulingPeriodDateSpecificCovers[i].Day + ": " +
+                               schedulingPeriodDateSpecificCovers[i].Cover.Min + " - " +
+                               schedulingPeriodDateSpecificCovers[i].Cover.Max + ")",
+                        Type = schedulingPeriodDateSpecificCovers[i].Cover.Shift,
+                        Priority = Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Cover.Min.Value) - 1 < j ? ShiftPriority.Min : Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Cover.Max.Value) - 1 < j ? ShiftPriority.Max : ShiftPriority.Opt,
+                        
+                        Day = Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Day)
+                     };
+                    scheduleContext.Shifts.Add(shift);
+                }
+            }
         }
 
-        private void MapPersons(SchedulingPeriodEmployee[] schedulingPeriodEmployees)
+        private void MapPersons(IReadOnlyList<SchedulingPeriodEmployee> schedulingPeriodEmployees)
         {
-            for (int i = 0; i < schedulingPeriodEmployees.Length; i++)
+            for (var i = 0; i < schedulingPeriodEmployees.Count; i++)
             {
-                var person = new Person();
-                person.Name = $"CID: {schedulingPeriodEmployees[i].ContractID} ID: {schedulingPeriodEmployees[i].ID}";
-                person.Index = i;
-                person.ID = schedulingPeriodEmployees[i].ID;
+                var person = new Person
+                {
+                    Name = $"CID: {schedulingPeriodEmployees[i].ContractID} ID: {schedulingPeriodEmployees[i].ID}",
+                    Index = i,
+                    ID = schedulingPeriodEmployees[i].ID
+                };
                 scheduleContext.Persons.Add(person);
             }
+
+            scheduleContext.PersonCount = schedulingPeriodEmployees.Count;
         }
 
         private void CreateAssignmentGraph()
         {
-            int graphedges = 0;
-            int graphStarts = scheduleContext.Solver.NumConstraints();
-            foreach (Shift shift in scheduleContext.Shifts)
+            var graphedges = 0;
+            var graphStarts = scheduleContext.Solver.NumConstraints();
+            foreach (var shift in scheduleContext.Shifts)
             {
-                List<Variable> shiftEmployeePairs = new List<Variable>();
-                foreach (Person employee in scheduleContext.Persons)
+                var shiftEmployeePairs = new List<Variable>();
+                foreach (var employee in scheduleContext.Persons)
                 {
                     // Változó egy összerendelési élre
-                    Variable v = scheduleContext.Solver.MakeIntVar(0.0, 1.0, $"{employee.ID}-{shift.ID}");
-                  //  scheduleContext.Variables.Add(v);
-                  Assignment assignment = new Assignment()
-                  {
-                      Index =  graphedges,
-                      assigningGraphEdge = v,
-                      Person = employee,
-                      Shift = shift
-                  };  
-                  scheduleContext.Assignments.Add(assignment);
-                  shiftEmployeePairs.Add(v);
-                  graphedges++;
+                    var v = scheduleContext.Solver.MakeIntVar(0.0, 1.0, $"{employee.ID}-{shift.Index}");
+                    //  scheduleContext.Variables.Add(v);
+                    var assignment = new Assignment()
+                    {
+                        Index = graphedges,
+                        assigningGraphEdge = v,
+                        Person = employee,
+                        Shift = shift
+                    };
+                    scheduleContext.Assignments.Add(assignment);
+                    shiftEmployeePairs.Add(v);
+                    graphedges++;
                 }
-                LinearConstraint linearConstraint = new LinearConstraint();
+
+                var linearConstraint = new LinearConstraint();
 
                 // Megkötés, hogy egy műszako csak egy ember vihet
-                Constraint constraint = scheduleContext.Solver.MakeConstraint(1.0, 1.0, $"shiftGraphConstraint: {shift.ID}");
+                var constraint = scheduleContext.Solver.MakeConstraint(1.0, 1.0, $"shiftGraphConstraint: {shift.Index}");
                 foreach (var shiftEmployeePair in shiftEmployeePairs)
                 {
                     constraint.SetCoefficient(shiftEmployeePair, 1);
                 }
-
             }
+
             scheduleContext.GraphEdges = graphedges;
         }
     }

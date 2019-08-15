@@ -18,6 +18,7 @@ namespace IPScheduler.Common
         public List<Variable> Variables { get; } = new List<Variable>();
         public int GraphEdges { get; internal set; }
         public int GraphStartsAt { get; internal set; }
+        public int PersonCount { get; set; }
 
 
         public void RunAlgo()

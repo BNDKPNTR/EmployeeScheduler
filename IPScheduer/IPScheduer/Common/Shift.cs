@@ -2,12 +2,11 @@
 {
     public class Shift
     {
-        public Shift(string id)
-        {
-            ID = id;
-        }
+        public string Name { get; set; }
+        public int Index { get; set; }
+        public string Type { get; set; }
 
-        public string ID { get; }
-        public object Name { get; }
+        public int Day { get; set; }
+        public ShiftPriority Priority { get; set; }
     }
 }
