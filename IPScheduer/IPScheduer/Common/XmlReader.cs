@@ -1,6 +1,6 @@
-﻿using SchedulingIP.Input;
-using System.IO;
+﻿using System.IO;
 using System.Xml.Serialization;
+using IPScheduler.Inputs;
 
 namespace Scheduling.Common
 {

@@ -6,10 +6,15 @@ namespace IPScheduler.Models
     {
         public int Index { get; set; }
 
-        public Person Person { get; set; }
-        public Shift Shift { get; set; }
+        public Common.Person Person { get; set; }
+        public Common.Shift Shift { get; set; }
         public Variable assigningGraphEdge { get; set; }
 
         public override string ToString() => $"{Person.Name}-{Shift.Name}";
+
+        public Assignment()
+        {
+                
+        }
     }
 }

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SchedulingIP.Input
+﻿namespace IPScheduler.Inputs
 {
-
-
 
     // NOTE: Generated code may require at least .NET Framework 4.5 or .NET Core/Standard 2.0.
     /// <remarks/>
@@ -20,31 +14,19 @@ namespace SchedulingIP.Input
 
         private System.DateTime endDateField;
 
-        private SchedulingPeriodShift[] shiftTypesField;
+        private SchedulingPeriodShiftTypes shiftTypesField;
 
-        private SchedulingPeriodShiftGroups shiftGroupsField;
+        private SchedulingPeriodContract[] contractsField;
 
         private SchedulingPeriodEmployee[] employeesField;
 
-        private SchedulingPeriodContracts contractsField;
+        private SchedulingPeriodEmployee1[] fixedAssignmentsField;
 
-        private object skillGroupsField;
+        private SchedulingPeriodShiftOff[] shiftOffRequestsField;
 
-        private SchedulingPeriodCoverRequirements coverRequirementsField;
+        private SchedulingPeriodShiftOn[] shiftOnRequestsField;
 
-        private SchedulingPeriodEmployee2[] fixedAssignmentsField;
-
-        private object rulesField;
-
-        private object employeePairingsField;
-
-        private object dayOffRequestsField;
-
-        private object dayOnRequestsField;
-
-        private object shiftOffRequestsField;
-
-        private object shiftOnRequestsField;
+        private SchedulingPeriodDateSpecificCover[] coverRequirementsField;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(DataType = "date")]
@@ -75,8 +57,7 @@ namespace SchedulingIP.Input
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Shift", IsNullable = false)]
-        public SchedulingPeriodShift[] ShiftTypes
+        public SchedulingPeriodShiftTypes ShiftTypes
         {
             get
             {
@@ -89,15 +70,16 @@ namespace SchedulingIP.Input
         }
 
         /// <remarks/>
-        public SchedulingPeriodShiftGroups ShiftGroups
+        [System.Xml.Serialization.XmlArrayItemAttribute("Contract", IsNullable = false)]
+        public SchedulingPeriodContract[] Contracts
         {
             get
             {
-                return this.shiftGroupsField;
+                return this.contractsField;
             }
             set
             {
-                this.shiftGroupsField = value;
+                this.contractsField = value;
             }
         }
 
@@ -116,47 +98,8 @@ namespace SchedulingIP.Input
         }
 
         /// <remarks/>
-        public SchedulingPeriodContracts Contracts
-        {
-            get
-            {
-                return this.contractsField;
-            }
-            set
-            {
-                this.contractsField = value;
-            }
-        }
-
-        /// <remarks/>
-        public object SkillGroups
-        {
-            get
-            {
-                return this.skillGroupsField;
-            }
-            set
-            {
-                this.skillGroupsField = value;
-            }
-        }
-
-        /// <remarks/>
-        public SchedulingPeriodCoverRequirements CoverRequirements
-        {
-            get
-            {
-                return this.coverRequirementsField;
-            }
-            set
-            {
-                this.coverRequirementsField = value;
-            }
-        }
-
-        /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute("Employee", IsNullable = false)]
-        public SchedulingPeriodEmployee2[] FixedAssignments
+        public SchedulingPeriodEmployee1[] FixedAssignments
         {
             get
             {
@@ -169,59 +112,8 @@ namespace SchedulingIP.Input
         }
 
         /// <remarks/>
-        public object Rules
-        {
-            get
-            {
-                return this.rulesField;
-            }
-            set
-            {
-                this.rulesField = value;
-            }
-        }
-
-        /// <remarks/>
-        public object EmployeePairings
-        {
-            get
-            {
-                return this.employeePairingsField;
-            }
-            set
-            {
-                this.employeePairingsField = value;
-            }
-        }
-
-        /// <remarks/>
-        public object DayOffRequests
-        {
-            get
-            {
-                return this.dayOffRequestsField;
-            }
-            set
-            {
-                this.dayOffRequestsField = value;
-            }
-        }
-
-        /// <remarks/>
-        public object DayOnRequests
-        {
-            get
-            {
-                return this.dayOnRequestsField;
-            }
-            set
-            {
-                this.dayOnRequestsField = value;
-            }
-        }
-
-        /// <remarks/>
-        public object ShiftOffRequests
+        [System.Xml.Serialization.XmlArrayItemAttribute("ShiftOff", IsNullable = false)]
+        public SchedulingPeriodShiftOff[] ShiftOffRequests
         {
             get
             {
@@ -234,7 +126,8 @@ namespace SchedulingIP.Input
         }
 
         /// <remarks/>
-        public object ShiftOnRequests
+        [System.Xml.Serialization.XmlArrayItemAttribute("ShiftOn", IsNullable = false)]
+        public SchedulingPeriodShiftOn[] ShiftOnRequests
         {
             get
             {
@@ -245,39 +138,59 @@ namespace SchedulingIP.Input
                 this.shiftOnRequestsField = value;
             }
         }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("DateSpecificCover", IsNullable = false)]
+        public SchedulingPeriodDateSpecificCover[] CoverRequirements
+        {
+            get
+            {
+                return this.coverRequirementsField;
+            }
+            set
+            {
+                this.coverRequirementsField = value;
+            }
+        }
     }
 
     /// <remarks/>
     [System.SerializableAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodShift
+    public partial class SchedulingPeriodShiftTypes
     {
 
-        private string nameField;
-
-        private string colorField;
-
-        private byte timeUnitsField;
-
-        private string startTimeField;
-
-        private string endTimeField;
-
-        private string idField;
+        private SchedulingPeriodShiftTypesShift shiftField;
 
         /// <remarks/>
-        public string Name
+        public SchedulingPeriodShiftTypesShift Shift
         {
             get
             {
-                return this.nameField;
+                return this.shiftField;
             }
             set
             {
-                this.nameField = value;
+                this.shiftField = value;
             }
         }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodShiftTypesShift
+    {
+
+        private string colorField;
+
+        private string startTimeField;
+
+        private ushort durationField;
+
+        private string idField;
 
         /// <remarks/>
         public string Color
@@ -289,19 +202,6 @@ namespace SchedulingIP.Input
             set
             {
                 this.colorField = value;
-            }
-        }
-
-        /// <remarks/>
-        public byte TimeUnits
-        {
-            get
-            {
-                return this.timeUnitsField;
-            }
-            set
-            {
-                this.timeUnitsField = value;
             }
         }
 
@@ -319,15 +219,15 @@ namespace SchedulingIP.Input
         }
 
         /// <remarks/>
-        public string EndTime
+        public ushort Duration
         {
             get
             {
-                return this.endTimeField;
+                return this.durationField;
             }
             set
             {
-                this.endTimeField = value;
+                this.durationField = value;
             }
         }
 
@@ -350,189 +250,25 @@ namespace SchedulingIP.Input
     [System.SerializableAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodShiftGroups
+    public partial class SchedulingPeriodContract
     {
 
-        private SchedulingPeriodShiftGroupsShiftGroup shiftGroupField;
+        private SchedulingPeriodContractMaxSeq maxSeqField;
 
-        /// <remarks/>
-        public SchedulingPeriodShiftGroupsShiftGroup ShiftGroup
-        {
-            get
-            {
-                return this.shiftGroupField;
-            }
-            set
-            {
-                this.shiftGroupField = value;
-            }
-        }
-    }
+        private SchedulingPeriodContractMinSeq[] minSeqField;
 
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodShiftGroupsShiftGroup
-    {
+        private SchedulingPeriodContractTimeUnits[] workloadField;
 
-        private string[] shiftField;
+        private SchedulingPeriodContractPatterns patternsField;
+
+        private SchedulingPeriodContractValidShifts validShiftsField;
+
+        private SchedulingPeriodContractMinRestTime minRestTimeField;
 
         private string idField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Shift")]
-        public string[] Shift
-        {
-            get
-            {
-                return this.shiftField;
-            }
-            set
-            {
-                this.shiftField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string ID
-        {
-            get
-            {
-                return this.idField;
-            }
-            set
-            {
-                this.idField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodEmployee
-    {
-
-        private string contractIDField;
-
-        private string[] skillsField;
-
-        private string idField;
-
-        /// <remarks/>
-        public string ContractID
-        {
-            get
-            {
-                return this.contractIDField;
-            }
-            set
-            {
-                this.contractIDField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Skill", IsNullable = false)]
-        public string[] Skills
-        {
-            get
-            {
-                return this.skillsField;
-            }
-            set
-            {
-                this.skillsField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string ID
-        {
-            get
-            {
-                return this.idField;
-            }
-            set
-            {
-                this.idField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodContracts
-    {
-
-        private SchedulingPeriodContractsContract contractField;
-
-        /// <remarks/>
-        public SchedulingPeriodContractsContract Contract
-        {
-            get
-            {
-                return this.contractField;
-            }
-            set
-            {
-                this.contractField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodContractsContract
-    {
-
-        private SchedulingPeriodContractsContractWorkload workloadField;
-
-        private SchedulingPeriodContractsContractMinSeq[] minSeqField;
-
-        private SchedulingPeriodContractsContractMaxSeq maxSeqField;
-
-        private SchedulingPeriodContractsContractMinRestTime minRestTimeField;
-
-        private string idField;
-
-        /// <remarks/>
-        public SchedulingPeriodContractsContractWorkload Workload
-        {
-            get
-            {
-                return this.workloadField;
-            }
-            set
-            {
-                this.workloadField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("MinSeq")]
-        public SchedulingPeriodContractsContractMinSeq[] MinSeq
-        {
-            get
-            {
-                return this.minSeqField;
-            }
-            set
-            {
-                this.minSeqField = value;
-            }
-        }
-
-        /// <remarks/>
-        public SchedulingPeriodContractsContractMaxSeq MaxSeq
+        public SchedulingPeriodContractMaxSeq MaxSeq
         {
             get
             {
@@ -545,7 +281,61 @@ namespace SchedulingIP.Input
         }
 
         /// <remarks/>
-        public SchedulingPeriodContractsContractMinRestTime MinRestTime
+        [System.Xml.Serialization.XmlElementAttribute("MinSeq")]
+        public SchedulingPeriodContractMinSeq[] MinSeq
+        {
+            get
+            {
+                return this.minSeqField;
+            }
+            set
+            {
+                this.minSeqField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("TimeUnits", IsNullable = false)]
+        public SchedulingPeriodContractTimeUnits[] Workload
+        {
+            get
+            {
+                return this.workloadField;
+            }
+            set
+            {
+                this.workloadField = value;
+            }
+        }
+
+        /// <remarks/>
+        public SchedulingPeriodContractPatterns Patterns
+        {
+            get
+            {
+                return this.patternsField;
+            }
+            set
+            {
+                this.patternsField = value;
+            }
+        }
+
+        /// <remarks/>
+        public SchedulingPeriodContractValidShifts ValidShifts
+        {
+            get
+            {
+                return this.validShiftsField;
+            }
+            set
+            {
+                this.validShiftsField = value;
+            }
+        }
+
+        /// <remarks/>
+        public SchedulingPeriodContractMinRestTime MinRestTime
         {
             get
             {
@@ -576,21 +366,54 @@ namespace SchedulingIP.Input
     [System.SerializableAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodContractsContractWorkload
+    public partial class SchedulingPeriodContractMaxSeq
     {
 
-        private SchedulingPeriodContractsContractWorkloadTimeUnits timeUnitsField;
+        private string labelField;
+
+        private byte valueField;
+
+        private string shiftField;
 
         /// <remarks/>
-        public SchedulingPeriodContractsContractWorkloadTimeUnits TimeUnits
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string label
         {
             get
             {
-                return this.timeUnitsField;
+                return this.labelField;
             }
             set
             {
-                this.timeUnitsField = value;
+                this.labelField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public byte value
+        {
+            get
+            {
+                return this.valueField;
+            }
+            set
+            {
+                this.valueField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string shift
+        {
+            get
+            {
+                return this.shiftField;
+            }
+            set
+            {
+                this.shiftField = value;
             }
         }
     }
@@ -599,13 +422,84 @@ namespace SchedulingIP.Input
     [System.SerializableAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodContractsContractWorkloadTimeUnits
+    public partial class SchedulingPeriodContractMinSeq
     {
 
-        private SchedulingPeriodContractsContractWorkloadTimeUnitsMax maxField;
+        private string labelField;
+
+        private byte valueField;
+
+        private string shiftField;
 
         /// <remarks/>
-        public SchedulingPeriodContractsContractWorkloadTimeUnitsMax Max
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string label
+        {
+            get
+            {
+                return this.labelField;
+            }
+            set
+            {
+                this.labelField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public byte value
+        {
+            get
+            {
+                return this.valueField;
+            }
+            set
+            {
+                this.valueField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string shift
+        {
+            get
+            {
+                return this.shiftField;
+            }
+            set
+            {
+                this.shiftField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodContractTimeUnits
+    {
+
+        private SchedulingPeriodContractTimeUnitsMin minField;
+
+        private SchedulingPeriodContractTimeUnitsMax maxField;
+
+        /// <remarks/>
+        public SchedulingPeriodContractTimeUnitsMin Min
+        {
+            get
+            {
+                return this.minField;
+            }
+            set
+            {
+                this.minField = value;
+            }
+        }
+
+        /// <remarks/>
+        public SchedulingPeriodContractTimeUnitsMax Max
         {
             get
             {
@@ -622,17 +516,15 @@ namespace SchedulingIP.Input
     [System.SerializableAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodContractsContractWorkloadTimeUnitsMax
+    public partial class SchedulingPeriodContractTimeUnitsMin
     {
 
-        private byte countField;
-
-        private SchedulingPeriodContractsContractWorkloadTimeUnitsMaxWeight weightField;
+        private ushort countField;
 
         private string labelField;
 
         /// <remarks/>
-        public byte Count
+        public ushort Count
         {
             get
             {
@@ -641,19 +533,6 @@ namespace SchedulingIP.Input
             set
             {
                 this.countField = value;
-            }
-        }
-
-        /// <remarks/>
-        public SchedulingPeriodContractsContractWorkloadTimeUnitsMaxWeight Weight
-        {
-            get
-            {
-                return this.weightField;
-            }
-            set
-            {
-                this.weightField = value;
             }
         }
 
@@ -675,60 +554,28 @@ namespace SchedulingIP.Input
     [System.SerializableAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodContractsContractWorkloadTimeUnitsMaxWeight
+    public partial class SchedulingPeriodContractTimeUnitsMax
     {
 
-        private string functionField;
-
-        private byte valueField;
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string function
-        {
-            get
-            {
-                return this.functionField;
-            }
-            set
-            {
-                this.functionField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlTextAttribute()]
-        public byte Value
-        {
-            get
-            {
-                return this.valueField;
-            }
-            set
-            {
-                this.valueField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodContractsContractMinSeq
-    {
+        private ushort countField;
 
         private string labelField;
 
-        private byte valueField;
-
-        private string shiftField;
-
-        private ushort weightField;
+        /// <remarks/>
+        public ushort Count
+        {
+            get
+            {
+                return this.countField;
+            }
+            set
+            {
+                this.countField = value;
+            }
+        }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string label
+        public string Label
         {
             get
             {
@@ -739,20 +586,155 @@ namespace SchedulingIP.Input
                 this.labelField = value;
             }
         }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodContractPatterns
+    {
+
+        private SchedulingPeriodContractPatternsMatch matchField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public byte value
+        public SchedulingPeriodContractPatternsMatch Match
         {
             get
             {
-                return this.valueField;
+                return this.matchField;
             }
             set
             {
-                this.valueField = value;
+                this.matchField = value;
             }
         }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodContractPatternsMatch
+    {
+
+        private SchedulingPeriodContractPatternsMatchMax maxField;
+
+        private SchedulingPeriodContractPatternsMatchPattern[] patternField;
+
+        /// <remarks/>
+        public SchedulingPeriodContractPatternsMatchMax Max
+        {
+            get
+            {
+                return this.maxField;
+            }
+            set
+            {
+                this.maxField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("Pattern")]
+        public SchedulingPeriodContractPatternsMatchPattern[] Pattern
+        {
+            get
+            {
+                return this.patternField;
+            }
+            set
+            {
+                this.patternField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodContractPatternsMatchMax
+    {
+
+        private byte countField;
+
+        private string labelField;
+
+        /// <remarks/>
+        public byte Count
+        {
+            get
+            {
+                return this.countField;
+            }
+            set
+            {
+                this.countField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string Label
+        {
+            get
+            {
+                return this.labelField;
+            }
+            set
+            {
+                this.labelField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodContractPatternsMatchPattern
+    {
+
+        private string startDayField;
+
+        private string[] shiftField;
+
+        /// <remarks/>
+        public string StartDay
+        {
+            get
+            {
+                return this.startDayField;
+            }
+            set
+            {
+                this.startDayField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("Shift")]
+        public string[] Shift
+        {
+            get
+            {
+                return this.shiftField;
+            }
+            set
+            {
+                this.shiftField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodContractValidShifts
+    {
+
+        private string shiftField;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -767,104 +749,16 @@ namespace SchedulingIP.Input
                 this.shiftField = value;
             }
         }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ushort weight
-        {
-            get
-            {
-                return this.weightField;
-            }
-            set
-            {
-                this.weightField = value;
-            }
-        }
     }
 
     /// <remarks/>
     [System.SerializableAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodContractsContractMaxSeq
+    public partial class SchedulingPeriodContractMinRestTime
     {
 
         private string labelField;
-
-        private byte valueField;
-
-        private string shiftField;
-
-        private ushort weightField;
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string label
-        {
-            get
-            {
-                return this.labelField;
-            }
-            set
-            {
-                this.labelField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public byte value
-        {
-            get
-            {
-                return this.valueField;
-            }
-            set
-            {
-                this.valueField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string shift
-        {
-            get
-            {
-                return this.shiftField;
-            }
-            set
-            {
-                this.shiftField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ushort weight
-        {
-            get
-            {
-                return this.weightField;
-            }
-            set
-            {
-                this.weightField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodContractsContractMinRestTime
-    {
-
-        private string labelField;
-
-        private ushort weightField;
 
         private ushort valueField;
 
@@ -879,20 +773,6 @@ namespace SchedulingIP.Input
             set
             {
                 this.labelField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ushort weight
-        {
-            get
-            {
-                return this.weightField;
-            }
-            set
-            {
-                this.weightField = value;
             }
         }
 
@@ -915,153 +795,38 @@ namespace SchedulingIP.Input
     [System.SerializableAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodCoverRequirements
+    public partial class SchedulingPeriodEmployee
     {
 
-        private SchedulingPeriodCoverRequirementsDayOfWeekCover dayOfWeekCoverField;
+        private string[] contractIDField;
+
+        private string idField;
 
         /// <remarks/>
-        public SchedulingPeriodCoverRequirementsDayOfWeekCover DayOfWeekCover
+        [System.Xml.Serialization.XmlElementAttribute("ContractID")]
+        public string[] ContractID
         {
             get
             {
-                return this.dayOfWeekCoverField;
+                return this.contractIDField;
             }
             set
             {
-                this.dayOfWeekCoverField = value;
+                this.contractIDField = value;
             }
         }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodCoverRequirementsDayOfWeekCover
-    {
-
-        private string dayField;
-
-        private SchedulingPeriodCoverRequirementsDayOfWeekCoverCover[] coverField;
-
-        /// <remarks/>
-        public string Day
-        {
-            get
-            {
-                return this.dayField;
-            }
-            set
-            {
-                this.dayField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Cover")]
-        public SchedulingPeriodCoverRequirementsDayOfWeekCoverCover[] Cover
-        {
-            get
-            {
-                return this.coverField;
-            }
-            set
-            {
-                this.coverField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodCoverRequirementsDayOfWeekCoverCover
-    {
-
-        private string shiftField;
-
-        private SchedulingPeriodCoverRequirementsDayOfWeekCoverCoverMin minField;
-
-        private SchedulingPeriodCoverRequirementsDayOfWeekCoverCoverMax maxField;
-
-        /// <remarks/>
-        public string Shift
-        {
-            get
-            {
-                return this.shiftField;
-            }
-            set
-            {
-                this.shiftField = value;
-            }
-        }
-
-        /// <remarks/>
-        public SchedulingPeriodCoverRequirementsDayOfWeekCoverCoverMin Min
-        {
-            get
-            {
-                return this.minField;
-            }
-            set
-            {
-                this.minField = value;
-            }
-        }
-
-        /// <remarks/>
-        public SchedulingPeriodCoverRequirementsDayOfWeekCoverCoverMax Max
-        {
-            get
-            {
-                return this.maxField;
-            }
-            set
-            {
-                this.maxField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodCoverRequirementsDayOfWeekCoverCoverMin
-    {
-
-        private ushort weightField;
-
-        private byte valueField;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ushort weight
+        public string ID
         {
             get
             {
-                return this.weightField;
+                return this.idField;
             }
             set
             {
-                this.weightField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlTextAttribute()]
-        public byte Value
-        {
-            get
-            {
-                return this.valueField;
-            }
-            set
-            {
-                this.valueField = value;
+                this.idField = value;
             }
         }
     }
@@ -1070,52 +835,12 @@ namespace SchedulingIP.Input
     [System.SerializableAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodCoverRequirementsDayOfWeekCoverCoverMax
-    {
-
-        private ushort weightField;
-
-        private byte valueField;
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ushort weight
-        {
-            get
-            {
-                return this.weightField;
-            }
-            set
-            {
-                this.weightField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlTextAttribute()]
-        public byte Value
-        {
-            get
-            {
-                return this.valueField;
-            }
-            set
-            {
-                this.valueField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodEmployee2
+    public partial class SchedulingPeriodEmployee1
     {
 
         private string employeeIDField;
 
-        private SchedulingPeriodEmployeeAssign[] assignField;
+        private SchedulingPeriodEmployeeAssign assignField;
 
         /// <remarks/>
         public string EmployeeID
@@ -1131,8 +856,7 @@ namespace SchedulingIP.Input
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Assign")]
-        public SchedulingPeriodEmployeeAssign[] Assign
+        public SchedulingPeriodEmployeeAssign Assign
         {
             get
             {
@@ -1154,7 +878,7 @@ namespace SchedulingIP.Input
 
         private string shiftField;
 
-        private System.DateTime dateField;
+        private byte dayField;
 
         /// <remarks/>
         public string Shift
@@ -1170,18 +894,327 @@ namespace SchedulingIP.Input
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(DataType = "date")]
-        public System.DateTime Date
+        public byte Day
         {
             get
             {
-                return this.dateField;
+                return this.dayField;
             }
             set
             {
-                this.dateField = value;
+                this.dayField = value;
             }
         }
     }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodShiftOff
+    {
+
+        private string shiftField;
+
+        private string employeeIDField;
+
+        private byte dayField;
+
+        private byte weightField;
+
+        /// <remarks/>
+        public string Shift
+        {
+            get
+            {
+                return this.shiftField;
+            }
+            set
+            {
+                this.shiftField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string EmployeeID
+        {
+            get
+            {
+                return this.employeeIDField;
+            }
+            set
+            {
+                this.employeeIDField = value;
+            }
+        }
+
+        /// <remarks/>
+        public byte Day
+        {
+            get
+            {
+                return this.dayField;
+            }
+            set
+            {
+                this.dayField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public byte weight
+        {
+            get
+            {
+                return this.weightField;
+            }
+            set
+            {
+                this.weightField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodShiftOn
+    {
+
+        private string shiftField;
+
+        private string employeeIDField;
+
+        private byte dayField;
+
+        private byte weightField;
+
+        /// <remarks/>
+        public string Shift
+        {
+            get
+            {
+                return this.shiftField;
+            }
+            set
+            {
+                this.shiftField = value;
+            }
+        }
+
+        /// <remarks/>
+        public string EmployeeID
+        {
+            get
+            {
+                return this.employeeIDField;
+            }
+            set
+            {
+                this.employeeIDField = value;
+            }
+        }
+
+        /// <remarks/>
+        public byte Day
+        {
+            get
+            {
+                return this.dayField;
+            }
+            set
+            {
+                this.dayField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public byte weight
+        {
+            get
+            {
+                return this.weightField;
+            }
+            set
+            {
+                this.weightField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodDateSpecificCover
+    {
+
+        private byte dayField;
+
+        private SchedulingPeriodDateSpecificCoverCover coverField;
+
+        /// <remarks/>
+        public byte Day
+        {
+            get
+            {
+                return this.dayField;
+            }
+            set
+            {
+                this.dayField = value;
+            }
+        }
+
+        /// <remarks/>
+        public SchedulingPeriodDateSpecificCoverCover Cover
+        {
+            get
+            {
+                return this.coverField;
+            }
+            set
+            {
+                this.coverField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodDateSpecificCoverCover
+    {
+
+        private string shiftField;
+
+        private SchedulingPeriodDateSpecificCoverCoverMin minField;
+
+        private SchedulingPeriodDateSpecificCoverCoverMax maxField;
+
+        /// <remarks/>
+        public string Shift
+        {
+            get
+            {
+                return this.shiftField;
+            }
+            set
+            {
+                this.shiftField = value;
+            }
+        }
+
+        /// <remarks/>
+        public SchedulingPeriodDateSpecificCoverCoverMin Min
+        {
+            get
+            {
+                return this.minField;
+            }
+            set
+            {
+                this.minField = value;
+            }
+        }
+
+        /// <remarks/>
+        public SchedulingPeriodDateSpecificCoverCoverMax Max
+        {
+            get
+            {
+                return this.maxField;
+            }
+            set
+            {
+                this.maxField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodDateSpecificCoverCoverMin
+    {
+
+        private byte weightField;
+
+        private byte valueField;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public byte weight
+        {
+            get
+            {
+                return this.weightField;
+            }
+            set
+            {
+                this.weightField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public byte Value
+        {
+            get
+            {
+                return this.valueField;
+            }
+            set
+            {
+                this.valueField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodDateSpecificCoverCoverMax
+    {
+
+        private byte weightField;
+
+        private byte valueField;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public byte weight
+        {
+            get
+            {
+                return this.weightField;
+            }
+            set
+            {
+                this.weightField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public byte Value
+        {
+            get
+            {
+                return this.valueField;
+            }
+            set
+            {
+                this.valueField = value;
+            }
+        }
+    }
+
 
 }

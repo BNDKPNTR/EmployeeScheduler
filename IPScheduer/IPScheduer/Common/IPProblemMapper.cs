@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Google.OrTools.LinearSolver;
 using IPScheduler.Models;
-using SchedulingIP.Input;
+using IPScheduler.Common;
+using IPScheduler.Inputs;
 
 namespace IPScheduler.Common
 {
@@ -27,31 +28,28 @@ namespace IPScheduler.Common
             CreateAssignmentGraph();
         }
 
-        private void MapShifts(SchedulingPeriodShift[] schedulingPeriodShiftTypes)
+        private void MapShifts(SchedulingPeriodShiftTypes schedulingPeriodShiftTypes)
         {
-            for (int i = 0; i < schedulingPeriodShiftTypes.Length; i++)
-            {
-                Shift shift = new Shift()
-                {
-                    ID = schedulingPeriodShiftTypes[i].ID,
-                    Index = i,
-                    Name = schedulingPeriodShiftTypes[i].StartTime + " - " + schedulingPeriodShiftTypes[i].EndTime + "_ " + schedulingPeriodShiftTypes[i].TimeUnits
-                };
-                scheduleContext.Shifts.Add(shift);
-            }
+            //for (int i = 0; i < schedulingPeriodShiftTypes.Length; i++)
+            //{
+            //    Shift shift = new Shift()
+            //    {
+            //        ID = schedulingPeriodShiftTypes[i].ID,
+            //        Index = i,
+            //        Name = schedulingPeriodShiftTypes[i].StartTime + " - " + schedulingPeriodShiftTypes[i].EndTime + "_ " + schedulingPeriodShiftTypes[i].TimeUnits
+            //    };
+            //    scheduleContext.Shifts.Add(shift);
+            //}
         }
 
         private void MapPersons(SchedulingPeriodEmployee[] schedulingPeriodEmployees)
         {
             for (int i = 0; i < schedulingPeriodEmployees.Length; i++)
             {
-                Person person = new Person()
-                {
-                    Name =  $"CID: {schedulingPeriodEmployees[i].ContractID} ID: {schedulingPeriodEmployees[i].ID}",
-                    Index = i,
-                    ID = schedulingPeriodEmployees[i].ID,
-                    
-                };
+                var person = new Person();
+                person.Name = $"CID: {schedulingPeriodEmployees[i].ContractID} ID: {schedulingPeriodEmployees[i].ID}";
+                person.Index = i;
+                person.ID = schedulingPeriodEmployees[i].ID;
                 scheduleContext.Persons.Add(person);
             }
         }
@@ -60,10 +58,10 @@ namespace IPScheduler.Common
         {
             int graphedges = 0;
             int graphStarts = scheduleContext.Solver.NumConstraints();
-            foreach (var shift in scheduleContext.Shifts)
+            foreach (Shift shift in scheduleContext.Shifts)
             {
                 List<Variable> shiftEmployeePairs = new List<Variable>();
-                foreach (var employee in scheduleContext.Persons)
+                foreach (Person employee in scheduleContext.Persons)
                 {
                     // Változó egy összerendelési élre
                     Variable v = scheduleContext.Solver.MakeIntVar(0.0, 1.0, $"{employee.ID}-{shift.ID}");
