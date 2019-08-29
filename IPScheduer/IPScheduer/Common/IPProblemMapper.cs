@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Google.OrTools.LinearSolver;
 using IPScheduler.Models;
 using IPScheduler.Common;
@@ -22,31 +23,91 @@ namespace IPScheduler.Common
 
         private void Map(SchedulingPeriod schedulingPeriod)
         {
+
+            MapShiftTypes(schedulingPeriod.ShiftTypes);
             MapPersons(schedulingPeriod.Employees);
             MapShifts(schedulingPeriod.CoverRequirements);
+            MapShiftOnRequests(schedulingPeriod.ShiftOnRequests);
             CreateAssignmentGraph();
+        }
+
+        private void MapShiftTypes(SchedulingPeriodShift[] schedulingPeriodShiftTypes)
+        {
+            int shiftTypeCounter = 0;
+            foreach (var shiftType in schedulingPeriodShiftTypes)
+            {
+                ShiftType type = new ShiftType()
+                {
+                    Index = ++shiftTypeCounter,
+                    ID = shiftType.ID,
+                    Color = shiftType.Color,
+                    StartTime = CreateDateStartTime(shiftType.StartTime),
+
+                };
+                scheduleContext.ShiftTypeDicitonary.Add(shiftTypeCounter, type);
+            }
+        }
+
+        private static Time CreateDateStartTime(string shiftTypeStartTime)
+        {
+            string[] components = shiftTypeStartTime.Split(":");
+            Time time = new Time()
+            {
+                Hour = Convert.ToInt32(components[0]),
+                Minute = Convert.ToInt32(components[1])
+            };
+            return time;
+        }
+
+
+        private void MapShiftOnRequests(SchedulingPeriodShiftOn[] schedulingPeriodShiftOnRequests)
+        {
+            foreach (var shiftOnRequest in schedulingPeriodShiftOnRequests)
+            {
+                var person = scheduleContext.Persons.SingleOrDefault(p => p.ID.Equals(shiftOnRequest.EmployeeID));
+              
+
+            }
         }
 
         private void MapShifts(SchedulingPeriodDateSpecificCover[] schedulingPeriodDateSpecificCovers)
         {
             int shiftCount = 0;
-            for (int i = 0; i < schedulingPeriodDateSpecificCovers.Length; i++)
+            //for (int i = 0; i < schedulingPeriodDateSpecificCovers.Length; i++)
+            //{
+            //    for (int j = 0; j < scheduleContext.PersonCount; j++)
+            //    {
+            //        Shift shift = new Shift()
+            //        {
+            //            Index = shiftCount,
+            //            //Name = schedulingPeriodDateSpecificCovers[i].Cover[0]. + "(" +
+            //            //       schedulingPeriodDateSpecificCovers[i].Day + ": " +
+            //            //       schedulingPeriodDateSpecificCovers[i].Cover.Min + " - " +
+            //            //       schedulingPeriodDateSpecificCovers[i].Cover.Max + ")",
+            //            //Type = schedulingPeriodDateSpecificCovers[i].Cover.Shift,
+            //            //Priority = Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Cover.Min.Value) - 1 < j ? ShiftPriority.Min : Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Cover.Max.Value) - 1 < j ? ShiftPriority.Max : ShiftPriority.Opt,
+                        
+            //            Day = Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Day)
+            //         };
+            //        scheduleContext.Shifts.Add(shift);
+            //    }
+            //}
+
+
+            foreach (var datespecificCover in schedulingPeriodDateSpecificCovers)
             {
-                for (int j = 0; j < scheduleContext.PersonCount; j++)
+                foreach (var cover in datespecificCover.Cover)
                 {
                     Shift shift = new Shift()
                     {
-                        Index = shiftCount,
-                        Name = schedulingPeriodDateSpecificCovers[i].Cover.Shift + "(" +
-                               schedulingPeriodDateSpecificCovers[i].Day + ": " +
-                               schedulingPeriodDateSpecificCovers[i].Cover.Min + " - " +
-                               schedulingPeriodDateSpecificCovers[i].Cover.Max + ")",
-                        Type = schedulingPeriodDateSpecificCovers[i].Cover.Shift,
-                        Priority = Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Cover.Min.Value) - 1 < j ? ShiftPriority.Min : Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Cover.Max.Value) - 1 < j ? ShiftPriority.Max : ShiftPriority.Opt,
-                        
-                        Day = Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Day)
-                     };
-                    scheduleContext.Shifts.Add(shift);
+                        Index = shiftCount++,
+                        Day = datespecificCover.Day,
+                        Name = cover.Shift + "(" +
+                               datespecificCover.Day + ": " +
+                            cover.Min + " - " +
+                         cover.Max + ")",
+                     //Type = scheduleContext.ShiftTypeDicitonary[cover.Shift],
+                    };
                 }
             }
         }
@@ -103,5 +164,24 @@ namespace IPScheduler.Common
 
             scheduleContext.GraphEdges = graphedges;
         }
+    }
+
+    public class Time
+    {
+        public int Hour { get; set; }
+        public int Minute { get; set; }
+    }
+
+    public class ShiftType
+    {
+        public int Index { get; set; }
+        public string ID { get; set; }
+        public string Color { get; set; }
+        public Time StartTime { get; set; }
+    }
+
+    public class ShiftOnRequest
+    {
+        public int Day { get; set; }
     }
 }

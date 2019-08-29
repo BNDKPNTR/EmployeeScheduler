@@ -14,7 +14,7 @@
 
         private System.DateTime endDateField;
 
-        private SchedulingPeriodShiftTypes shiftTypesField;
+        private SchedulingPeriodShift[] shiftTypesField;
 
         private SchedulingPeriodContract[] contractsField;
 
@@ -57,7 +57,8 @@
         }
 
         /// <remarks/>
-        public SchedulingPeriodShiftTypes ShiftTypes
+        [System.Xml.Serialization.XmlArrayItemAttribute("Shift", IsNullable = false)]
+        public SchedulingPeriodShift[] ShiftTypes
         {
             get
             {
@@ -158,30 +159,7 @@
     [System.SerializableAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodShiftTypes
-    {
-
-        private SchedulingPeriodShiftTypesShift shiftField;
-
-        /// <remarks/>
-        public SchedulingPeriodShiftTypesShift Shift
-        {
-            get
-            {
-                return this.shiftField;
-            }
-            set
-            {
-                this.shiftField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class SchedulingPeriodShiftTypesShift
+    public partial class SchedulingPeriodShift
     {
 
         private string colorField;
@@ -253,6 +231,8 @@
     public partial class SchedulingPeriodContract
     {
 
+        private SchedulingPeriodContractMaxTot[] maxTotField;
+
         private SchedulingPeriodContractMaxSeq maxSeqField;
 
         private SchedulingPeriodContractMinSeq[] minSeqField;
@@ -266,6 +246,20 @@
         private SchedulingPeriodContractMinRestTime minRestTimeField;
 
         private string idField;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("MaxTot")]
+        public SchedulingPeriodContractMaxTot[] MaxTot
+        {
+            get
+            {
+                return this.maxTotField;
+            }
+            set
+            {
+                this.maxTotField = value;
+            }
+        }
 
         /// <remarks/>
         public SchedulingPeriodContractMaxSeq MaxSeq
@@ -358,6 +352,62 @@
             set
             {
                 this.idField = value;
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.SerializableAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public partial class SchedulingPeriodContractMaxTot
+    {
+
+        private string labelField;
+
+        private byte valueField;
+
+        private string shiftField;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string label
+        {
+            get
+            {
+                return this.labelField;
+            }
+            set
+            {
+                this.labelField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public byte value
+        {
+            get
+            {
+                return this.valueField;
+            }
+            set
+            {
+                this.valueField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string shift
+        {
+            get
+            {
+                return this.shiftField;
+            }
+            set
+            {
+                this.shiftField = value;
             }
         }
     }
@@ -519,12 +569,12 @@
     public partial class SchedulingPeriodContractTimeUnitsMin
     {
 
-        private ushort countField;
+        private uint countField;
 
         private string labelField;
 
         /// <remarks/>
-        public ushort Count
+        public uint Count
         {
             get
             {
@@ -557,12 +607,12 @@
     public partial class SchedulingPeriodContractTimeUnitsMax
     {
 
-        private ushort countField;
+        private uint countField;
 
         private string labelField;
 
         /// <remarks/>
-        public ushort Count
+        public uint Count
         {
             get
             {
@@ -878,7 +928,7 @@
 
         private string shiftField;
 
-        private byte dayField;
+        private ushort dayField;
 
         /// <remarks/>
         public string Shift
@@ -894,7 +944,7 @@
         }
 
         /// <remarks/>
-        public byte Day
+        public ushort Day
         {
             get
             {
@@ -918,7 +968,7 @@
 
         private string employeeIDField;
 
-        private byte dayField;
+        private ushort dayField;
 
         private byte weightField;
 
@@ -949,7 +999,7 @@
         }
 
         /// <remarks/>
-        public byte Day
+        public ushort Day
         {
             get
             {
@@ -987,7 +1037,7 @@
 
         private string employeeIDField;
 
-        private byte dayField;
+        private ushort dayField;
 
         private byte weightField;
 
@@ -1018,7 +1068,7 @@
         }
 
         /// <remarks/>
-        public byte Day
+        public ushort Day
         {
             get
             {
@@ -1052,12 +1102,12 @@
     public partial class SchedulingPeriodDateSpecificCover
     {
 
-        private byte dayField;
+        private ushort dayField;
 
-        private SchedulingPeriodDateSpecificCoverCover coverField;
+        private SchedulingPeriodDateSpecificCoverCover[] coverField;
 
         /// <remarks/>
-        public byte Day
+        public ushort Day
         {
             get
             {
@@ -1070,7 +1120,8 @@
         }
 
         /// <remarks/>
-        public SchedulingPeriodDateSpecificCoverCover Cover
+        [System.Xml.Serialization.XmlElementAttribute("Cover")]
+        public SchedulingPeriodDateSpecificCoverCover[] Cover
         {
             get
             {
@@ -1092,10 +1143,6 @@
 
         private string shiftField;
 
-        private SchedulingPeriodDateSpecificCoverCoverMin minField;
-
-        private SchedulingPeriodDateSpecificCoverCoverMax maxField;
-
         /// <remarks/>
         public string Shift
         {
@@ -1110,30 +1157,10 @@
         }
 
         /// <remarks/>
-        public SchedulingPeriodDateSpecificCoverCoverMin Min
-        {
-            get
-            {
-                return this.minField;
-            }
-            set
-            {
-                this.minField = value;
-            }
-        }
+        public SchedulingPeriodDateSpecificCoverCoverMin Min { get; set; }
 
         /// <remarks/>
-        public SchedulingPeriodDateSpecificCoverCoverMax Max
-        {
-            get
-            {
-                return this.maxField;
-            }
-            set
-            {
-                this.maxField = value;
-            }
-        }
+        public SchedulingPeriodDateSpecificCoverCoverMax Max { get; set; }
     }
 
     /// <remarks/>
