@@ -8,8 +8,8 @@ namespace IPScheduler.Common
 {
     public class SchedulingIpContext
     {
-        public List<Person> Persons { get; set; } = new List<Person>();
-        public List<Shift> Shifts { get; set; } = new List<Shift>();
+        public Dictionary<string, Person> Persons { get; set; } = new Dictionary<string, Person>();
+        public Dictionary<int, Shift> Shifts { get; set; } = new Dictionary<int, Shift>();
 
         public List<Assignment> Assignments { get; set; } = new List<Assignment>();
         
@@ -19,7 +19,7 @@ namespace IPScheduler.Common
         public int GraphEdges { get; internal set; }
         public int GraphStartsAt { get; internal set; }
         public int PersonCount { get; set; }
-        public Dictionary<int, ShiftType> ShiftTypeDicitonary { get; set; } = new Dictionary<int, ShiftType>(); 
+        public Dictionary<string, ShiftType> ShiftTypeDicitonary { get; set; } = new Dictionary<string, ShiftType>(); 
 
 
 
@@ -30,7 +30,7 @@ namespace IPScheduler.Common
 
             SchedulingResultGraph resultGraph = SchedulingResultGraph.Create(Assignments);
 
-          resultGraph.WriteToConsole();
+//          resultGraph.WriteToConsole();
 
             Console.WriteLine(Solver.Objective().Value());
             

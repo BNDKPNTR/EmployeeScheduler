@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Google.OrTools.LinearSolver;
 using IPScheduler.Models;
-using IPScheduler.Common;
 using IPScheduler.Inputs;
 
 namespace IPScheduler.Common
 {
     public class IpProblemMapper
     {
-        private SchedulingIpContext scheduleContext = new SchedulingIpContext();
+        private readonly SchedulingIpContext scheduleContext = new SchedulingIpContext();
 
         public SchedulingIpContext MapToSolver(SchedulingPeriod schedulingPeriod)
         {
-            //CreateGraph(schedulingPeriod);
-
-
             Map(schedulingPeriod);
+            
+            CreateAssignmentGraph();
+
             return scheduleContext;
         }
 
@@ -28,15 +26,58 @@ namespace IPScheduler.Common
             MapPersons(schedulingPeriod.Employees);
             MapShifts(schedulingPeriod.CoverRequirements);
             MapShiftOnRequests(schedulingPeriod.ShiftOnRequests);
-            CreateAssignmentGraph();
+            MapShiftOffRequests(schedulingPeriod.ShiftOffRequests);
+            MapFixedAssignments(schedulingPeriod.FixedAssignments);
         }
 
-        private void MapShiftTypes(SchedulingPeriodShift[] schedulingPeriodShiftTypes)
+        private void MapFixedAssignments(IEnumerable<SchedulingPeriodEmployee1> schedulingPeriodFixedAssignments)
         {
-            int shiftTypeCounter = 0;
+            foreach (var fixedAssignment in schedulingPeriodFixedAssignments)
+            {
+                var day = fixedAssignment.Assign.Day;
+                if (fixedAssignment.Assign.Shift.Equals("-"))
+                {
+                    var ff = new FixedFreeDay()
+                    {
+                        Day = day,
+                    };
+                    scheduleContext.Persons[fixedAssignment.EmployeeID].FixedFreeDays.Add(ff);
+                }
+                else
+                {
+                    var fa = new FixedAssaignment()
+                    {
+                        Type =  scheduleContext.ShiftTypeDicitonary[fixedAssignment.Assign.Shift]
+                    };
+                    scheduleContext.Persons[fixedAssignment.EmployeeID].FixedAssignments.Add(day, fa);
+                }
+                
+            }
+        }
+
+        private void MapShiftOffRequests(IEnumerable<SchedulingPeriodShiftOff> schedulingPeriodShiftOffRequests)
+        {
+            
+            foreach (var shiftOffRequest in schedulingPeriodShiftOffRequests)
+            {
+                var day = shiftOffRequest.Day;
+                var offRequest = new ShiftOffRequest()
+                {
+                    Day = shiftOffRequest.Day,
+                    Type = scheduleContext.ShiftTypeDicitonary[shiftOffRequest.Shift]
+                };
+                
+                scheduleContext.Persons[shiftOffRequest.EmployeeID].ShiftOffRequests.Add(day,offRequest);
+
+            }
+        }
+
+        private void MapShiftTypes(IEnumerable<SchedulingPeriodShift> schedulingPeriodShiftTypes)
+        {
+            var shiftTypeCounter = 0;
             foreach (var shiftType in schedulingPeriodShiftTypes)
             {
-                ShiftType type = new ShiftType()
+                var type = new ShiftType()
                 {
                     Index = ++shiftTypeCounter,
                     ID = shiftType.ID,
@@ -44,85 +85,71 @@ namespace IPScheduler.Common
                     StartTime = CreateDateStartTime(shiftType.StartTime),
 
                 };
-                scheduleContext.ShiftTypeDicitonary.Add(shiftTypeCounter, type);
+                scheduleContext.ShiftTypeDicitonary.Add(shiftType.ID, type);
             }
         }
 
         private static Time CreateDateStartTime(string shiftTypeStartTime)
         {
-            string[] components = shiftTypeStartTime.Split(":");
-            Time time = new Time()
+            var components = shiftTypeStartTime.Split(":");
+            var time = new Time()
             {
                 Hour = Convert.ToInt32(components[0]),
                 Minute = Convert.ToInt32(components[1])
-            };
+            }; 
             return time;
         }
 
 
-        private void MapShiftOnRequests(SchedulingPeriodShiftOn[] schedulingPeriodShiftOnRequests)
+        private void MapShiftOnRequests(IEnumerable<SchedulingPeriodShiftOn> schedulingPeriodShiftOnRequests)
         {
             foreach (var shiftOnRequest in schedulingPeriodShiftOnRequests)
             {
-                var person = scheduleContext.Persons.SingleOrDefault(p => p.ID.Equals(shiftOnRequest.EmployeeID));
-              
-
+                var day = shiftOnRequest.Day;
+                var onRequest = new ShiftOnRequest()
+                {
+                    Day = shiftOnRequest.Day,
+                    Type = scheduleContext.ShiftTypeDicitonary[shiftOnRequest.Shift]
+                };
+                scheduleContext.Persons[shiftOnRequest.EmployeeID].ShiftOnRequests.Add(day,onRequest);
             }
         }
 
-        private void MapShifts(SchedulingPeriodDateSpecificCover[] schedulingPeriodDateSpecificCovers)
+        private void MapShifts(IEnumerable<SchedulingPeriodDateSpecificCover> schedulingPeriodDateSpecificCovers)
         {
-            int shiftCount = 0;
-            //for (int i = 0; i < schedulingPeriodDateSpecificCovers.Length; i++)
-            //{
-            //    for (int j = 0; j < scheduleContext.PersonCount; j++)
-            //    {
-            //        Shift shift = new Shift()
-            //        {
-            //            Index = shiftCount,
-            //            //Name = schedulingPeriodDateSpecificCovers[i].Cover[0]. + "(" +
-            //            //       schedulingPeriodDateSpecificCovers[i].Day + ": " +
-            //            //       schedulingPeriodDateSpecificCovers[i].Cover.Min + " - " +
-            //            //       schedulingPeriodDateSpecificCovers[i].Cover.Max + ")",
-            //            //Type = schedulingPeriodDateSpecificCovers[i].Cover.Shift,
-            //            //Priority = Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Cover.Min.Value) - 1 < j ? ShiftPriority.Min : Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Cover.Max.Value) - 1 < j ? ShiftPriority.Max : ShiftPriority.Opt,
-                        
-            //            Day = Convert.ToInt32(schedulingPeriodDateSpecificCovers[i].Day)
-            //         };
-            //        scheduleContext.Shifts.Add(shift);
-            //    }
-            //}
-
+            var shiftCount = 0;
 
             foreach (var datespecificCover in schedulingPeriodDateSpecificCovers)
             {
                 foreach (var cover in datespecificCover.Cover)
                 {
-                    Shift shift = new Shift()
+                    var shift = new Shift()
                     {
                         Index = shiftCount++,
                         Day = datespecificCover.Day,
                         Name = cover.Shift + "(" +
                                datespecificCover.Day + ": " +
-                            cover.Min + " - " +
-                         cover.Max + ")",
-                     //Type = scheduleContext.ShiftTypeDicitonary[cover.Shift],
+                               cover.Min + " - " +
+                               cover.Max + ")",
+                        Type = scheduleContext.ShiftTypeDicitonary[cover.Shift],
                     };
+                    scheduleContext.Shifts.Add(shift.Day,shift);
                 }
             }
         }
 
-        private void MapPersons(IReadOnlyList<SchedulingPeriodEmployee> schedulingPeriodEmployees)
+        private void MapPersons(IReadOnlyCollection<SchedulingPeriodEmployee> schedulingPeriodEmployees)
         {
-            for (var i = 0; i < schedulingPeriodEmployees.Count; i++)
+            var employeeCount = 0;
+            foreach (var employee in schedulingPeriodEmployees)
             {
                 var person = new Person
                 {
-                    Name = $"CID: {schedulingPeriodEmployees[i].ContractID} ID: {schedulingPeriodEmployees[i].ID}",
-                    Index = i,
-                    ID = schedulingPeriodEmployees[i].ID
+                    Name = $"CID: {employee.ContractID} ID: {employee.ID}",
+                    Index = ++employeeCount,
+                    ID = employee.ID
                 };
-                scheduleContext.Persons.Add(person);
+                scheduleContext.Persons.Add(person.ID,person);
             }
 
             scheduleContext.PersonCount = schedulingPeriodEmployees.Count;
@@ -132,10 +159,10 @@ namespace IPScheduler.Common
         {
             var graphedges = 0;
             var graphStarts = scheduleContext.Solver.NumConstraints();
-            foreach (var shift in scheduleContext.Shifts)
+            foreach (var shift in scheduleContext.Shifts.Values)
             {
                 var shiftEmployeePairs = new List<Variable>();
-                foreach (var employee in scheduleContext.Persons)
+                foreach (var employee in scheduleContext.Persons.Values)
                 {
                     // Változó egy összerendelési élre
                     var v = scheduleContext.Solver.MakeIntVar(0.0, 1.0, $"{employee.ID}-{shift.Index}");
@@ -164,24 +191,5 @@ namespace IPScheduler.Common
 
             scheduleContext.GraphEdges = graphedges;
         }
-    }
-
-    public class Time
-    {
-        public int Hour { get; set; }
-        public int Minute { get; set; }
-    }
-
-    public class ShiftType
-    {
-        public int Index { get; set; }
-        public string ID { get; set; }
-        public string Color { get; set; }
-        public Time StartTime { get; set; }
-    }
-
-    public class ShiftOnRequest
-    {
-        public int Day { get; set; }
     }
 }
