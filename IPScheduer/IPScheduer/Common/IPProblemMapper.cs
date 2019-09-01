@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Google.OrTools.LinearSolver;
 using IPScheduler.Models;
 using IPScheduler.Inputs;
@@ -28,6 +29,20 @@ namespace IPScheduler.Common
             MapShiftOnRequests(schedulingPeriod.ShiftOnRequests);
             MapShiftOffRequests(schedulingPeriod.ShiftOffRequests);
             MapFixedAssignments(schedulingPeriod.FixedAssignments);
+            MapContracts(schedulingPeriod.Contracts);
+        }
+
+        private void MapContracts(IEnumerable<SchedulingPeriodContract> schedulingPeriodContracts)
+        {
+            foreach (var contract in schedulingPeriodContracts)
+            {
+                var person = contract.ID;
+                var ct = new SchedulingContract()
+                {
+                    
+                };
+                scheduleContext.Persons[person].Contracts.Add(ct);
+            }
         }
 
         private void MapFixedAssignments(IEnumerable<SchedulingPeriodEmployee1> schedulingPeriodFixedAssignments)
@@ -145,7 +160,7 @@ namespace IPScheduler.Common
             {
                 var person = new Person
                 {
-                    Name = $"CID: {employee.ContractID} ID: {employee.ID}",
+                    Name = $"{employee.ID}",
                     Index = ++employeeCount,
                     ID = employee.ID
                 };
