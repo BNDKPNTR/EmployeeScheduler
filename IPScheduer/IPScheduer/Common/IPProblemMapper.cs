@@ -36,12 +36,17 @@ namespace IPScheduler.Common
         {
             foreach (var contract in schedulingPeriodContracts)
             {
-                var person = contract.ID;
-                var ct = new SchedulingContract()
+                var schedulingContract = new SchedulingContract()
                 {
-                    
+                    MaxSeq = contract.MaxSeq == null ? null : new SchedulingMaxSeq()
+                    {
+                        Shift = scheduleContext.ShiftTypeDicitonary[contract.MaxSeq.shift],
+                        MaxValue = Convert.ToInt32(contract.MaxSeq.value),
+                        // TODO : wight 
+                            
+                    } 
                 };
-                scheduleContext.Persons[person].Contracts.Add(ct);
+                scheduleContext.ContractDictionary.Add(contract.ID, schedulingContract);
             }
         }
 

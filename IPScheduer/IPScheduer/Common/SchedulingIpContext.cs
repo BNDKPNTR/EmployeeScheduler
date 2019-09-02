@@ -19,8 +19,8 @@ namespace IPScheduler.Common
         public int GraphEdges { get; internal set; }
         public int GraphStartsAt { get; internal set; }
         public int PersonCount { get; set; }
-        public Dictionary<string, ShiftType> ShiftTypeDicitonary { get; set; } = new Dictionary<string, ShiftType>(); 
-
+        public Dictionary<string, ShiftType> ShiftTypeDicitonary { get; set; } = new Dictionary<string, ShiftType>();
+        public Dictionary<string,SchedulingContract> ContractDictionary { get; } = new Dictionary<string, SchedulingContract>();
 
 
         public void RunAlgo()

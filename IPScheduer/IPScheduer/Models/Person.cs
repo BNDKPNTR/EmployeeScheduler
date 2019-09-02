@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using IPScheduler.Common;
 
 namespace IPScheduler.Models
 {
@@ -17,6 +16,7 @@ namespace IPScheduler.Models
         public Dictionary<int, ShiftOffRequest> ShiftOffRequests { get; } = new Dictionary<int, ShiftOffRequest>();
         public List<FixedFreeDay> FixedFreeDays { get; } = new List<FixedFreeDay>();
         public Dictionary<int, FixedAssaignment> FixedAssignments { get; } = new Dictionary<int, FixedAssaignment>();
+        public List<SchedulingContract> Contracts { get; } = new List<SchedulingContract>();
 
         public Person()
         {
