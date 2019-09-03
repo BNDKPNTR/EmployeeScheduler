@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Collections.Immutable;
+using System.Linq;
 using Google.OrTools.LinearSolver;
 using IPScheduler.Models;
 using IPScheduler.Inputs;
@@ -9,12 +10,14 @@ namespace IPScheduler.Common
 {
     public class IpProblemMapper
     {
+        private const string AllShiftId = "$";
+
         private readonly SchedulingIpContext scheduleContext = new SchedulingIpContext();
 
         public SchedulingIpContext MapToSolver(SchedulingPeriod schedulingPeriod)
         {
             Map(schedulingPeriod);
-            
+
             CreateAssignmentGraph();
 
             return scheduleContext;
@@ -30,25 +33,34 @@ namespace IPScheduler.Common
             MapShiftOffRequests(schedulingPeriod.ShiftOffRequests);
             MapFixedAssignments(schedulingPeriod.FixedAssignments);
             MapContracts(schedulingPeriod.Contracts);
+
         }
 
         private void MapContracts(IEnumerable<SchedulingPeriodContract> schedulingPeriodContracts)
         {
             foreach (var contract in schedulingPeriodContracts)
             {
-                var schedulingContract = new SchedulingContract()
+                scheduleContext.ContractDictionary.Add(contract.ID, new SchedulingContract
                 {
-                    MaxSeq = contract.MaxSeq == null ? null : new SchedulingMaxSeq()
-                    {
-                        Shift = scheduleContext.ShiftTypeDicitonary[contract.MaxSeq.shift],
-                        MaxValue = Convert.ToInt32(contract.MaxSeq.value),
-                        // TODO : wight 
-                            
-                    } 
-                };
-                scheduleContext.ContractDictionary.Add(contract.ID, schedulingContract);
+                    MaxSeqs = contract.MaxSeq?
+                        .Select(maxseq => new SchedulingMaxSeq
+                        {
+                            Shift = scheduleContext.ShiftTypeDicitonary[maxseq.shift],
+                            MaxValue = Convert.ToInt32(maxseq.value)
+                        })
+                        .ToImmutableList(),
+                    MinSeqs = contract.MinSeq?
+                        .Select(minseq => new SchedulingMinSeq()
+                        {
+                            Shift = scheduleContext.ShiftTypeDicitonary[minseq.shift],
+                            MinValue = Convert.ToInt32(minseq.value)
+                        })
+                        .ToImmutableList()
+                });
             }
         }
+
+
 
         private void MapFixedAssignments(IEnumerable<SchedulingPeriodEmployee1> schedulingPeriodFixedAssignments)
         {
@@ -67,17 +79,17 @@ namespace IPScheduler.Common
                 {
                     var fa = new FixedAssaignment()
                     {
-                        Type =  scheduleContext.ShiftTypeDicitonary[fixedAssignment.Assign.Shift]
+                        Type = scheduleContext.ShiftTypeDicitonary[fixedAssignment.Assign.Shift]
                     };
                     scheduleContext.Persons[fixedAssignment.EmployeeID].FixedAssignments.Add(day, fa);
                 }
-                
+
             }
         }
 
         private void MapShiftOffRequests(IEnumerable<SchedulingPeriodShiftOff> schedulingPeriodShiftOffRequests)
         {
-            
+
             foreach (var shiftOffRequest in schedulingPeriodShiftOffRequests)
             {
                 var day = shiftOffRequest.Day;
@@ -86,15 +98,23 @@ namespace IPScheduler.Common
                     Day = shiftOffRequest.Day,
                     Type = scheduleContext.ShiftTypeDicitonary[shiftOffRequest.Shift]
                 };
-                
-                scheduleContext.Persons[shiftOffRequest.EmployeeID].ShiftOffRequests.Add(day,offRequest);
+
+                scheduleContext.Persons[shiftOffRequest.EmployeeID].ShiftOffRequests.Add(day, offRequest);
 
             }
         }
 
         private void MapShiftTypes(IEnumerable<SchedulingPeriodShift> schedulingPeriodShiftTypes)
         {
-            var shiftTypeCounter = 0;
+            var shiftTypeCounter = 1;
+            scheduleContext.ShiftTypeDicitonary.Add("$", new ShiftType()
+            {
+                Index = ++shiftTypeCounter,
+                ID = "$",
+                Color = default,
+                StartTime = new Time(),
+
+            });
             foreach (var shiftType in schedulingPeriodShiftTypes)
             {
                 var type = new ShiftType()
@@ -116,7 +136,7 @@ namespace IPScheduler.Common
             {
                 Hour = Convert.ToInt32(components[0]),
                 Minute = Convert.ToInt32(components[1])
-            }; 
+            };
             return time;
         }
 
@@ -131,7 +151,7 @@ namespace IPScheduler.Common
                     Day = shiftOnRequest.Day,
                     Type = scheduleContext.ShiftTypeDicitonary[shiftOnRequest.Shift]
                 };
-                scheduleContext.Persons[shiftOnRequest.EmployeeID].ShiftOnRequests.Add(day,onRequest);
+                scheduleContext.Persons[shiftOnRequest.EmployeeID].ShiftOnRequests.Add(day, onRequest);
             }
         }
 
@@ -153,7 +173,7 @@ namespace IPScheduler.Common
                                cover.Max + ")",
                         Type = scheduleContext.ShiftTypeDicitonary[cover.Shift],
                     };
-                    scheduleContext.Shifts.Add(shift.Day,shift);
+                    scheduleContext.Shifts.Add(shift.Day, shift);
                 }
             }
         }
@@ -169,7 +189,7 @@ namespace IPScheduler.Common
                     Index = ++employeeCount,
                     ID = employee.ID
                 };
-                scheduleContext.Persons.Add(person.ID,person);
+                scheduleContext.Persons.Add(person.ID, person);
             }
 
             scheduleContext.PersonCount = schedulingPeriodEmployees.Count;
@@ -211,5 +231,11 @@ namespace IPScheduler.Common
 
             scheduleContext.GraphEdges = graphedges;
         }
+    }
+
+    public class SchedulingMinSeq
+    {
+        public ShiftType Shift { get; set; }
+        public int MinValue { get; set; }
     }
 }

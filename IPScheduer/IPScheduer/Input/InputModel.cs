@@ -233,7 +233,7 @@
 
         private SchedulingPeriodContractMaxTot[] maxTotField;
 
-        private SchedulingPeriodContractMaxSeq maxSeqField;
+        private SchedulingPeriodContractMaxSeq[] maxSeqField;
 
         private SchedulingPeriodContractMinSeq[] minSeqField;
 
@@ -262,7 +262,7 @@
         }
 
         /// <remarks/>
-        public SchedulingPeriodContractMaxSeq MaxSeq
+        public SchedulingPeriodContractMaxSeq[] MaxSeq
         {
             get
             {

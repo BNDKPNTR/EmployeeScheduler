@@ -1,9 +1,11 @@
-﻿using IPScheduler.Common;
+﻿using System.Collections.Immutable;
+using IPScheduler.Common;
 
 namespace IPScheduler.Models
 {
     public class SchedulingContract
     {
-        public SchedulingMaxSeq MaxSeq { get; set; }
+        public ImmutableList<SchedulingMaxSeq> MaxSeqs { get; set; }
+        public ImmutableList<SchedulingMinSeq> MinSeqs { get; set; }
     }
 }
