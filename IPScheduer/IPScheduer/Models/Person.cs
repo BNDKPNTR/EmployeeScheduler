@@ -15,7 +15,7 @@ namespace IPScheduler.Models
         public Dictionary<int,ShiftOnRequest> ShiftOnRequests { get; } = new Dictionary<int, ShiftOnRequest>();
         public Dictionary<int, ShiftOffRequest> ShiftOffRequests { get; } = new Dictionary<int, ShiftOffRequest>();
         public List<FixedFreeDay> FixedFreeDays { get; } = new List<FixedFreeDay>();
-        public Dictionary<int, FixedAssaignment> FixedAssignments { get; } = new Dictionary<int, FixedAssaignment>();
+        public List<FixedAssaignment> FixedAssignments { get; } = new List<FixedAssaignment>();
         public List<SchedulingContract> Contracts { get; } = new List<SchedulingContract>();
 
         public Person()

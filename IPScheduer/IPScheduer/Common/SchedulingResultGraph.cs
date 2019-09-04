@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Principal;
-using Google.OrTools.LinearSolver;
 using IPScheduler.Models;
 
 namespace IPScheduler.Common
@@ -23,7 +21,7 @@ namespace IPScheduler.Common
                     Console.Write($"Person {person.Name} is assignemd to: ");
                     for (var j = 0; j < Assignments[person.Index].Count; j++)
                     {
-                        Console.Write($"{Assignments[person.Index][j].ToString()} \t");
+                        Console.Write($"{Assignments[person.Index][j].Shift.Type.ID} on day: {Assignments[person.Index][j].Shift.Day} \t");
                     }   
                     Console.Write(Environment.NewLine);
                 }

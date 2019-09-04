@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Google.OrTools.LinearSolver;
 using IPScheduler.Models;
 
@@ -21,11 +22,19 @@ namespace IPScheduler.Common
         public int PersonCount { get; set; }
         public Dictionary<string, ShiftType> ShiftTypeDicitonary { get; set; } = new Dictionary<string, ShiftType>();
         public Dictionary<string,SchedulingContract> ContractDictionary { get; } = new Dictionary<string, SchedulingContract>();
+        public int DayCount { get; set; }
 
 
         public void RunAlgo()
         {
-            Solver.Maximize(new LinearExpr());
+            var objective = Solver.Objective();
+            foreach (var edge in Assignments.Select(a => a.assigningGraphEdge))
+            {
+                objective.SetCoefficient(edge,1.0);
+            }
+            objective.SetMinimization();
+
+           
             var resultStatus = Solver.Solve();
 
             SchedulingResultGraph resultGraph = SchedulingResultGraph.Create(Assignments);

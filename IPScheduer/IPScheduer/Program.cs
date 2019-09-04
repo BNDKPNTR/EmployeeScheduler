@@ -11,14 +11,21 @@ namespace IPScheduler
             //SolverTryout();
 
 
-            var input = XmlReader.ReadInstance(1);
+           // var input = XmlReader.ReadInstance(1);
+           var input = XmlReader.ReadInputFrom(@"testInstance.xml");
 
             IpProblemMapper mapper = new IpProblemMapper();
             
                var s = mapper.MapToSolver(input);
                
                s.RunAlgo();
-//
+
+               var resgraph = SchedulingResultGraph.Create(s.Assignments);
+
+               resgraph.WriteToConsole();
+               ;
+
+               //
 //            s.Solver.Maximize(s.Variables[0]);
 //            Solver.ResultStatus resultStatus = s.Solver.Solve();
 //
