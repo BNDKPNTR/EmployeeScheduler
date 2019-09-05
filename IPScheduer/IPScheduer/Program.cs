@@ -11,8 +11,8 @@ namespace IPScheduler
             //SolverTryout();
 
 
-           // var input = XmlReader.ReadInstance(1);
-           var input = XmlReader.ReadInputFrom(@"testInstance.xml");
+            var input = XmlReader.ReadInstance(1);
+          // var input = XmlReader.ReadInputFrom(@"testInstance.xml");
 
             IpProblemMapper mapper = new IpProblemMapper();
             

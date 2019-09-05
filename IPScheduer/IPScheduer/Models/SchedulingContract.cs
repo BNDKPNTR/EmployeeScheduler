@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using IPScheduler.Common;
 
 namespace IPScheduler.Models
 {

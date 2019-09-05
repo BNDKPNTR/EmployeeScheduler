@@ -8,5 +8,6 @@ namespace IPScheduler.Models
         public ShiftType Type { get; set; }
         
         public Variable ShiftOnRrequestVariable { get; set; }
+        public int Weight { get; set; }
     }
 }
