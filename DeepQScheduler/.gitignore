@@ -124,3 +124,4 @@ dmypy.json
 .pyre/
 
 .vscode/
+roster_viewer_format_result.txt

@@ -30,6 +30,17 @@ class SchedulingModel:
 
         return demandCountsOnDays
 
+    def calculateDemandPenalty(self) -> int:
+        penalty = 0
+
+        for dayIndex in range(0, self._dayCount):
+            assignmentsOnDay = sum(e.hasAssignmentOnDay(dayIndex) for e in self._employees)
+            demandsOnDay = self._demandCounts[dayIndex]
+            diff = demandsOnDay - assignmentsOnDay
+            penalty += diff * 100 if diff > 0 else -1 * diff * 100
+
+        return penalty
+
     @property
     def dayCount(self) -> int:
         return self._dayCount

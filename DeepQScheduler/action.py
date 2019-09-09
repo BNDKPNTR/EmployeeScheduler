@@ -1,9 +1,9 @@
 class Action:
-    def __init__(self, dayIndex: int, employeeIndex: int, demandIndex: int, add: bool):
+    def __init__(self, dayIndex: int, employeeIndex: int, shiftIndex: int, stateIndex: int):
         self._dayIndex = dayIndex
         self._employeeIndex = employeeIndex
-        self._demandIndex = demandIndex
-        self._add = add
+        self._shiftIndex = shiftIndex
+        self._stateIndex = stateIndex
 
     @property
     def DayIndex(self) -> int:
@@ -14,9 +14,9 @@ class Action:
         return self._employeeIndex
 
     @property
-    def DemandIndex(self) -> int:
-        return self._demandIndex
+    def ShiftIndex(self) -> int:
+        return self._shiftIndex
 
     @property
-    def Add(self) -> bool:
-        return self._add
+    def StateIndex(self) -> int:
+        return self._stateIndex

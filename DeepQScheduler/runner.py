@@ -22,6 +22,7 @@ class Runner:
     def run(self):
         state = self._env.reset()
         tot_reward = 0
+        stepCount = 0
 
         while True:
             action = self._choose_action(state)
@@ -37,6 +38,7 @@ class Runner:
 
             # exponentially decay the eps value
             self._steps += 1
+            stepCount += 1
             self._eps = constants.MIN_EPSILON + (constants.MAX_EPSILON - constants.MIN_EPSILON) * math.exp(-constants.LAMBDA * self._steps)
 
             # move the agent to the next state and accumulate the reward
@@ -48,7 +50,7 @@ class Runner:
                 self._reward_store.append(tot_reward)
                 break
 
-        print("Step {}, Total reward: {}, Eps: {}".format(self._steps, tot_reward, self._eps))
+        print("Steps: {}, Total reward: {}, Eps: {}".format(stepCount, tot_reward, self._eps))
 
     def _choose_action(self, state) -> int:
         if random.random() < self._eps:
