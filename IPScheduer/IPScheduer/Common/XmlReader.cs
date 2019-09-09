@@ -6,27 +6,18 @@ namespace IPScheduler.Common
 {
     public class XmlReader
     {
-        public static SchedulingPeriod ReadInputFrom(string path)
+        public static SchedulingPeriod ReadInputFrom(string filePath)
         {
-            XmlSerializer dser = new XmlSerializer(typeof(SchedulingPeriod));
+            SchedulingPeriod schedulingPeriod;
 
-            SchedulingPeriod sp;
+            using (var fileStream = new FileStream(filePath, FileMode.Open))
+                schedulingPeriod = new XmlSerializer(typeof(SchedulingPeriod)).Deserialize(fileStream) as SchedulingPeriod;
 
-            using (FileStream fs = new FileStream(path, FileMode.Open))
-            {
-                sp = dser.Deserialize(fs) as SchedulingPeriod;
-            }
-
-            if (sp == null)
-                throw new IOException($"File : {path} could not be serialized");
-
-            return sp;
+            return schedulingPeriod ?? throw new IOException($"File : {filePath} could not be serialized");
         }
 
         public static SchedulingPeriod ReadInstance(int instanceNumber)
             => ReadInputFrom(@"../../../Inputs/Instance" + instanceNumber + ".xml");
-
-
 
     }
 }

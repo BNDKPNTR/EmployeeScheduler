@@ -1,4 +1,6 @@
-﻿namespace IPScheduler.Models
+﻿using Google.OrTools.LinearSolver;
+
+namespace IPScheduler.Models
 {
     public class Shift
     {
@@ -9,5 +11,10 @@
         public int Day { get; set; }
         public int Max { get; set; }
         public int Min { get; set; }
+        public int MaxWeight { get; set; }
+        public int MinWeight { get; set; }
+
+        public Variable OverMax { get; set; }
+        public Variable UnderMin { get; set; }
     }
 }

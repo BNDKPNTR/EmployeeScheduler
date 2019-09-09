@@ -21,11 +21,14 @@ namespace IPScheduler.Common
         public int PersonCount { get; set; }
         public Dictionary<string, ShiftType> ShiftTypeDicitonary { get; set; } = new Dictionary<string, ShiftType>();
         public Dictionary<string,SchedulingContract> ContractDictionary { get; } = new Dictionary<string, SchedulingContract>();
+        public int DayCount { get; set; }
+        public Dictionary<string, Dictionary<int,Variable>> WeekEndVariables { get; set; } = new Dictionary<string, Dictionary<int,Variable>>();
+        public int WeekCount { get; set; }
 
 
         public void RunAlgo()
         {
-            Solver.Maximize(new LinearExpr());
+           
             var resultStatus = Solver.Solve();
 
             SchedulingResultGraph resultGraph = SchedulingResultGraph.Create(Assignments);
