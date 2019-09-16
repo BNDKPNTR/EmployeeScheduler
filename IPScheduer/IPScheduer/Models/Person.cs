@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace IPScheduler.Models
 {
@@ -16,7 +17,7 @@ namespace IPScheduler.Models
         public Dictionary<int, ShiftOffRequest> ShiftOffRequests { get; } = new Dictionary<int, ShiftOffRequest>();
         public List<FixedFreeDay> FixedFreeDays { get; } = new List<FixedFreeDay>();
         public List<FixedAssaignment> FixedAssignments { get; } = new List<FixedAssaignment>();
-        public List<SchedulingContract> Contracts { get; } = new List<SchedulingContract>();
+        public List<string> ContractIDs { get; set; } = new List<string>();
 
         public Person()
         {

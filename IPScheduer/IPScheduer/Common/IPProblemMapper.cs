@@ -75,8 +75,29 @@ namespace IPScheduler.Common
 
             CoverRequirementsConstraints();
 
+            SequenceConstraints();
+
+
             OnlyOneWeekendConstraints();
 
+        }
+
+        private void SequenceConstraints()
+        {
+            foreach (var person in scheduleContext.Persons.Values)
+            {
+                var assaignments = scheduleContext.Assignments.Where(a => a.Person.ID == person.ID);
+                //int personMinValue = person.ContractID.Max(c => c.MinSeqs.Max(ms => ms.MinValue));
+                //int personMaxValue = person.Contracts.Min(c => c.MaxSeqs.Min(ms => ms.MaxValue));
+                //var constraint = scheduleContext.Solver.MakeConstraint(personMinValue,personMaxValue
+                //    ,$"Person : {person.ID} needs to work min: {personMinValue}, but can only work max: {personMaxValue}");
+                //foreach (var assaignment in assaignments.Where(a => a.Person.ID.Equals(person.ID)))
+                //{
+                //    constraint.SetCoefficient(assaignment.assigningGraphEdge,assaignment.Shift.Type.DurationInMnutes);
+                //}
+
+
+            }
         }
 
         private void OnlyOneWeekendConstraints()
@@ -91,17 +112,17 @@ namespace IPScheduler.Common
 
 
 
-                //var constraint = scheduleContext.Solver.MakeConstraint(0.0,1.0, $"OnlyOneWeekendConstraint person: {person.ID}");
+                var constraint = scheduleContext.Solver.MakeConstraint(0.0,1.0, $"OnlyOneWeekendConstraint person: {person.ID}");
 
-                //foreach (var saturday in saturdayDays)
-                //{
-                //    var thatSaturdayDayAssaignments = saturdayAssaignments.Where(a => a.Shift.Day == saturday);
-                //    var thatSundayDayAssaignments = sundayAssaignments.Where(a => a.Shift.Day == saturday+1);
-                //    // TODO : only one weekend on scheduling period
+                foreach (var saturday in saturdayDays)
+                {
+                    var thatSaturdayDayAssaignments = saturdayAssaignments.Where(a => a.Shift.Day == saturday);
+                    var thatSundayDayAssaignments = sundayAssaignments.Where(a => a.Shift.Day == saturday + 1);
+                    // TODO : only one weekend on scheduling period
 
-                    
-                //    constraint.SetCoefficient(scheduleContext.WeekEndVariables[person.ID][1+(saturday/7)],1.0);
-                //}
+
+                    constraint.SetCoefficient(scheduleContext.WeekEndVariables[person.ID][saturday / 7], 1.0);
+                }
             }
         }
 
@@ -248,11 +269,11 @@ namespace IPScheduler.Common
 
             MapShiftTypes(schedulingPeriod.ShiftTypes);
             MapPersons(schedulingPeriod.Employees);
+            MapContracts(schedulingPeriod.Contracts);
             MapShifts(schedulingPeriod.CoverRequirements);
             MapShiftOnRequests(schedulingPeriod.ShiftOnRequests);
             MapShiftOffRequests(schedulingPeriod.ShiftOffRequests);
             MapFixedAssignments(schedulingPeriod.FixedAssignments);
-            MapContracts(schedulingPeriod.Contracts);
 
             MapExtraInfomraiton();
         }
@@ -280,23 +301,30 @@ namespace IPScheduler.Common
         {
             foreach (var contract in schedulingPeriodContracts)
             {
+                var maxSeq = contract.MaxSeq?
+                    .Select(maxseq => new SchedulingMaxSeq
+                    {
+                        Shift = scheduleContext.ShiftTypeDicitonary[maxseq.shift],
+                        MaxValue = Convert.ToInt32(maxseq.value)
+                    })
+                    .ToImmutableList()
+                    ;
+                var minSeq = contract.MinSeq?
+                    .Select(minseq => new SchedulingMinSeq()
+                    {
+                        Shift = scheduleContext.ShiftTypeDicitonary[minseq.shift],
+                        MinValue = Convert.ToInt32(minseq.value)
+                    })
+                    .ToImmutableList()
+                    ;
+               
                 scheduleContext.ContractDictionary.Add(contract.ID, new SchedulingContract
                 {
-                    MaxSeqs = contract.MaxSeq?
-                        .Select(maxseq => new SchedulingMaxSeq
-                        {
-                            Shift = scheduleContext.ShiftTypeDicitonary[maxseq.shift],
-                            MaxValue = Convert.ToInt32(maxseq.value)
-                        })
-                        .ToImmutableList(),
-                    MinSeqs = contract.MinSeq?
-                        .Select(minseq => new SchedulingMinSeq()
-                        {
-                            Shift = scheduleContext.ShiftTypeDicitonary[minseq.shift],
-                            MinValue = Convert.ToInt32(minseq.value)
-                        })
-                        .ToImmutableList()
+
+                    MaxSeqs = maxSeq,
+                    MinSeqs = minSeq
                 });
+
             }
         }
 
@@ -446,7 +474,8 @@ namespace IPScheduler.Common
                 {
                     Name = $"{employee.ID}",
                     Index = ++employeeCount,
-                    ID = employee.ID
+                    ID = employee.ID,
+                    ContractIDs = employee.ContractID.ToList()
                 };
                 scheduleContext.Persons.Add(person.ID, person);
             }
