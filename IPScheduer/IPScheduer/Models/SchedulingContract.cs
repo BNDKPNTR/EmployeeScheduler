@@ -6,5 +6,8 @@ namespace IPScheduler.Models
     {
         public ImmutableList<SchedulingMaxSeq> MaxSeqs { get; set; }
         public ImmutableList<SchedulingMinSeq> MinSeqs { get; set; }
+        public int? MinWork { get; set; }
+        public int? MaxWork { get; set; }
+        public string[] ValidShiftIDs  { get; set; }
     }
 }

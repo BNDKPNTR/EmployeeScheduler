@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using IPScheduler.Models;
 
 namespace IPScheduler.Common
@@ -52,6 +54,37 @@ namespace IPScheduler.Common
                 }
             }
             return resultGraph;
+        }
+
+
+        public static string ToRosterViewerFormat(SchedulingIpContext scheduleContext)
+        {
+            var builder = new StringBuilder();
+
+            foreach (var person in scheduleContext.Persons.Values)
+            {
+                foreach (var day in Enumerable.Range(0, scheduleContext.DayCount-1))
+                {
+                    var assaignmentsThatDay = scheduleContext.Assignments.Single(a => a.Shift.Day == day && a.Person.ID.Equals(person.ID));
+
+                    if (Math.Abs(assaignmentsThatDay.assigningGraphEdge.SolutionValue()) < double.Epsilon)
+                    {
+                        builder.Append("\t");
+                    }
+                    else
+                    {
+                        builder.Append($"{assaignmentsThatDay.Shift.Type.ID}\t");
+                    }
+
+                    builder.AppendLine();
+
+                }
+
+            }
+
+            return builder.ToString();
+
+
         }
     }
 }

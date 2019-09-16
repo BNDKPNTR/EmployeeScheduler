@@ -23,7 +23,9 @@ namespace IPScheduler
                var resgraph = SchedulingResultGraph.Create(s.Assignments);
 
                resgraph.WriteToConsole();
-               ;
+               var result = SchedulingResultGraph.ToRosterViewerFormat(s);
+               Clipboard.Copy(result);
+            ;
 
                //
 //            s.Solver.Maximize(s.Variables[0]);
