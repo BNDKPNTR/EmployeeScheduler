@@ -28,8 +28,12 @@ namespace IPScheduler.Common
 
         public void RunAlgo()
         {
-           
+            Console.WriteLine(Solver.NumConstraints());
+
+
             var resultStatus = Solver.Solve();
+
+
 
             SchedulingResultGraph resultGraph = SchedulingResultGraph.Create(Assignments);
 

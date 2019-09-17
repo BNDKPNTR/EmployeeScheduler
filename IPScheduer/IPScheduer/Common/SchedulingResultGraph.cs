@@ -12,18 +12,18 @@ namespace IPScheduler.Common
 
         public HashSet<Shift> Shifts { get; set; } = new HashSet<Shift>();
         
-        public Dictionary<int, List<Assignment>> Assignments = new Dictionary<int, List<Assignment>>();
+        public Dictionary<string, List<Assignment>> Assignments = new Dictionary<string, List<Assignment>>();
 
         public void WriteToConsole()
         {
             foreach (var person in Persons)
             {
-                if(Assignments.ContainsKey(person.Index))
+                if(Assignments.ContainsKey(person.ID))
                 {
                     Console.Write($"Person {person.Name} is assignemd to: ");
-                    for (var j = 0; j < Assignments[person.Index].Count; j++)
+                    for (var j = 0; j < Assignments[person.ID].Count; j++)
                     {
-                        Console.Write($"{Assignments[person.Index][j].Shift.Type.ID} on day: {Assignments[person.Index][j].Shift.Day} \t");
+                        Console.Write($"{Assignments[person.ID][j].Shift.Type.ID} on day: {Assignments[person.ID][j].Shift.Day} \t");
                     }   
                     Console.Write(Environment.NewLine);
                 }
@@ -42,14 +42,14 @@ namespace IPScheduler.Common
                 resultGraph.Shifts.Add(assignment.Shift);
                 if (Math.Abs(assignment.assigningGraphEdge.SolutionValue() - 1.0) < double.Epsilon)
                 {
-                    if (resultGraph.Assignments.ContainsKey(assignment.Person.Index))
+                    if (resultGraph.Assignments.ContainsKey(assignment.Person.ID))
                     {
-                        resultGraph.Assignments[assignment.Person.Index].Add(assignment);
+                        resultGraph.Assignments[assignment.Person.ID].Add(assignment);
                     }
                     else
                     {
-                        resultGraph.Assignments.Add(assignment.Person.Index,new List<Assignment>());
-                        resultGraph.Assignments[assignment.Person.Index].Add(assignment);
+                        resultGraph.Assignments.Add(assignment.Person.ID,new List<Assignment>());
+                        resultGraph.Assignments[assignment.Person.ID].Add(assignment);
                     }
                 }
             }

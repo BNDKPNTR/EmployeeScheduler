@@ -86,15 +86,19 @@ namespace IPScheduler.Common
         {
             foreach (var person in scheduleContext.Persons.Values)
             {
+                
                 foreach (var contractID in person.ContractIDs)
                 {
+                    // if contranct contains minseq
                     if (!scheduleContext.ContractDictionary[contractID].MinSeqs.IsEmpty)
                     {
+                        
                         foreach (var minSeq in scheduleContext.ContractDictionary[contractID].MinSeqs)
                         {
+                            // if a minseq is valid for general shift
                             if (minSeq.Shift.ID.Equals(AllShiftId))
                             {
-
+                                CreateMinSeqConstraint(person, minSeq.MinValue, scheduleContext.Assignments.Where(a => a.Person.ID.Equals(person.ID)));
                             }
                         }
                     }
@@ -102,6 +106,30 @@ namespace IPScheduler.Common
 
 
             }
+        }
+
+        private void CreateMinSeqConstraint(Person person, int minSeqMinValue, IEnumerable<Assignment> assaignments)
+        {
+            var days = assaignments.Select(a => a.Shift.Day).Max();
+            for (int i = 0; i <= days-minSeqMinValue+1; i++)
+            {
+                var currentAssaignments = new List<Assignment>();
+                currentAssaignments = assaignments.Where(a => a.Shift.Day >= i && a.Shift.Day <= i + minSeqMinValue - 1).ToList();
+
+                Variable v = scheduleContext.Solver.MakeIntVar(minSeqMinValue, minSeqMinValue, "minseqvar");
+
+
+
+                var constraint = scheduleContext.Solver.MakeConstraint(0.0, minSeqMinValue-1,
+                    $"MinSeqConstraint fore person: {person.ID}, from day: {i}, minlength: {minSeqMinValue}");
+                constraint.SetCoefficient(v,-1.0);
+                foreach (var assignment in currentAssaignments)
+                {
+                    constraint.SetCoefficient(assignment.assigningGraphEdge,1.0);
+                }
+
+            }
+
         }
 
         private void OnlyOneWeekendConstraints()
