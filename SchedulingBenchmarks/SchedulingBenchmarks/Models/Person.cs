@@ -7,11 +7,11 @@ namespace SchedulingBenchmarks.Models
     class Person
     {
         public string Id { get; }
-        public State State { get; }
+        public State State { get; set; }
         public WorkSchedule WorkSchedule { get; }
         public bool[] Availabilities { get; }
         public Dictionary<int, ShiftRequest> ShiftRequests { get; }
-        public AssignmentsCollection Assignments { get; }
+        public AssignmentsCollection Assignments { get; set; }
 
         public Person(string id, State state, WorkSchedule workSchedule, bool[] availabilities, Dictionary<int, ShiftRequest> shiftRequests)
         {

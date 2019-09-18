@@ -4,9 +4,9 @@ using System.Text;
 
 namespace SchedulingBenchmarks.Models
 {
-    class AssignmentsCollection
+    class AssignmentsCollection : ICloneable
     {
-        private readonly Dictionary<int, Assignment> _allRounds;
+        private Dictionary<int, Assignment> _allRounds;
         private Dictionary<int, Assignment> _latestRound;
         private Dictionary<int, Assignment> _previousAssignments;
 
@@ -21,11 +21,20 @@ namespace SchedulingBenchmarks.Models
             _latestRound = new Dictionary<int, Assignment>();
         }
 
-        public void Add(int day, Assignment assignment)
+        public Assignment Add(int day, Assignment assignment)
         {
             // Let the dictionaries throw and exception if an assigment already exists for the given day
             _allRounds.Add(day, assignment);
             _latestRound.Add(day, assignment);
+
+            return assignment;
+        }
+
+        public void Remove(int day)
+        {
+            _allRounds.Remove(day);
+            _latestRound.Remove(day);
+            _previousAssignments.Remove(day);
         }
 
         public void StartNewRound()
@@ -36,6 +45,25 @@ namespace SchedulingBenchmarks.Models
             }
 
             _latestRound = new Dictionary<int, Assignment>();
+        }
+
+        public AssignmentsCollection Clone()
+        {
+            return new AssignmentsCollection
+            {
+                _allRounds = new Dictionary<int, Assignment>(_allRounds),
+                _latestRound = new Dictionary<int, Assignment>(_latestRound),
+                _previousAssignments = new Dictionary<int, Assignment>(_previousAssignments)
+            };
+        }
+
+        object ICloneable.Clone() => Clone();
+
+        public void Restore(AssignmentsCollection collection)
+        {
+            _allRounds = collection._allRounds;
+            _latestRound = collection._latestRound;
+            _previousAssignments = collection._previousAssignments;
         }
     }
 }
