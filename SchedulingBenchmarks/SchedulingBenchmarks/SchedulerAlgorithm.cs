@@ -20,12 +20,12 @@ namespace SchedulingBenchmarks
         {
             _model = model;
             _stateCalculator = new StateCalculator(_model.SchedulePeriod, _model.Calendar);
-            _costFunction = CreateCompositeCostFunction();
+            _costFunction = CreateCompositeCostFunction(model);
         }
 
         public void Run()
         {
-            SchedulePeopleForMinDemands();
+            //SchedulePeopleForMinDemands();
             //SchedulePeopleForWeekends();
             SchedulePeopleForAllDemands();
             SchedulePeopleUntilMinTotalWorkTime();
@@ -308,13 +308,15 @@ namespace SchedulingBenchmarks
             });
         }
 
-        private CompositeCostFunction CreateCompositeCostFunction()
+        private CompositeCostFunction CreateCompositeCostFunction(SchedulerModel model)
         {
+            var (maxShiftOffRequestWeight, maxShiftOnRequestWeight) = ShiftRequestCostFunction.GetMaxWeights(model);
+
             var costFunctions = new CostFunctionBase[]
             {
                 new WeekendWorkCostFunction(_model.Calendar),
                 new TotalWorkTimeCostFunction(),
-                new ShiftRequestCostFunction(),
+                new ShiftRequestCostFunction(maxShiftOffRequestWeight, maxShiftOnRequestWeight),
                 new ConsecutiveShiftCostFunction(_model.Calendar),
                 new DayOffCostFunction(),
                 new ValidShiftCostFunction(),
