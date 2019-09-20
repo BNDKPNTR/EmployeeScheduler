@@ -430,7 +430,7 @@ namespace SchedulingBenchmarks
 
         private void RemoveUnderMinConsecutiveShifts()
         {
-            foreach (var person in _model.People)
+            Parallel.ForEach(_model.People, person =>
             {
                 foreach (var assignmentGroup in GetAssignmentGroups(person).Where(r => r.Start != 0 && r.End != _model.SchedulePeriod.End))
                 {
@@ -442,7 +442,7 @@ namespace SchedulingBenchmarks
                         }
                     }
                 }
-            }
+            });
 
             List<Range> GetAssignmentGroups(Person p)
             {
