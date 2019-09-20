@@ -60,9 +60,10 @@ namespace IPScheduler.Common
         public static string ToRosterViewerFormat(SchedulingIpContext scheduleContext)
         {
             var builder = new StringBuilder();
-
+            int pc = 0;
             foreach (var person in scheduleContext.Persons.Values)
             {
+                pc++;
                 foreach (var day in Enumerable.Range(0, scheduleContext.DayCount-1))
                 {
                     var assaignmentsThatDay = scheduleContext.Assignments.Single(a => a.Shift.Day == day && a.Person.ID.Equals(person.ID));
@@ -76,9 +77,12 @@ namespace IPScheduler.Common
                         builder.Append($"{assaignmentsThatDay.Shift.Type.ID}\t");
                     }
 
-                    builder.AppendLine();
+                   
 
                 }
+
+                if (pc != scheduleContext.PersonCount)
+                    builder.AppendLine();
 
             }
 

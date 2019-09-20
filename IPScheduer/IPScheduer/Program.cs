@@ -25,6 +25,9 @@ namespace IPScheduler
                resgraph.WriteToConsole();
                var result = SchedulingResultGraph.ToRosterViewerFormat(s);
                Clipboard.Copy(result);
+
+               Console.WriteLine($"Objective: {s.Solver.Objective().Value()}");
+        
             ;
 
                //
