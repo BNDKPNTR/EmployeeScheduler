@@ -30,6 +30,7 @@ namespace SchedulingBenchmarks
             SchedulePeopleForAllDemands();
             SchedulePeopleUntilMinTotalWorkTime();
             ReplaceSingleWeekendsWithDoubleWeekends();
+            RemoveUnderMinConsecutiveShifts();
         }
 
         private void SchedulePeopleForMinDemands()
@@ -424,6 +425,52 @@ namespace SchedulingBenchmarks
 
                 return Range.Of(day + 1, length: p.WorkSchedule.MinConsecutiveWorkDays).All(d => p.Assignments.AllRounds.ContainsKey(d))
                     || Range.Of(end: day - 1, length: p.WorkSchedule.MinConsecutiveWorkDays).All(d => p.Assignments.AllRounds.ContainsKey(d));
+            }
+        }
+
+        private void RemoveUnderMinConsecutiveShifts()
+        {
+            Parallel.ForEach(_model.People, person =>
+            {
+                foreach (var assignmentGroup in GetAssignmentGroups(person).Where(r => r.Start != 0 && r.End != _model.SchedulePeriod.End))
+                {
+                    if (assignmentGroup.Length < person.WorkSchedule.MinConsecutiveWorkDays)
+                    {
+                        foreach (var day in assignmentGroup)
+                        {
+                            person.Assignments.Remove(day);
+                        }
+                    }
+                }
+            });
+
+            List<Range> GetAssignmentGroups(Person p)
+            {
+                var assignmentGroups = new List<Range>();
+
+                if (p.Assignments.AllRounds.Count == 0) return assignmentGroups;
+
+                var firstAssignmentInRow = p.Assignments.AllRounds.Values.First();
+                var lastAssignmentInRow = firstAssignmentInRow;
+
+                foreach (var assignment in p.Assignments.AllRounds.Values.Skip(1))
+                {
+                    if (assignment.Day != lastAssignmentInRow.Day + 1)
+                    {
+                        assignmentGroups.Add(Range.Of(firstAssignmentInRow.Day, lastAssignmentInRow.Day));
+
+                        firstAssignmentInRow = assignment;
+                        lastAssignmentInRow = firstAssignmentInRow;
+                    }
+                    else
+                    {
+                        lastAssignmentInRow = assignment;
+                    }
+                }
+
+                assignmentGroups.Add(Range.Of(firstAssignmentInRow.Day, lastAssignmentInRow.Day));
+
+                return assignmentGroups;
             }
         }
 
