@@ -17,7 +17,7 @@ namespace IPScheduler.Common
         }
 
         public static SchedulingPeriod ReadInstance(int instanceNumber)
-            => ReadInputFrom(@"../../../Inputs/Instance" + instanceNumber + ".xml");
+            => ReadInputFrom(@"../../../Inputs/Instance" + instanceNumber + ".ros");
 
     }
 }

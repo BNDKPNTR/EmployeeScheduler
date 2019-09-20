@@ -66,15 +66,23 @@ namespace IPScheduler.Common
                 pc++;
                 foreach (var day in Enumerable.Range(0, scheduleContext.DayCount-1))
                 {
-                    var assaignmentsThatDay = scheduleContext.Assignments.Single(a => a.Shift.Day == day && a.Person.ID.Equals(person.ID));
-
-                    if (Math.Abs(assaignmentsThatDay.assigningGraphEdge.SolutionValue()) < double.Epsilon)
+                    var assignmentsThatDay = scheduleContext.Assignments.Where(a => a.Shift.Day == day && a.Person.ID.Equals(person.ID));
+                    var today = "";
+                    foreach (var assignemnt in assignmentsThatDay)
+                    {
+                        if (Math.Abs(assignemnt.assigningGraphEdge.SolutionValue() - 1.0) < double.Epsilon)
+                        {
+                            today = $"{assignemnt.Shift.Type.ID}\t";
+                            break;
+                        }
+                    }
+                    if (today == "")
                     {
                         builder.Append("\t");
                     }
                     else
                     {
-                        builder.Append($"{assaignmentsThatDay.Shift.Type.ID}\t");
+                        builder.Append(today);
                     }
 
                    

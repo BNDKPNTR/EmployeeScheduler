@@ -254,16 +254,16 @@ namespace IPScheduler.Common
 
         private void CoverRequirementsConstraints()
         {
-            foreach (var (day, shift) in scheduleContext.Shifts)
+            foreach (var shift in scheduleContext.Shifts)
             {
                 var maxConstraint = scheduleContext.Solver.MakeConstraint(0.0, shift.Max,
-                    $"CoverRequirementMaxConstraint shift: {shift.Type.ID}, day: {day}, max: {shift.Max}");
+                    $"CoverRequirementMaxConstraint shift: {shift.Type.ID}, day: {shift.Day}, max: {shift.Max}");
                 var minConstraint = scheduleContext.Solver.MakeConstraint(shift.Min, scheduleContext.PersonCount,
-                    $"CoverRequirementMinConstraint shift: {shift.Type.ID}, day: {day}, min: {shift.Min}");
-                var e = scheduleContext.Assignments.Where(a => a.Shift.Day == day && a.Shift.Type.ID == shift.Type.ID);
+                    $"CoverRequirementMinConstraint shift: {shift.Type.ID}, day: {shift.Day}, min: {shift.Min}");
+                var e = scheduleContext.Assignments.Where(a => a.Shift.Day == shift.Day && a.Shift.Type.ID == shift.Type.ID);
 
                 foreach (var assignment in scheduleContext.Assignments.Where(a =>
-                    a.Shift.Day == day && a.Shift.Type.ID == shift.Type.ID))
+                    a.Shift.Day == shift.Day && a.Shift.Type.ID == shift.Type.ID))
                 {
                     maxConstraint.SetCoefficient(assignment.assigningGraphEdge, 1.0);
                     minConstraint.SetCoefficient(assignment.assigningGraphEdge, 1.0);
@@ -382,7 +382,7 @@ namespace IPScheduler.Common
 
         private void OnlyOnePersonForAnAssignmentCOnstraint()
         {
-            foreach (var shift in scheduleContext.Shifts.Values)
+            foreach (var shift in scheduleContext.Shifts)
             {
                 var shiftEmployeePairs = scheduleContext.Assignments
                     .Where(a => a.Shift.Index == shift.Index)
@@ -413,7 +413,7 @@ namespace IPScheduler.Common
 
         private void MapExtraInfomraiton()
         {
-            scheduleContext.DayCount = scheduleContext.Shifts.Keys.Max();
+            scheduleContext.DayCount = scheduleContext.Shifts.Max(s => s.Day);
             var weekCount = scheduleContext.DayCount % 7 == 0
                 ? scheduleContext.DayCount / 7
                 : (scheduleContext.DayCount / 7) + 1;
@@ -618,7 +618,7 @@ namespace IPScheduler.Common
                         UnderMin = scheduleContext.Solver.MakeIntVar(0.0, Convert.ToInt32(cover.Min.Value),
                             $"UnderMin on shift: {cover.Shift}, day: {datespecificCover.Day}"),
                     };
-                    scheduleContext.Shifts.Add(shift.Day, shift);
+                    scheduleContext.Shifts.Add(shift);
                 }
             }
         }
@@ -645,7 +645,7 @@ namespace IPScheduler.Common
         {
             var graphEdges = 0;
             var graphStarts = scheduleContext.Solver.NumConstraints();
-            foreach (var shift in scheduleContext.Shifts.Values)
+            foreach (var shift in scheduleContext.Shifts)
             {
                 var shiftEmployeePairs = new List<Variable>();
                 foreach (var employee in scheduleContext.Persons.Values)

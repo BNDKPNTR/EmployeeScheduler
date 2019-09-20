@@ -9,7 +9,7 @@ namespace IPScheduler.Common
     public class SchedulingIpContext
     {
         public Dictionary<string, Person> Persons { get; set; } = new Dictionary<string, Person>();
-        public Dictionary<int, Shift> Shifts { get; set; } = new Dictionary<int, Shift>();
+        public List<Shift> Shifts { get; set; } = new List<Shift>();
 
         public List<Assignment> Assignments { get; set; } = new List<Assignment>();
         

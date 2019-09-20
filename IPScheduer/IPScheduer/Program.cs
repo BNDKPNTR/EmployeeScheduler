@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Google.OrTools.LinearSolver;
 using IPScheduler.Common;
 
@@ -8,10 +9,12 @@ namespace IPScheduler
     {
         static void Main(string[] args)
         {
+            Stopwatch stopwatch  =new Stopwatch();
+            stopwatch.Start();
             //SolverTryout();
 
 
-            var input = XmlReader.ReadInstance(1);
+            var input = XmlReader.ReadInstance(20);
           // var input = XmlReader.ReadInputFrom(@"testInstance.xml");
 
             IpProblemMapper mapper = new IpProblemMapper();
@@ -27,7 +30,8 @@ namespace IPScheduler
                Clipboard.Copy(result);
 
                Console.WriteLine($"Objective: {s.Solver.Objective().Value()}");
-        
+               stopwatch.Stop();
+               Console.WriteLine($"elasped: {stopwatch.ElapsedMilliseconds}");
             ;
 
                //
