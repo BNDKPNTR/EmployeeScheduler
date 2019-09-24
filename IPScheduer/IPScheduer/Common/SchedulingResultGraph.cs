@@ -64,7 +64,7 @@ namespace IPScheduler.Common
             foreach (var person in scheduleContext.Persons.Values)
             {
                 pc++;
-                foreach (var day in Enumerable.Range(0, scheduleContext.DayCount-1))
+                foreach (var day in Enumerable.Range(0, scheduleContext.DayCount+1))
                 {
                     var assignmentsThatDay = scheduleContext.Assignments.Where(a => a.Shift.Day == day && a.Person.ID.Equals(person.ID));
                     var today = "";

@@ -14,7 +14,7 @@ namespace IPScheduler
             //SolverTryout();
 
 
-            var input = XmlReader.ReadInstance(20);
+            var input = XmlReader.ReadInstance(1);
           // var input = XmlReader.ReadInputFrom(@"testInstance.xml");
 
             IpProblemMapper mapper = new IpProblemMapper();
@@ -23,12 +23,12 @@ namespace IPScheduler
                
                s.RunAlgo();
 
-               var resgraph = SchedulingResultGraph.Create(s.Assignments);
+              // var resgraph = SchedulingResultGraph.Create(s.Assignments);
 
-               resgraph.WriteToConsole();
+              // resgraph.WriteToConsole();
                var result = SchedulingResultGraph.ToRosterViewerFormat(s);
                Clipboard.Copy(result);
-
+               Console.WriteLine("Constraint Count:" + s.Solver.NumConstraints());
                Console.WriteLine($"Objective: {s.Solver.Objective().Value()}");
                stopwatch.Stop();
                Console.WriteLine($"elasped: {stopwatch.ElapsedMilliseconds}");
@@ -56,7 +56,7 @@ namespace IPScheduler
             s.Add(5 * x + 5 * y >= 20);
             s.Add(2 * x + 6 * y >= 12);
 
-            Console.WriteLine(s.NumConstraints());
+            Console.WriteLine("Constraint Count:" + s.NumConstraints());
 
             s.Minimize(1100 * x + 1000 * y);
 
