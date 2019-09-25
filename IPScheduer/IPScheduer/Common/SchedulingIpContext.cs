@@ -28,7 +28,7 @@ namespace IPScheduler.Common
 
         public void RunAlgo()
         {
-            Console.WriteLine(Solver.NumConstraints());
+         //   Console.WriteLine(Solver.NumConstraints());
 
 
             var resultStatus = Solver.Solve();

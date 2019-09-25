@@ -57,7 +57,7 @@ namespace IPScheduler.Common
         }
 
 
-        public static string ToRosterViewerFormat(SchedulingIpContext scheduleContext)
+        public static string ToRosterViewerFormat(SchedulingIpContext scheduleContext, bool logOn =false)
         {
             var builder = new StringBuilder();
             int pc = 0;
@@ -70,7 +70,8 @@ namespace IPScheduler.Common
                     var today = "";
                     foreach (var assignemnt in assignmentsThatDay)
                     {
-                        Console.WriteLine($"day: {day}, person: {assignemnt.Person.ID}, graphedge: {assignemnt.assigningGraphEdge.SolutionValue()}");
+                        if(logOn)
+                            Console.WriteLine($"day: {day}, person: {assignemnt.Person.ID}, graphedge: {assignemnt.assigningGraphEdge.SolutionValue()}");
                         if (Math.Abs(assignemnt.assigningGraphEdge.SolutionValue() - 1.0) < double.Epsilon)
                         {
                             today = $"{assignemnt.Shift.Type.ID}\t";
