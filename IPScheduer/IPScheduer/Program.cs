@@ -9,7 +9,7 @@ namespace IPScheduler
     {
         static void Main(string[] args)
         {
-            Stopwatch stopwatch  =new Stopwatch();
+            Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             //SolverTryout();
 
@@ -33,13 +33,6 @@ namespace IPScheduler
                stopwatch.Stop();
                Console.WriteLine($"elasped: {stopwatch.ElapsedMilliseconds}");
             ;
-
-               //
-//            s.Solver.Maximize(s.Variables[0]);
-//            Solver.ResultStatus resultStatus = s.Solver.Solve();
-//
-//            Console.WriteLine(s.Solver.Objective().Value());
-
 
         }
 
