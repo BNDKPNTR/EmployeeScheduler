@@ -9,33 +9,50 @@ namespace IPScheduler
     {
         static void Main(string[] args)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            //SolverTryout();
+            long min = long.MaxValue, max = long.MinValue, average = 0, sum = 0;
+            int LOOPMAX = 1;
+            for (var i = 0; i < LOOPMAX; i++)
+            {
+                long runtime =RunInstance();
+                if (runtime > max)
+                    max = runtime;
+                if(runtime < min)
+                    min = runtime;
+                sum += runtime;
+            }
 
+            average = sum / LOOPMAX;
+            Console.WriteLine($"avg: {average}");
+            Console.WriteLine($"max: {max}");
+            Console.WriteLine($"min: {min}");
 
-            var input = XmlReader.ReadInstance(1);
-          // var input = XmlReader.ReadInputFrom(@"testInstance.xml");
-
-            IpProblemMapper mapper = new IpProblemMapper();
-            
-               var s = mapper.MapToSolver(input);
-               
-               s.RunAlgo();
-
-              // var resgraph = SchedulingResultGraph.Create(s.Assignments);
-
-              // resgraph.WriteToConsole();
-               var result = SchedulingResultGraph.ToRosterViewerFormat(s);
-               Clipboard.Copy(result);
-               Console.WriteLine("Constraint Count:" + s.Solver.NumConstraints());
-               Console.WriteLine($"Objective: {s.Solver.Objective().Value()}");
-               stopwatch.Stop();
-               Console.WriteLine($"elasped: {stopwatch.ElapsedMilliseconds}");
-            ;
 
         }
 
+        private static long RunInstance()
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var input = XmlReader.ReadInstance(13);
+
+
+            IpProblemMapper mapper = new IpProblemMapper();
+
+            var s = mapper.MapToSolver(input);
+
+            s.RunAlgo();
+            stopwatch.Stop();
+            var elaspedMilisecs = stopwatch.ElapsedMilliseconds;
+            Console.WriteLine($"elasped: {elaspedMilisecs}");
+
+            var result = SchedulingResultGraph.ToRosterViewerFormat(s);
+            Clipboard.Copy(result);
+            Console.WriteLine("Constraint Count:" + s.Solver.NumConstraints());
+            Console.WriteLine($"Objective: {s.Solver.Objective().Value()}");
+
+            return elaspedMilisecs;
+        }
         private static void SolverTryout()
         {
             Solver s = new Solver("trysolver", Solver.OptimizationProblemType.BOP_INTEGER_PROGRAMMING);
