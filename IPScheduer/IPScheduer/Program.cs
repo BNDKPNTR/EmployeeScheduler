@@ -7,7 +7,7 @@ namespace IPScheduler
 {
     class Program
     {
-        public static int INSTANCENUM = 8;
+        public static int INSTANCENUM = 2;
         static void Main(string[] args)
         {
             long min = long.MaxValue, max = long.MinValue, average = 0, sum = 0;

@@ -151,14 +151,14 @@ namespace IPScheduler.Common.Mapper
             scheduleContext.ShiftTypeDicitonary.Add(SchedulingGlobalConstants.AllShiftId, new ShiftType()
             {
                 Index = ++shiftTypeCounter,
-                ID = "$",
+                ID = SchedulingGlobalConstants.AllShiftId,
                 Color = default,
                 StartTime = new Time(),
             });
             scheduleContext.ShiftTypeDicitonary.Add(SchedulingGlobalConstants.FreeDayShiftId, new ShiftType()
             {
                 Index = ++shiftTypeCounter,
-                ID = "-",
+                ID = SchedulingGlobalConstants.FreeDayShiftId,
                 Color = default,
                 StartTime = new Time(),
             });

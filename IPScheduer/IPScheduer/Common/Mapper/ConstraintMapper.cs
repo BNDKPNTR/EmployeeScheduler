@@ -3,23 +3,21 @@ using IPScheduler.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace IPScheduler.Common.Mapper
 {
-   public static class ConstraintMapper
+    public static class ConstraintMapper
     {
         public static void CreateConstraints(SchedulingIpContext context)
         {
             CreateAssignmentGraph(context);
             ShiftOnRequestConstraints(context);
-            ShiftOffRequestConstraints(context);
+            //ShiftOffRequestConstraints(context);
             CoverRequirementsConstraints(context);
             SequenceConstraints(context);
             OnlyOneWeekendConstraints(context);
         }
       
-
         private static void SequenceConstraints(SchedulingIpContext scheduleContext)
         {
             foreach (var person in scheduleContext.Persons.Values)
@@ -49,7 +47,6 @@ namespace IPScheduler.Common.Mapper
 
                     if (!scheduleContext.ContractDictionary[contractID].MaxSeqs.IsEmpty)
                     {
-
                         // if a maxseq is valid for general shift
                         if (scheduleContext.ContractDictionary[contractID].MaxSeqs.Shift.ID.Equals(SchedulingGlobalConstants.AllShiftId))
                         {
@@ -184,14 +181,10 @@ namespace IPScheduler.Common.Mapper
                     perosnWeekendVariables.Add(weekendVariable);
                     var thatSaturdayDayAssaignments = saturdayAssaignments.Where(a => a.Shift.Day == saturday);
                     var thatSundayDayAssaignments = sundayAssaignments.Where(a => a.Shift.Day == saturday + 1);
-                    // TODO : only one weekend on scheduling period
-
 
                     thisWeekendConstraint.SetCoefficient(weekendVariable, 2.0);
                     AddCoefficients(thatSundayDayAssaignments, thisWeekendConstraint, -0.5);
                     AddCoefficients(thatSaturdayDayAssaignments, thisWeekendConstraint, -0.5);
-
-
 
                     constraint.SetCoefficient(scheduleContext.WeekEndVariables[person.ID][saturday / 7], 1.0);
                 }
@@ -274,7 +267,6 @@ namespace IPScheduler.Common.Mapper
             var graphEdges = 0;
             var graphStarts = scheduleContext.Solver.NumConstraints();
 
-            var shiftEmployeePairs = new List<Variable>();
             foreach (var person in scheduleContext.Persons.Values)
             {
                 var contract = scheduleContext.ContractDictionary.Where(cid => person.ContractIDs.Contains(cid.Key) && cid.Value.MinWork.HasValue).Select(c => c.Value).Single();
@@ -282,7 +274,6 @@ namespace IPScheduler.Common.Mapper
                 var max = contract.MaxWork.Value;
                 var constraint = scheduleContext.Solver.MakeConstraint(min, max, $"workload constraint for person: {person.ID}");
                 foreach (var shift in scheduleContext.Shifts)
-
                 {
                     // Változó egy összerendelési élre
                     Variable v;
@@ -299,19 +290,36 @@ namespace IPScheduler.Common.Mapper
                         v = scheduleContext.Solver.MakeIntVar(0.0, 1.0, $"{person.ID}-{shift.Index}");
                     }
 
+                    Variable request = null;
+
+                    if (person.ShiftOffRequests.ContainsKey(shift.Day) && person.ShiftOffRequests[shift.Day].Type.ID.Equals(shift.Type.ID))
+                    {
+                        //scheduleContext.Solver.Add(v - person.ShiftOffRequests[shift.Day].ShiftOffRrequestVariable >= 0.0);
+                        //scheduleContext.Solver.Add(v - person.ShiftOffRequests[shift.Day].ShiftOffRrequestVariable <= 0.0);
+
+                        request = person.ShiftOffRequests[shift.Day].ShiftOffRrequestVariable;
+                    }
+                    //else if (person.ShiftOnRequests.ContainsKey(shift.Day) && person.ShiftOnRequests[shift.Day].Type.ID.Equals(shift.Type.ID))
+                    //{
+                    //    //scheduleContext.Solver.Add(v + person.ShiftOnRequests[shift.Day].ShiftOnRrequestVariable >= 1.0);
+                    //    //scheduleContext.Solver.Add(v + person.ShiftOnRequests[shift.Day].ShiftOnRrequestVariable <= 1.0);
+                    //    request = person.ShiftOnRequests[shift.Day].ShiftOnRrequestVariable;
+                    //}
+
+                    var actual = request == null ? v : request;
+
                     //var assignments = scheduleContext.Assignments.Where(a => a.Person.ID.Equals(person.ID));
-                    constraint.SetCoefficient(v, shift.Type.DurationInMnutes);
+                    constraint.SetCoefficient(actual, shift.Type.DurationInMnutes);
 
                     //  scheduleContext.Variables.Add(v);
                     var assignment = new Assignment()
                     {
                         Index = graphEdges,
-                        assigningGraphEdge = v,
+                        assigningGraphEdge = actual,
                         Person = person,
                         Shift = shift
                     };
                     scheduleContext.Assignments.Add(assignment);
-                    shiftEmployeePairs.Add(v);
                     graphEdges++;
                 }
             }
