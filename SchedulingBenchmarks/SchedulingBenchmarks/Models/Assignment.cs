@@ -17,6 +17,6 @@ namespace SchedulingBenchmarks.Models
             Shift = shift ?? throw new ArgumentNullException(nameof(shift));
         }
 
-        public override string ToString() => $"{Day} - {Person.Id} - {Shift.Id}";
+        public override string ToString() => $"{Day} - {Person.ExternalId} - {Shift.Id}";
     }
 }

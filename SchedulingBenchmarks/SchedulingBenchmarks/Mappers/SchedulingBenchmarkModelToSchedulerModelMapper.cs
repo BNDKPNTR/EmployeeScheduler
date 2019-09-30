@@ -51,21 +51,14 @@ namespace SchedulingBenchmarks.Mappers
 
         private List<Person> MapPeople(Range schedulePeriod)
         {
-            var people = new List<Person>();
-
-            foreach (var employee in _schedulingBenchmarkModel.Employees)
-            {
-                var person = new Person(
-                    employee.Id,
-                    new State(),
-                    MapWorkSchedule(employee.Contract),
-                    MapAvailabilities(employee, schedulePeriod),
-                    MapShiftRequests(employee));
-
-                people.Add(person);
-            }
-
-            return people;
+            return _schedulingBenchmarkModel.Employees.Select((e, i) => new Person(
+                i,
+                e.Id,
+                new State(),
+                MapWorkSchedule(e.Contract),
+                MapAvailabilities(e, schedulePeriod),
+                MapShiftRequests(e))
+            ).ToList();
         }
 
         private bool[] MapAvailabilities(Employee employee, Range schedulePeriod)
