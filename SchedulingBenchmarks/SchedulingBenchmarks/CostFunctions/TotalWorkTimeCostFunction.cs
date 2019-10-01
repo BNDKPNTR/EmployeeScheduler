@@ -40,7 +40,10 @@ namespace SchedulingBenchmarks.CostFunctions
         private bool CanWorkMinTotalWorkTime(Person person, Demand demand, int today)
         {
             var totalWorkTime = person.State.TotalWorkTime + demand.Shift.Duration;
+            var remaingingDays = _model.SchedulePeriod.ExclusiveEnd - today;
+            var maxPossibleTotalWorkTime = totalWorkTime + remaingingDays * _longestShift.Duration;
 
+            if (maxPossibleTotalWorkTime < person.WorkSchedule.MinTotalWorkTime) return true;
             if (totalWorkTime >= person.WorkSchedule.MinTotalWorkTime) return true;
             if (today == _model.SchedulePeriod.End) return totalWorkTime >= person.WorkSchedule.MinTotalWorkTime;
 

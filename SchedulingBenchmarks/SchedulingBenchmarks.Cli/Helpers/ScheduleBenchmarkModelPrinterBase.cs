@@ -83,7 +83,7 @@ namespace SchedulingBenchmarks.Cli
 
             foreach (var day in SchedulePeriod())
             {
-                var infeasibleDemandCount = _schedulingBenchmarkModel.Demands[day].Sum(d => d.MinEmployeeCount) - assignmentsOnDays[day];
+                var infeasibleDemandCount = -1 * (_schedulingBenchmarkModel.Demands[day].Sum(d => d.MinEmployeeCount) - assignmentsOnDays[day]);
                 var infeasibleDemandCountString = infeasibleDemandCount.ToString();
                 Write($"{infeasibleDemandCountString}{new string(' ', _dayColumnWidth - infeasibleDemandCountString.Length)}");
             }
