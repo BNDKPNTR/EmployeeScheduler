@@ -33,17 +33,11 @@ namespace IPScheduler.Common
 
             var resultStatus = Solver.Solve();
 
-
-
             SchedulingResultGraph resultGraph = SchedulingResultGraph.Create(Assignments);
 
 //          resultGraph.WriteToConsole();
 
             Console.WriteLine(Solver.Objective().Value());
-            
-            
-            
-            
         }
     }
 }

@@ -275,6 +275,10 @@ namespace IPScheduler.Common.Mapper
                 var constraint = scheduleContext.Solver.MakeConstraint(min, max, $"workload constraint for person: {person.ID}");
                 foreach (var shift in scheduleContext.Shifts)
                 {
+                    var contractids = person.ContractIDs;
+                    var contracts = scheduleContext.ContractDictionary.Where(c => contractids.Contains(c.Key));
+                    if(!contracts.Any(c => c.Value.ValidShiftIDs.Contains(shift.Type.ID)))
+                        continue;
                     // Változó egy összerendelési élre
                     Variable v;
                     if (person.FixedAssignments.Any(a => a.Day == shift.Day && shift.Type.ID == a.Type.ID))
@@ -297,7 +301,8 @@ namespace IPScheduler.Common.Mapper
                         //scheduleContext.Solver.Add(v - person.ShiftOffRequests[shift.Day].ShiftOffRrequestVariable >= 0.0);
                         //scheduleContext.Solver.Add(v - person.ShiftOffRequests[shift.Day].ShiftOffRrequestVariable <= 0.0);
 
-                        request = person.ShiftOffRequests[shift.Day].ShiftOffRrequestVariable;
+                        request = scheduleContext.Solver.MakeIntVar(0.0, 1.0,
+                            $"ShiftOffRequeest person: {person.ID}, day: {shift.Day}");
                     }
                     //else if (person.ShiftOnRequests.ContainsKey(shift.Day) && person.ShiftOnRequests[shift.Day].Type.ID.Equals(shift.Type.ID))
                     //{

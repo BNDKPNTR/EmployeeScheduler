@@ -30,5 +30,10 @@ namespace IPScheduler.Common.Mapper
             Console.WriteLine($"VariableNUm: " + scheduleContext.Solver.NumVariables());
             return scheduleContext;
         }
+
+        public SchedulingIpContext MapInput(SchedulingPeriod schedulingPeriod)
+        {
+            return SchedulingPeriodMapper.Map(schedulingPeriod);
+        }
     }
 }

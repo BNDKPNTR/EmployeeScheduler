@@ -9,7 +9,7 @@ using System.Text;
 
 namespace IPScheduler.Common.Mapper
 {
-    public static class SchedulingPeriodMapper
+    public  class SchedulingPeriodMapper
     {
         private static SchedulingIpContext scheduleContext = new SchedulingIpContext();
         public static SchedulingIpContext Map(SchedulingPeriod schedulingPeriod)
@@ -84,7 +84,7 @@ namespace IPScheduler.Common.Mapper
                     maxWork = (int)contract.Workload?.Max(wl => wl.Max).Count;
                 }
 
-                string[] validIDs = null;
+                string[] validIDs = {""};
                 if (contract.ValidShifts != null)
                 {
                     validIDs = contract.ValidShifts.shift.Split(",").Where(cid => cid.Length > 0).ToArray();
@@ -136,8 +136,6 @@ namespace IPScheduler.Common.Mapper
                 {
                     Day = shiftOffRequest.Day,
                     Type = scheduleContext.ShiftTypeDicitonary[shiftOffRequest.Shift],
-                    ShiftOffRrequestVariable = scheduleContext.Solver.MakeIntVar(0.0, 1.0,
-                        $"ShiftOffRequeest person: {shiftOffRequest.EmployeeID}, day: {shiftOffRequest.Day}"),
                     Weight = Convert.ToInt32(shiftOffRequest.weight)
                 };
 

@@ -33,7 +33,7 @@ namespace IPScheduler
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-
+            Console.WriteLine("Running instance: " + INSTANCENUM);
             var input = XmlReader.ReadInstance(INSTANCENUM);
 
             IpProblemMapper mapper = new IpProblemMapper();
