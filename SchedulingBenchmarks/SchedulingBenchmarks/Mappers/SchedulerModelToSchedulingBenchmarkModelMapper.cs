@@ -27,7 +27,7 @@ namespace SchedulingBenchmarks.Mappers
 
         private SchedulingBenchmarkModel MapToInputModel()
         {
-            var people = _schedulerModel.People.ToDictionary(p => p.Id);
+            var people = _schedulerModel.People.ToDictionary(p => p.ExternalId);
 
             foreach (var employee in _schedulingBenchmarkModel.Employees)
             {
@@ -39,7 +39,7 @@ namespace SchedulingBenchmarks.Mappers
                     {
                         Day = schedulerAssignment.Day,
                         ShiftId = schedulerAssignment.Shift.Id,
-                        PersonId = schedulerAssignment.Person.Id
+                        PersonId = schedulerAssignment.Person.ExternalId
                     };
 
                     // Az Add() metódussal kényszerítsük ki, hogy hiba keletkezzen, ha egy adott napra több beosztása is lenne egy dolgozónak

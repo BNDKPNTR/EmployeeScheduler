@@ -29,8 +29,8 @@ namespace IPScheduler.Common
         {
             var objective = scheduleContext.Solver.Objective();
 
-            SetObjectiveForShiftOnRequests(objective);
-            SetObjectiveForShiftOffRequests(objective);
+            SetObjectiveForShiftOnRequests(objective); // 2
+            SetObjectiveForShiftOffRequests(objective); // 1
             SetObjectiveForCoverRequirements(objective);
             objective.SetMinimization();
         }
@@ -66,7 +66,6 @@ namespace IPScheduler.Common
         {
             CreateAssignmentGraph();
 
-            OnlyOnePersonForAnAssignmentCOnstraint();
             OneAssignmentPerDayConstraint();
 
             FixedFreeDayConstraint();
@@ -86,22 +85,22 @@ namespace IPScheduler.Common
 
         private void WorkLoadConstraints()
         {
+            Console.WriteLine("berfore: " + scheduleContext.Solver.NumConstraints());
+
             foreach (var person in scheduleContext.Persons.Values)
             {
-                foreach (var cid in person.ContractIDs)
+                var contract = scheduleContext.ContractDictionary.Where(cid => person.ContractIDs.Contains(cid.Key) && cid.Value.MinWork.HasValue).Select(c => c.Value).Single();
+                var min = contract.MinWork.Value / 480;
+                var max = contract.MaxWork.Value / 480;
+
+                var constraint = scheduleContext.Solver.MakeConstraint(min, max, $"workload constraint for person: {person.ID}");
+                var assignments = scheduleContext.Assignments.Where(a => a.Person.ID.Equals(person.ID));
+                foreach (var assignment in assignments)
                 {
-                    if (scheduleContext.ContractDictionary[cid].MinWork.HasValue 
-                        && scheduleContext.ContractDictionary[cid].MaxWork.HasValue)
-                    {
-                        var min = scheduleContext.ContractDictionary[cid].MinWork.Value;
-                        var max = scheduleContext.ContractDictionary[cid].MaxWork.Value;
-                        var constraint = scheduleContext.Solver.MakeConstraint(min, max, $"workload constraint for person: {person.ID}");
-
-                        AddCoefficients(scheduleContext.Assignments.Where(a => a.Person.ID == person.ID), constraint);
-
-                    }
+                    constraint.SetCoefficient(assignment.assigningGraphEdge, 1.0);
                 }
             }
+            Console.WriteLine("after: " + scheduleContext.Solver.NumConstraints());
         }
 
         private void SequenceConstraints()
@@ -130,7 +129,34 @@ namespace IPScheduler.Common
                             }
                         }
                     }
+                    if (!scheduleContext.ContractDictionary[contractID].MaxSeqs.IsEmpty)
+                    {
+
+                        // if a maxseq is valid for general shift
+                        if (scheduleContext.ContractDictionary[contractID].MaxSeqs.Shift.ID.Equals(AllShiftId))
+                        {
+                            CreateMaxSeqConstraint(person, scheduleContext.ContractDictionary[contractID].MaxSeqs.MaxValue,
+                                scheduleContext.Assignments.Where(a => a.Person.ID.Equals(person.ID)));
+                        }
+                    }
                 }
+            }
+        }
+
+        private void CreateMaxSeqConstraint(Person person, int maxSeqMaxValue, IEnumerable<Assignment> assaignmentCollection)
+        {
+            var assignments = assaignmentCollection as Assignment[] ?? assaignmentCollection.ToArray();
+            var days = assignments.Select(a => a.Shift.Day).Max();
+
+            if (days < maxSeqMaxValue)
+                return;
+
+            for (var i = 0; i <= days - maxSeqMaxValue; i++)
+            {
+                var currentAssaignments = assignments.Where(a => a.Shift.Day >= i && a.Shift.Day <= i + maxSeqMaxValue).ToList();
+                var constraint = scheduleContext.Solver.MakeConstraint(0.0, maxSeqMaxValue,
+                    $"MaxSeqconstraint for person: {person.ID}, during days: {i}-{i + maxSeqMaxValue}");
+                AddCoefficients(currentAssaignments, constraint);
             }
         }
 
@@ -239,15 +265,31 @@ namespace IPScheduler.Common
 
                 var constraint =
                     scheduleContext.Solver.MakeConstraint(0.0, 1.0, $"OnlyOneWeekendConstraint person: {person.ID}");
-
+                var perosnWeekendVariables = new List<Variable>();
                 foreach (var saturday in saturdayDays)
                 {
+                    var thisWeekendConstraint = scheduleContext.Solver.MakeConstraint(0.0, 1.5,
+                        $"WeekendConstraint for person: {person.ID}, on week: {(saturday + 1) / 7}");
+                    var weekendVariable = scheduleContext.Solver.MakeIntVar(0.0, 1.0,
+                        $"Variable for person: {person.ID}, on week: {(saturday + 1) / 7}");
+                    perosnWeekendVariables.Add(weekendVariable);
                     var thatSaturdayDayAssaignments = saturdayAssaignments.Where(a => a.Shift.Day == saturday);
                     var thatSundayDayAssaignments = sundayAssaignments.Where(a => a.Shift.Day == saturday + 1);
                     // TODO : only one weekend on scheduling period
 
 
+                    thisWeekendConstraint.SetCoefficient(weekendVariable, 2.0);
+                    AddCoefficients(thatSundayDayAssaignments, thisWeekendConstraint, -0.5);
+                    AddCoefficients(thatSaturdayDayAssaignments, thisWeekendConstraint, -0.5);
+
+
+
                     constraint.SetCoefficient(scheduleContext.WeekEndVariables[person.ID][saturday / 7], 1.0);
+                }
+
+                foreach (var variable in perosnWeekendVariables)
+                {
+                    constraint.SetCoefficient(variable, 1.0);
                 }
             }
         }
@@ -280,7 +322,7 @@ namespace IPScheduler.Common
             {
                 foreach (var (day, shiftOffRequest) in person.ShiftOffRequests)
                 {
-                    var constraint = scheduleContext.Solver.MakeConstraint(1.0, 1.0,
+                    var constraint = scheduleContext.Solver.MakeConstraint(0.0, 0.0,
                         $"ShiftOnRequestConstraint {person.ID}, day: {day}, shift: {shiftOffRequest.Type}");
                     var potentialPersonAssaignments = scheduleContext.Assignments.Where(a =>
                             a.Person.ID.Equals(person.ID) && a.Shift.Day == day &&
@@ -291,7 +333,7 @@ namespace IPScheduler.Common
                         constraint.SetCoefficient(variable, 1.0);
                     }
 
-                    constraint.SetCoefficient(shiftOffRequest.ShiftOffRrequestVariable, 1.0);
+                    constraint.SetCoefficient(shiftOffRequest.ShiftOffRrequestVariable, -1.0);
                 }
             }
         }
@@ -438,18 +480,15 @@ namespace IPScheduler.Common
         {
             foreach (var contract in schedulingPeriodContracts)
             {
-                var maxSeq = ImmutableList<SchedulingMaxSeq>.Empty;
+                var maxSeq = SchedulingMaxSeq.Empty;
                 var minSeq = ImmutableList<SchedulingMinSeq>.Empty;
                 if (contract.MaxSeq != null)
                 {
-                    maxSeq = contract.MaxSeq?
-                            .Select(maxseq => new SchedulingMaxSeq
-                            {
-                                Shift = scheduleContext.ShiftTypeDicitonary[maxseq.shift],
-                                MaxValue = Convert.ToInt32(maxseq.value)
-                            })
-                            .ToImmutableList()
-                        ;
+                    maxSeq = new SchedulingMaxSeq
+                    {
+                        Shift = scheduleContext.ShiftTypeDicitonary[contract.MaxSeq.shift],
+                        MaxValue = Convert.ToInt32(contract.MaxSeq.value)
+                    };
                 }
 
                 if (contract.MinSeq != null)
@@ -558,6 +597,7 @@ namespace IPScheduler.Common
                     ID = shiftType.ID,
                     Color = shiftType.Color,
                     StartTime = CreateDateStartTime(shiftType.StartTime),
+                    DurationInMnutes = shiftType.Duration
                 };
                 scheduleContext.ShiftTypeDicitonary.Add(shiftType.ID, type);
             }
@@ -665,13 +705,13 @@ namespace IPScheduler.Common
                     graphEdges++;
                 }
 
-                // Megkötés, hogy egy műszako csak egy ember vihet
-                var constraint =
-                    scheduleContext.Solver.MakeConstraint(1.0, 1.0, $"shiftGraphConstraint: {shift.Index}");
-                foreach (var shiftEmployeePair in shiftEmployeePairs)
-                {
-                    constraint.SetCoefficient(shiftEmployeePair, 1);
-                }
+                //// Megkötés, hogy egy műszako csak egy ember vihet
+                //var constraint =
+                //    scheduleContext.Solver.MakeConstraint(1.0, 1.0, $"shiftGraphConstraint: {shift.Index}");
+                //foreach (var shiftEmployeePair in shiftEmployeePairs)
+                //{
+                //    constraint.SetCoefficient(shiftEmployeePair, 1);
+                //}
             }
 
             scheduleContext.GraphStartsAt = graphStarts;

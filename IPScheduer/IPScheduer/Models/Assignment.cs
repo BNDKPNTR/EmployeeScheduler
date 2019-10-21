@@ -1,4 +1,4 @@
-﻿using Google.OrTools.LinearSolver;
+﻿
 
 namespace IPScheduler.Models
 {
@@ -8,7 +8,7 @@ namespace IPScheduler.Models
 
         public Person Person { get; set; }
         public Shift Shift { get; set; }
-        public Variable assigningGraphEdge { get; set; }
+        public Google.OrTools.LinearSolver.Variable assigningGraphEdge { get; set; }
 
         public override string ToString() => $"{Person.Name}-{Shift.Name}";
 
