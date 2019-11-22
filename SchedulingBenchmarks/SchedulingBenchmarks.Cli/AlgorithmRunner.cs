@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BenchmarkDotNet.Running;
+using Newtonsoft.Json;
 using SchedulingBenchmarks.Evaluators;
 using SchedulingBenchmarks.Mappers;
 using SchedulingBenchmarks.SchedulingBenchmarksModel;
@@ -91,6 +92,11 @@ namespace SchedulingBenchmarks.Cli
             });
 
             Console.WriteLine("... Done!");
+        }
+
+        public static void RunBenchmarks()
+        {
+            BenchmarkRunner.Run<PerfBenchmark>();
         }
 
         public static void RunPerf()
