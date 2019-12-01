@@ -11,11 +11,11 @@ namespace SchedulingBenchmarks.CostFunctions
     {
         private readonly SchedulerModel _model;
         private readonly WorkEligibilityChecker _workEligibilityChecker;
-        private readonly StateCalculator _stateCalculator;
+        private readonly CompositeStateCalculator _stateCalculator;
         private readonly double _underMinWorkTimeCost;
         private readonly Shift _longestShift;
 
-        public TotalWorkTimeCostFunction(SchedulerModel model, WorkEligibilityChecker workEligibilityChecker, StateCalculator stateCalculator)
+        public TotalWorkTimeCostFunction(SchedulerModel model, WorkEligibilityChecker workEligibilityChecker, CompositeStateCalculator stateCalculator)
         {
             _underMinWorkTimeCost = DefaultCost * 0.5;
             _model = model ?? throw new ArgumentNullException(nameof(model));

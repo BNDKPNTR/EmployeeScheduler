@@ -5,7 +5,7 @@ using SchedulingBenchmarks.Models;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    class WorkedWeekendCountStateCalculator : IStateCalculator<int>
+    class WorkedWeekendCountStateCalculator : StateCalculatorBase<int>
     {
         private readonly Range _schedulePeriod;
         private readonly Calendar _calendar;
@@ -16,7 +16,7 @@ namespace SchedulingBenchmarks.StateCalculation
             _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
         }
 
-        public int CalculateState(Person person, StateTriggers triggers, int day)
+        public override int CalculateState(Person person, StateTriggers triggers, int day)
         {
             if (!_calendar.IsMonday(day)) return person.State.WorkedWeekendCount;
 
@@ -33,7 +33,7 @@ namespace SchedulingBenchmarks.StateCalculation
                 || person.Assignments.LatestRound.ContainsKey(day - 1));
         }
 
-        public int InitializeState(Person person)
+        public override int InitializeState(Person person)
         {
             var workedOnWeekendCount = 0;
 

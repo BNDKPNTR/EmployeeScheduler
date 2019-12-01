@@ -13,7 +13,7 @@ namespace SchedulingBenchmarks
     class SchedulerAlgorithm
     {
         private readonly SchedulerModel _model;
-        private readonly StateCalculator _stateCalculator;
+        private readonly CompositeStateCalculator _stateCalculator;
         private readonly WorkEligibilityChecker _workEligibilityChecker;
         private readonly CostFunctionBase _costFunction;
         private readonly SchedulerBase[] _schedulers;
@@ -21,7 +21,7 @@ namespace SchedulingBenchmarks
         public SchedulerAlgorithm(SchedulerModel model)
         {
             _model = model;
-            _stateCalculator = new StateCalculator(_model.SchedulePeriod, _model.Calendar);
+            _stateCalculator = new CompositeStateCalculator(_model.SchedulePeriod, _model.Calendar);
             _workEligibilityChecker = new WorkEligibilityChecker(_model);
             _costFunction = CreateCompositeCostFunction(_model);
 

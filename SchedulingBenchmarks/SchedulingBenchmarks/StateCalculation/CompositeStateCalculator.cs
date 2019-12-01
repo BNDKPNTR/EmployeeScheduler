@@ -7,14 +7,14 @@ using System.Text;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    class StateCalculator
+    class CompositeStateCalculator
     {
         private readonly Action<Person, StateTriggers, int> _refreshState;
         private readonly Action<Person> _initializeState;
 
-        public StateCalculator(Range schedulePeriod, Calendar calendar)
+        public CompositeStateCalculator(Range schedulePeriod, Calendar calendar)
         {
-            var stateCalculators = new Dictionary<string, object>
+            var stateCalculators = new Dictionary<string, IStateCalculator>
             {
                 [nameof(State.WorkedOnWeeked)] = new WorkedOnWeekedStateCalculator(calendar),
                 [nameof(State.TotalWorkTime)] = new TotalWorkTimeStateCalculator(),
@@ -41,24 +41,24 @@ namespace SchedulingBenchmarks.StateCalculation
             _initializeState(person);
         }
 
-        private Action<Person, StateTriggers, int> CreateRefreshStateMethod(Dictionary<string, object> stateCalculators)
+        private Action<Person, StateTriggers, int> CreateRefreshStateMethod(Dictionary<string, IStateCalculator> stateCalculators)
         {
-            return (Action<Person, StateTriggers, int>)CreateMethod(stateCalculators, nameof(IStateCalculator<object>.CalculateState), typeof(StateTriggers), typeof(int));
+            return (Action<Person, StateTriggers, int>)CreateMethod(stateCalculators, nameof(IStateCalculator.CalculateState), typeof(StateTriggers), typeof(int));
         }
 
-        private Action<Person> CreateInitializeStateMethod(Dictionary<string, object> stateCalculators)
+        private Action<Person> CreateInitializeStateMethod(Dictionary<string, IStateCalculator> stateCalculators)
         {
-            return (Action<Person>)CreateMethod(stateCalculators, nameof(IStateCalculator<object>.InitializeState));
+            return (Action<Person>)CreateMethod(stateCalculators, nameof(IStateCalculator.InitializeState));
         }
 
-        private Delegate CreateMethod(Dictionary<string, object> stateCalculators, string methodName, params Type[] additionalMethodParamTypes)
+        private Delegate CreateMethod(Dictionary<string, IStateCalculator> stateCalculators, string methodName, params Type[] additionalMethodParamTypes)
         {
             var personMethodParam = Expression.Parameter(typeof(Person));
             var personStateProperty = Expression.PropertyOrField(personMethodParam, nameof(Person.State));
             var methodParams = new[] { personMethodParam }.Concat(additionalMethodParamTypes.Select(t => Expression.Parameter(t))).ToList();
 
             var methodBody = CreateMethodBody(stateCalculators, methodName, personStateProperty, methodParams);
-
+            
             var lambda = Expression.Lambda(methodBody, methodParams);
             return lambda.Compile();
         }
@@ -76,7 +76,7 @@ namespace SchedulingBenchmarks.StateCalculation
         ///     state.p2 = p2__temp;
         /// }
         /// </summary>
-        private BlockExpression CreateMethodBody(Dictionary<string, object> stateCalculators, string methodName, MemberExpression personStateProperty, IEnumerable<Expression> methodParameters)
+        private BlockExpression CreateMethodBody(Dictionary<string, IStateCalculator> stateCalculators, string methodName, MemberExpression personStateProperty, IEnumerable<Expression> methodParameters)
         {
             var calculateStateExpressions = new List<Expression>();
             var stateAssignmentExpressions = new List<Expression>();

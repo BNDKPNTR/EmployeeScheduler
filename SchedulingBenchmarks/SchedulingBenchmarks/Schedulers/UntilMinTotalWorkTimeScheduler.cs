@@ -11,9 +11,9 @@ namespace SchedulingBenchmarks.Schedulers
 {
     internal class UntilMinTotalWorkTimeScheduler : SchedulerBase
     {
-        private readonly StateCalculator _stateCalculator;
+        private readonly CompositeStateCalculator _stateCalculator;
 
-        public UntilMinTotalWorkTimeScheduler(SchedulerModel model, StateCalculator stateCalculator, WorkEligibilityChecker workEligibilityChecker, CostFunctionBase costFunction) : base(model, costFunction, workEligibilityChecker)
+        public UntilMinTotalWorkTimeScheduler(SchedulerModel model, CompositeStateCalculator stateCalculator, WorkEligibilityChecker workEligibilityChecker, CostFunctionBase costFunction) : base(model, costFunction, workEligibilityChecker)
         {
             _stateCalculator = stateCalculator ?? throw new ArgumentNullException(nameof(stateCalculator));
         }

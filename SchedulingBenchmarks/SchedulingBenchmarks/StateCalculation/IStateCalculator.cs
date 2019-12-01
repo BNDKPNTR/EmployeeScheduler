@@ -5,10 +5,15 @@ using System.Text;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    interface IStateCalculator<out T>
+    interface IStateCalculator
     {
-        T CalculateState(Person person, StateTriggers triggers, int day);
+        object CalculateState(Person person, StateTriggers triggers, int day);
+        object InitializeState(Person person);
+    }
 
-        T InitializeState(Person person);
+    interface IStateCalculator<out T> : IStateCalculator
+    {
+        new T CalculateState(Person person, StateTriggers triggers, int day);
+        new T InitializeState(Person person);
     }
 }

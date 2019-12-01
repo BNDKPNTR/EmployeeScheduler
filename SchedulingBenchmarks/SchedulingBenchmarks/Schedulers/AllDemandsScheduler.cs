@@ -11,9 +11,9 @@ namespace SchedulingBenchmarks.Schedulers
 {
     internal class AllDemandsScheduler : SchedulerBase
     {
-        private readonly StateCalculator _stateCalculator;
+        private readonly CompositeStateCalculator _stateCalculator;
 
-        public AllDemandsScheduler(SchedulerModel model, CostFunctionBase costFunction, StateCalculator stateCalculator, WorkEligibilityChecker workEligibilityChecker)
+        public AllDemandsScheduler(SchedulerModel model, CostFunctionBase costFunction, CompositeStateCalculator stateCalculator, WorkEligibilityChecker workEligibilityChecker)
             : base(model, costFunction, workEligibilityChecker)
         {
             _stateCalculator = stateCalculator ?? throw new ArgumentNullException(nameof(stateCalculator));

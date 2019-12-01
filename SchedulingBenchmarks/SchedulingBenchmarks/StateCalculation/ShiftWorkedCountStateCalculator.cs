@@ -6,9 +6,9 @@ using SchedulingBenchmarks.Models;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    class ShiftWorkedCountStateCalculator : IStateCalculator<Dictionary<Shift, int>>
+    class ShiftWorkedCountStateCalculator : StateCalculatorBase<Dictionary<Shift, int>>
     {
-        public Dictionary<Shift, int> CalculateState(Person person, StateTriggers triggers, int day)
+        public override Dictionary<Shift, int> CalculateState(Person person, StateTriggers triggers, int day)
         {
             if (!person.Assignments.LatestRound.TryGetValue(day - 1, out var previousAssignment)) return person.State.ShiftWorkedCount;
 
@@ -18,7 +18,7 @@ namespace SchedulingBenchmarks.StateCalculation
             return person.State.ShiftWorkedCount;
         }
 
-        public Dictionary<Shift, int> InitializeState(Person person) 
+        public override Dictionary<Shift, int> InitializeState(Person person) 
             => person.Assignments.AllRounds.Values.GroupBy(a => a.Shift).ToDictionary(g => g.Key, g => g.Count());
     }
 }

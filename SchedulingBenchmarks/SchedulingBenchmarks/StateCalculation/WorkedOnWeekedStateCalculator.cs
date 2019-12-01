@@ -5,7 +5,7 @@ using SchedulingBenchmarks.Models;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    class WorkedOnWeekedStateCalculator : IStateCalculator<bool>
+    class WorkedOnWeekedStateCalculator : StateCalculatorBase<bool>
     {
         private readonly Calendar _calendar;
 
@@ -14,7 +14,7 @@ namespace SchedulingBenchmarks.StateCalculation
             _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
         }
 
-        public bool CalculateState(Person person, StateTriggers triggers, int day)
+        public override bool CalculateState(Person person, StateTriggers triggers, int day)
         {
             if (person.State.WorkedOnWeeked) return true;
 
@@ -23,6 +23,6 @@ namespace SchedulingBenchmarks.StateCalculation
                 : person.State.WorkedOnWeeked;
         }
 
-        public bool InitializeState(Person person) => false;
+        public override bool InitializeState(Person person) => false;
     }
 }

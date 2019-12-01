@@ -6,9 +6,9 @@ using SchedulingBenchmarks.Models;
 
 namespace SchedulingBenchmarks.StateCalculation
 {
-    class TotalWorkTimeStateCalculator : IStateCalculator<int>
+    class TotalWorkTimeStateCalculator : StateCalculatorBase<int>
     {
-        public int CalculateState(Person person, StateTriggers triggers, int day)
+        public override int CalculateState(Person person, StateTriggers triggers, int day)
         {
             if (person.Assignments.LatestRound.TryGetValue(day - 1, out var assignment))
             {
@@ -18,6 +18,6 @@ namespace SchedulingBenchmarks.StateCalculation
             return person.State.TotalWorkTime;
         }
 
-        public int InitializeState(Person person) => person.Assignments.AllRounds.Values.Sum(a => a.Shift.Duration);
+        public override int InitializeState(Person person) => person.Assignments.AllRounds.Values.Sum(a => a.Shift.Duration);
     }
 }

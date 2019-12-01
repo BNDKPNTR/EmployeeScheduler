@@ -10,9 +10,9 @@ namespace SchedulingBenchmarks.Schedulers
 {
     internal class WeekendScheduler : SchedulerBase
     {
-        private readonly StateCalculator _stateCalculator;
+        private readonly CompositeStateCalculator _stateCalculator;
 
-        public WeekendScheduler(SchedulerModel model, CostFunctionBase costFunction, WorkEligibilityChecker workEligibilityChecker, StateCalculator stateCalculator) 
+        public WeekendScheduler(SchedulerModel model, CostFunctionBase costFunction, WorkEligibilityChecker workEligibilityChecker, CompositeStateCalculator stateCalculator) 
             : base(model, costFunction, workEligibilityChecker)
         {
             _stateCalculator = stateCalculator ?? throw new ArgumentNullException(nameof(stateCalculator));
