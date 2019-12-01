@@ -14,7 +14,7 @@ namespace SchedulingBenchmarks.StateCalculation
             _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
         }
 
-        public override bool CalculateState(Person person, StateTriggers triggers, int day)
+        public override bool CalculateState(Person person, State newState, StateTriggers triggers, int day)
         {
             if (person.State.WorkedOnWeeked) return true;
 
@@ -23,6 +23,6 @@ namespace SchedulingBenchmarks.StateCalculation
                 : person.State.WorkedOnWeeked;
         }
 
-        public override bool InitializeState(Person person) => false;
+        public override bool InitializeState(Person person, State newState) => false;
     }
 }

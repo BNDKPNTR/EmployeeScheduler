@@ -7,13 +7,14 @@ namespace SchedulingBenchmarks.StateCalculation
 {
     interface IStateCalculator
     {
-        object CalculateState(Person person, StateTriggers triggers, int day);
-        object InitializeState(Person person);
+        string[] StatePropertyDependencies { get; }
+        object CalculateState(Person person, State newState, StateTriggers triggers, int day);
+        object InitializeState(Person person, State newState);
     }
 
     interface IStateCalculator<out T> : IStateCalculator
     {
-        new T CalculateState(Person person, StateTriggers triggers, int day);
-        new T InitializeState(Person person);
+        new T CalculateState(Person person, State newState, StateTriggers triggers, int day);
+        new T InitializeState(Person person, State newState);
     }
 }

@@ -7,7 +7,7 @@ namespace SchedulingBenchmarks.StateCalculation
 {
     class PossibleFutureWorkDayCountStateCalculator : StateCalculatorBase<int>
     {
-        public override int CalculateState(Person person, StateTriggers triggers, int day)
+        public override int CalculateState(Person person, State newState, StateTriggers triggers, int day)
         {
             if (triggers.WorkedOnPreviousDay)
             {
@@ -17,7 +17,7 @@ namespace SchedulingBenchmarks.StateCalculation
             return CalculatePossibleFutureWorkDayCount(person, day);
         }
 
-        public override int InitializeState(Person person)
+        public override int InitializeState(Person person, State newState)
         {
             return CalculatePossibleFutureWorkDayCount(person, 0);
         }

@@ -16,7 +16,7 @@ namespace SchedulingBenchmarks.StateCalculation
             _calendar = calendar ?? throw new ArgumentNullException(nameof(calendar));
         }
 
-        public override int CalculateState(Person person, StateTriggers triggers, int day)
+        public override int CalculateState(Person person, State newState, StateTriggers triggers, int day)
         {
             if (!_calendar.IsMonday(day)) return person.State.WorkedWeekendCount;
 
@@ -33,7 +33,7 @@ namespace SchedulingBenchmarks.StateCalculation
                 || person.Assignments.LatestRound.ContainsKey(day - 1));
         }
 
-        public override int InitializeState(Person person)
+        public override int InitializeState(Person person, State newState)
         {
             var workedOnWeekendCount = 0;
 

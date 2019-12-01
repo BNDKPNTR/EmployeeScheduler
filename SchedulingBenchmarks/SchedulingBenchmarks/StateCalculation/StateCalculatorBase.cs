@@ -7,12 +7,14 @@ namespace SchedulingBenchmarks.StateCalculation
 {
     internal abstract class StateCalculatorBase<T> : IStateCalculator<T>
     {
-        public abstract T CalculateState(Person person, StateTriggers triggers, int day);
+        public virtual string[] StatePropertyDependencies => Array.Empty<string>();
 
-        public abstract T InitializeState(Person person);
+        public abstract T CalculateState(Person person, State newState, StateTriggers triggers, int day);
 
-        object IStateCalculator.CalculateState(Person person, StateTriggers triggers, int day) => CalculateState(person, triggers, day);
+        public abstract T InitializeState(Person person, State newState);
 
-        object IStateCalculator.InitializeState(Person person) => InitializeState(person);
+        object IStateCalculator.CalculateState(Person person, State newState, StateTriggers triggers, int day) => CalculateState(person, newState, triggers, day);
+
+        object IStateCalculator.InitializeState(Person person, State newState) => InitializeState(person, newState);
     }
 }
