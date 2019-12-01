@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SchedulingBenchmarks.Models.Assignment">
+    <Position X="6.5" Y="1.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Shift" Type="SchedulingBenchmarks.Models.Shift" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.5" Y="2.75" />
+        <Point X="6.125" Y="2.75" />
+        <Point X="6.125" Y="3.312" />
+        <Point X="6.5" Y="3.312" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.414" Y="0.235" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAIAAAAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Assignment.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Shift" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SchedulingBenchmarks.Models.AssignmentsCollection" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="5.75" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>BgIAAAAAAAAAAQAIAAACBAAAAAAAJAAAAAAAABAAABg=</HashCode>
+      <FileName>Models\AssignmentsCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SchedulingBenchmarks.Models.Calendar">
+    <Position X="1.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAABAIAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Models\Calendar.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SchedulingBenchmarks.Models.Demand">
+    <Position X="1.5" Y="2.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAgAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Demand.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SchedulingBenchmarks.Models.Person">
+    <Position X="4" Y="2.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Assignments" Type="SchedulingBenchmarks.Models.AssignmentsCollection" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.5" Y="2.625" />
+        <Point X="6.312" Y="2.625" />
+        <Point X="6.312" Y="1.062" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.075" Y="0.079" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="WorkSchedule" Type="SchedulingBenchmarks.Models.WorkSchedule" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.5" Y="3.75" />
+        <Point X="5.875" Y="3.75" />
+        <Point X="5.875" Y="4.25" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.143" Y="0.047" Height="0.182" Width="1.118" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="ShiftRequests" Type="SchedulingBenchmarks.Models.ShiftRequest" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.5" Y="3.5" />
+        <Point X="6.377" Y="3.5" />
+        <Point X="6.377" Y="5.5" />
+        <Point X="6.625" Y="5.5" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.044" Y="0.058" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="State" Type="SchedulingBenchmarks.Models.State" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4" Y="3.683" />
+        <Point X="3.625" Y="3.683" />
+        <Point X="3.625" Y="4.75" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.763" Y="0.516" Height="0.182" Width="0.576" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAICAAAAAAAAAAAFAABAAAAAAAAAAAIAAAAABAAAEAA=</HashCode>
+      <FileName>Models\Person.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Assignments" />
+      <Property Name="WorkSchedule" />
+      <Property Name="State" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="ShiftRequests" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SchedulingBenchmarks.Models.SchedulerModel">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Demands" Type="SchedulingBenchmarks.Models.Demand" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4" Y="1.625" />
+        <Point X="3.312" Y="1.625" />
+        <Point X="3.312" Y="2.5" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.68" Y="0.933" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="People" Type="SchedulingBenchmarks.Models.Person" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.5" Y="1.875" />
+        <Point X="5.875" Y="1.875" />
+        <Point X="5.875" Y="2.438" />
+        <Point X="5.5" Y="2.438" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.11" Y="0.654" Height="0.182" Width="0.65" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Calendar" Type="SchedulingBenchmarks.Models.Calendar" FixedFromPoint="true">
+      <Path>
+        <Point X="4" Y="0.75" />
+        <Point X="3" Y="0.75" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.091" Y="-0.265" Height="0.182" Width="0.785" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAICAAAAQAAAAAAAAAAAAAAAEAABAAAAAAAA=</HashCode>
+      <FileName>Models\SchedulerModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Calendar" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Demands" />
+      <Property Name="People" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SchedulingBenchmarks.Models.Shift">
+    <Position X="6.5" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAACAAAAAAAAAAAAIAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Models\Shift.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SchedulingBenchmarks.Models.ShiftRequest">
+    <Position X="6.5" Y="5.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAiAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Models\ShiftRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SchedulingBenchmarks.Models.State" BaseTypeListCollapsed="true">
+    <Position X="1.5" Y="4.75" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAAAAAAABIQAACAAgAAAAABAAAAAAAAAQABBA=</HashCode>
+      <FileName>Models\State.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SchedulingBenchmarks.Models.WorkSchedule">
+    <Position X="4" Y="4.25" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACAAAYAAIAAAAAAAGAACAAAIAAAAAABAA=</HashCode>
+      <FileName>Models\WorkSchedule.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
