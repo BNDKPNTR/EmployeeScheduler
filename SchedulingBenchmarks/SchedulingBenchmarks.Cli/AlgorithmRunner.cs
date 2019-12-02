@@ -60,7 +60,7 @@ namespace SchedulingBenchmarks.Cli
             Console.WriteLine("Generating expected test results based on current result of the algorithm");
             var solutionDir = new DirectoryInfo(Environment.CurrentDirectory).Parent.Parent.Parent.Parent.FullName;
             var TestsProjDir = Path.Combine(solutionDir, "SchedulingBenchmarks.Tests");
-            var outputDir = Path.Combine(TestsProjDir, "bin", "Debug", "netcoreapp2.0", "ExpectedTestResults");
+            var outputDir = Path.Combine(TestsProjDir, "bin", "Debug", "netcoreapp3.0", "ExpectedTestResults");
 
             if (Directory.Exists(outputDir))
             {
