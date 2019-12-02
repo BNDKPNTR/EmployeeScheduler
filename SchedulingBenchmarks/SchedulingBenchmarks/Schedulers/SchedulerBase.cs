@@ -11,6 +11,8 @@ namespace SchedulingBenchmarks.Schedulers
 {
     internal abstract class SchedulerBase
     {
+        public const bool UseJonkerVolgenant = false;
+
         protected readonly SchedulerModel _model;
         protected readonly CostFunctionBase _costFunction;
         protected readonly WorkEligibilityChecker _workEligibilityChecker;
@@ -64,11 +66,22 @@ namespace SchedulingBenchmarks.Schedulers
 
                 for (int j = 0; j < demands.Length; j++)
                 {
-                    costMatrix[i][j] = _costFunction.CalculateCost(person, demands[j], day);
+                    if (UseJonkerVolgenant)
+                    {
+                        var cost = _costFunction.CalculateCost(person, demands[j], day);
+                        costMatrix[i][j] = cost == _costFunction.MaxCost ? _costFunction.MaxCost : (int)(cost * 1000);
+                    }
+                    else
+                    {
+                        costMatrix[i][j] = _costFunction.CalculateCost(person, demands[j], day);
+                    }
                 }
             });
 
-            var (copulationVerticesX, _) = EgervaryAlgorithmV2.RunAlgorithm(costMatrix, _costFunction.MaxCost);
+            var (copulationVerticesX, _) = UseJonkerVolgenant
+                ? JonkerVolgenantAlgorithmV2.RunAlgorithm(costMatrix)
+                : EgervaryAlgorithmV2.RunAlgorithm(costMatrix, _costFunction.MaxCost);
+
             CreateAssignments(day, costMatrix, copulationVerticesX, people, demands);
         }
 
