@@ -1,6 +1,7 @@
 ﻿using SchedulingBenchmarks.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SchedulingBenchmarks
@@ -8,27 +9,27 @@ namespace SchedulingBenchmarks
     internal class WorkEligibilityChecker
     {
         private readonly SchedulerModel _model;
+        private readonly Func<Person, int, bool>[] _workEligibilityCheckers;
 
         public WorkEligibilityChecker(SchedulerModel model)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
+            _workEligibilityCheckers = new Func<Person, int, bool>[]
+            {
+                Unavailable,
+                AlreadyHasAssignmentOnDay,
+                WouldWorkLessThanMinConsecutiveDays,
+                WouldWorkMoreThanMaxConsecutiveDays,
+                WouldRestLessThanMinConsecutiveDayOff,
+                WouldWorkMoreThanMaxWeekends
+            };
         }
 
-        public bool CanWorkOnDay(Person person, int day)
-        {
-            if (!Available(person, day)) return false;
-            if (AlreadyHasAssignmentOnDay(person, day)) return false;
-            if (WouldWorkLessThanMinConsecutiveDays(person, day)) return false;
-            if (WouldWorkMoreThanMaxConsecutiveDays(person, day)) return false;
-            if (WouldRestLessThanMinConsecutiveDayOff(person, day)) return false;
-            if (WouldWorkMoreThanMaxWeekends(person, day)) return false;
+        public bool CanWorkOnDay(Person person, int day) => _workEligibilityCheckers.All(checker => !checker(person, day));
 
-            return true;
-        }
-
-        private bool Available(Person person, int day)
+        private bool Unavailable(Person person, int day)
         {
-            return person.Availabilities[day];
+            return !person.Availabilities[day];
         }
 
         private bool AlreadyHasAssignmentOnDay(Person person, int day)
