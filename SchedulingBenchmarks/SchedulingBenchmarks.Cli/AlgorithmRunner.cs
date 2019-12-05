@@ -38,21 +38,32 @@ namespace SchedulingBenchmarks.Cli
         public static void CalculatePenaltyAndMissingTotalMinutes()
         {
             var bag = new ConcurrentBag<(int, int, int)>();
+            var bag2 = new ConcurrentBag<int>();
 
             Parallel.For(1, 25, i =>
             {
                 var result = RunSchedulerAlgorithm(i, copyToClipboard: false);
                 var penalty = OptimalityEvaluator.CalculatePenalty(result.Result);
-                var aggregates = FeasibilityDataAggregator.GetAggregate(result.Result).ToDictionary(a => a.EmployeeId);
+                var aggregates = EvaluationDataAggregator.GetAggregate(result.Result).ToDictionary(a => a.EmployeeId);
 
                 var sumOfUnderMin = result.Result.Employees
                     .Where(e => aggregates[e.Id].TotalWorkedMinutes < e.Contract.MinTotalWorkTime)
                     .Sum(e => e.Contract.MinTotalWorkTime - aggregates[e.Id].TotalWorkedMinutes);
 
                 bag.Add((i, penalty, sumOfUnderMin));
+
+                var sumOfUnderMin2 = result.Result.Employees
+                    .Where(e => aggregates[e.Id].TotalWorkedMinutes < e.Contract.MinTotalWorkTime)
+                    .Select(e => e.Contract.MinTotalWorkTime - aggregates[e.Id].TotalWorkedMinutes);
+
+                foreach (var item in sumOfUnderMin2)
+                {
+                    bag2.Add(item);
+                }
             });
 
             var str = string.Join(Environment.NewLine, bag.OrderBy(x => x.Item1).Select(x => $"{x.Item1}\t{x.Item2}\t{x.Item3}"));
+            var str2 = string.Join(Environment.NewLine, bag2);
         }
 
         public static void GenerateAllExpectedTestResults()

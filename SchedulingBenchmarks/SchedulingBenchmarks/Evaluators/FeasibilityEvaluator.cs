@@ -21,11 +21,11 @@ namespace SchedulingBenchmarks.Evaluators
 
         public static (bool feasible, List<string> messages) Evaluate(SchedulingBenchmarkModel schedulingBenchmarkModel)
         {
-            var aggregates = FeasibilityDataAggregator.GetAggregate(schedulingBenchmarkModel);
+            var aggregates = EvaluationDataAggregator.GetAggregate(schedulingBenchmarkModel);
             return new FeasibilityEvaluator(schedulingBenchmarkModel).Feasible(aggregates);
         }
 
-        public (bool feasible, List<string> messages) Feasible(IEnumerable<EmployeeFeasibilityAggregate> feasibilityAggregates)
+        public (bool feasible, List<string> messages) Feasible(IEnumerable<EmployeeEvaluationAggregate> feasibilityAggregates)
         {
             var feasible = true;
             var aggregates = feasibilityAggregates.ToDictionary(a => a.EmployeeId);
@@ -46,9 +46,9 @@ namespace SchedulingBenchmarks.Evaluators
             return (feasible, _messages.ToList());
         }
 
-        private IEnumerable<Func<Employee, EmployeeFeasibilityAggregate, bool>> GetRules()
+        private IEnumerable<Func<Employee, EmployeeEvaluationAggregate, bool>> GetRules()
         {
-            return new Func<Employee, EmployeeFeasibilityAggregate, bool>[]
+            return new Func<Employee, EmployeeEvaluationAggregate, bool>[]
             {
                 MaxNumberOfShiftsNotExceeded,
                 MinTotalMinutesNotExceeded,
@@ -62,7 +62,7 @@ namespace SchedulingBenchmarks.Evaluators
             };
         }
 
-        public bool MaxNumberOfShiftsNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MaxNumberOfShiftsNotExceeded(Employee employee, EmployeeEvaluationAggregate aggregate)
         {
             var feasible = true;
 
@@ -78,7 +78,7 @@ namespace SchedulingBenchmarks.Evaluators
             return feasible;
         }
 
-        public bool MinTotalMinutesNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MinTotalMinutesNotExceeded(Employee employee, EmployeeEvaluationAggregate aggregate)
         {
             var feasible = true;
 
@@ -91,7 +91,7 @@ namespace SchedulingBenchmarks.Evaluators
             return feasible;
         }
 
-        public bool MaxTotalMinutesNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MaxTotalMinutesNotExceeded(Employee employee, EmployeeEvaluationAggregate aggregate)
         {
             var feasible = true;
 
@@ -104,7 +104,7 @@ namespace SchedulingBenchmarks.Evaluators
             return feasible;
         }
 
-        public bool MinConsecutiveShiftsNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MinConsecutiveShiftsNotExceeded(Employee employee, EmployeeEvaluationAggregate aggregate)
         {
             var feasible = true;
 
@@ -131,7 +131,7 @@ namespace SchedulingBenchmarks.Evaluators
             }
         }
 
-        public bool MaxConsecutiveShiftsNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MaxConsecutiveShiftsNotExceeded(Employee employee, EmployeeEvaluationAggregate aggregate)
         {
             var feasible = true;
 
@@ -147,7 +147,7 @@ namespace SchedulingBenchmarks.Evaluators
             return feasible;
         }
 
-        public bool MinConsecutiveDaysOffNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MinConsecutiveDaysOffNotExceeded(Employee employee, EmployeeEvaluationAggregate aggregate)
         {
             var feasible = true;
 
@@ -163,7 +163,7 @@ namespace SchedulingBenchmarks.Evaluators
             return feasible;
         }
 
-        public bool MaxNumberOfWeekendsNotExceeded(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MaxNumberOfWeekendsNotExceeded(Employee employee, EmployeeEvaluationAggregate aggregate)
         {
             var feasible = true;
 
@@ -176,7 +176,7 @@ namespace SchedulingBenchmarks.Evaluators
             return feasible;
         }
 
-        public bool DayOffsRespected(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool DayOffsRespected(Employee employee, EmployeeEvaluationAggregate aggregate)
         {
             var feasible = true;
 
@@ -189,7 +189,7 @@ namespace SchedulingBenchmarks.Evaluators
             return feasible;
         }
 
-        public bool MinRestTimeRespected(Employee employee, EmployeeFeasibilityAggregate aggregate)
+        public bool MinRestTimeRespected(Employee employee, EmployeeEvaluationAggregate aggregate)
         {
             var feasible = true;
 

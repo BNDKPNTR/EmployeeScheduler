@@ -11,7 +11,7 @@ namespace SchedulingBenchmarks.Cli
     class ExpectedTestResultsGenerator
     {
         private readonly SchedulingBenchmarkModel _result;
-        private readonly Dictionary<string, EmployeeFeasibilityAggregate> _aggregates;
+        private readonly Dictionary<string, EmployeeEvaluationAggregate> _aggregates;
         private readonly FeasibilityEvaluator _feasibilityEvaluator;
 
         public ExpectedTestResultsGenerator(int instanceNumber)
@@ -20,7 +20,7 @@ namespace SchedulingBenchmarks.Cli
             var schedulingBenchmarkModel = DtoToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(dto);
 
             _result = SchedulerAlgorithmRunner.Run(schedulingBenchmarkModel);
-            _aggregates = FeasibilityDataAggregator.GetAggregate(_result).ToDictionary(a => a.EmployeeId);
+            _aggregates = EvaluationDataAggregator.GetAggregate(_result).ToDictionary(a => a.EmployeeId);
             _feasibilityEvaluator = new FeasibilityEvaluator(_result);
         }
 
@@ -47,7 +47,7 @@ namespace SchedulingBenchmarks.Cli
             return result;
         }
 
-        private bool ForEachEmployee(Func<Employee, EmployeeFeasibilityAggregate, bool> func)
+        private bool ForEachEmployee(Func<Employee, EmployeeEvaluationAggregate, bool> func)
         {
             return _result.Employees.AsParallel().All(e => func(e, _aggregates[e.Id]));
         }

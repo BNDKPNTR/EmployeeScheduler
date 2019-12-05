@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SchedulingBenchmarks.Evaluators
 {
-    public class EmployeeFeasibilityAggregate
+    public class EmployeeEvaluationAggregate
     {
         public string EmployeeId { get; }
         public Dictionary<string, int> ShiftCounts { get; }
@@ -14,7 +14,7 @@ namespace SchedulingBenchmarks.Evaluators
         public List<int> DayOffsWithAssignments { get; }
         public List<int> RestTimes { get; }
 
-        public EmployeeFeasibilityAggregate(string employeeId, Dictionary<string, int> shiftCounts, int totalWorkedMinutes, List<ConsecutiveShiftLength> consecutiveShiftLengths, List<int> dayOffLengths, int workedWeekendsCount, List<int> dayOffsWithAssignments, List<int> restTimes)
+        public EmployeeEvaluationAggregate(string employeeId, Dictionary<string, int> shiftCounts, int totalWorkedMinutes, List<ConsecutiveShiftLength> consecutiveShiftLengths, List<int> dayOffLengths, int workedWeekendsCount, List<int> dayOffsWithAssignments, List<int> restTimes)
         {
             EmployeeId = employeeId ?? throw new ArgumentNullException(nameof(employeeId));
             ShiftCounts = shiftCounts ?? throw new ArgumentNullException(nameof(shiftCounts));

@@ -8,25 +8,25 @@ using System.Threading.Tasks;
 
 namespace SchedulingBenchmarks.Evaluators
 {
-    public class FeasibilityDataAggregator
+    public class EvaluationDataAggregator
     {
         private readonly SchedulingBenchmarkModel _schedulingBenchmarkModel;
         private readonly Dictionary<string, TimeSpan> _shiftLengths;
         private readonly Dictionary<string, TimeSpan> _shiftStartTimes;
 
-        public FeasibilityDataAggregator(SchedulingBenchmarkModel schedulingBenchmarkModel)
+        public EvaluationDataAggregator(SchedulingBenchmarkModel schedulingBenchmarkModel)
         {
             _schedulingBenchmarkModel = schedulingBenchmarkModel ?? throw new ArgumentNullException(nameof(schedulingBenchmarkModel));
             _shiftLengths = _schedulingBenchmarkModel.Shifts.ToDictionary(s => s.Id, s => s.Duration);
             _shiftStartTimes = _schedulingBenchmarkModel.Shifts.ToDictionary(s => s.Id, s => s.StartTime);
         }
 
-        public static List<EmployeeFeasibilityAggregate> GetAggregate(SchedulingBenchmarkModel schedulingBenchmarkModel)
-            => new FeasibilityDataAggregator(schedulingBenchmarkModel).Feasible();
+        public static List<EmployeeEvaluationAggregate> GetAggregate(SchedulingBenchmarkModel schedulingBenchmarkModel)
+            => new EvaluationDataAggregator(schedulingBenchmarkModel).Feasible();
 
-        private List<EmployeeFeasibilityAggregate> Feasible()
+        private List<EmployeeEvaluationAggregate> Feasible()
         {
-            var aggregates = new ConcurrentBag<EmployeeFeasibilityAggregate>();
+            var aggregates = new ConcurrentBag<EmployeeEvaluationAggregate>();
 
             Parallel.ForEach(_schedulingBenchmarkModel.Employees, employee =>
             {
@@ -38,7 +38,7 @@ namespace SchedulingBenchmarks.Evaluators
                 var dayOffsWithAssignments = GetDayOffsWithAssignments(employee);
                 var restTimes = GetRestTimes(employee);
 
-                var aggregate = new EmployeeFeasibilityAggregate(
+                var aggregate = new EmployeeEvaluationAggregate(
                     employee.Id,
                     shiftCounts, 
                     totalWorkedMinutes, 

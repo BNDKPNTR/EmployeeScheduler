@@ -14,7 +14,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
     public abstract class InstanceTestBase
     {
         private readonly SchedulingBenchmarkModel _result;
-        private readonly Dictionary<string, EmployeeFeasibilityAggregate> _aggregates;
+        private readonly Dictionary<string, EmployeeEvaluationAggregate> _aggregates;
         private readonly FeasibilityEvaluator _feasibilityEvaluator;
         private readonly ExpectedTestResult _expectedTestResult;
 
@@ -26,7 +26,7 @@ namespace SchedulingBenchmarks.Tests.InstanceTests
             var schedulingBenchmarkModel = DtoToSchedulingBenchmarkModelMapper.MapToSchedulingBenchmarkModel(dto);
 
             _result = SchedulerAlgorithmRunner.Run(schedulingBenchmarkModel);
-            _aggregates = FeasibilityDataAggregator.GetAggregate(_result).ToDictionary(a => a.EmployeeId);
+            _aggregates = EvaluationDataAggregator.GetAggregate(_result).ToDictionary(a => a.EmployeeId);
             _feasibilityEvaluator = new FeasibilityEvaluator(_result);
             _expectedTestResult = GetExpectedTestResult();
         }
