@@ -17,11 +17,11 @@ namespace SchedulingBenchmarks
             _workEligibilityCheckers = new Func<Person, int, bool>[]
             {
                 Unavailable,
-                AlreadyHasAssignmentOnDay,
-                WouldWorkLessThanMinConsecutiveDays,
-                WouldWorkMoreThanMaxConsecutiveDays,
-                WouldRestLessThanMinConsecutiveDayOff,
-                WouldWorkMoreThanMaxWeekends
+                //AlreadyHasAssignmentOnDay,
+                //WouldWorkLessThanMinConsecutiveDays,
+                //WouldWorkMoreThanMaxConsecutiveDays,
+                //WouldRestLessThanMinConsecutiveDayOff,
+                //WouldWorkMoreThanMaxWeekends
             };
         }
 

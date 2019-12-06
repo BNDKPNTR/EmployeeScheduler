@@ -18,6 +18,7 @@ namespace SchedulingBenchmarks.CostFunctions
 
         public override double CalculateCost(Person person, Demand demand, int day)
         {
+            if (WouldWorkMoreThanMaxWeekends(person, day)) return MaxCost;
             if (!_calendar.IsWeekend(day)) return DefaultCost;
 
             if (_calendar.IsSaturday(day))
@@ -37,6 +38,13 @@ namespace SchedulingBenchmarks.CostFunctions
             }
 
             return DefaultCost;
+        }
+
+        private bool WouldWorkMoreThanMaxWeekends(Person person, int day)
+        {
+            if (!_calendar.IsWeekend(day)) return false;
+
+            return person.State.WorkedWeekendCount >= person.WorkSchedule.MaxWorkingWeekendCount;
         }
     }
 }

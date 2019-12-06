@@ -30,9 +30,9 @@ namespace SchedulingBenchmarks
                 //new MinDemandsScheduler(_model, _costFunction, _workEligibilityChecker, _stateCalculator),
                 //new WeekendScheduler(_model, _costFunction, _workEligibilityChecker, _stateCalculator),
                 new AllDemandsScheduler(_model, _costFunction, _stateCalculator, _workEligibilityChecker),
-                new UntilMinTotalWorkTimeScheduler(_model, _stateCalculator, _workEligibilityChecker, _costFunction),
-                new ReplaceSingleWeekendsWithDoubleWeekendsScheduler(_model, _stateCalculator, _workEligibilityChecker, _costFunction),
-                new RemoveUnderMinConsecutiveShiftsScheduler(_model, _costFunction, _workEligibilityChecker),
+                //new UntilMinTotalWorkTimeScheduler(_model, _stateCalculator, _workEligibilityChecker, _costFunction),
+                //new ReplaceSingleWeekendsWithDoubleWeekendsScheduler(_model, _stateCalculator, _workEligibilityChecker, _costFunction),
+                //new RemoveUnderMinConsecutiveShiftsScheduler(_model, _costFunction, _workEligibilityChecker),
             };
         }
 

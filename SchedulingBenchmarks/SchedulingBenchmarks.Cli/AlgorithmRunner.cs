@@ -25,6 +25,26 @@ namespace SchedulingBenchmarks.Cli
             OnKeyDown(schedulerResult);
         }
 
+        public static void MeasureLAP()
+        {
+            for (int i = 1; i < 25; i++)
+            {
+                var numerator = 0.0;
+
+                for (int j = 0; j < 3; j++)
+                {
+                    var result = RunSchedulerAlgorithm(i,false);
+
+                    var lapTime = SchedulerAlgorithmRunner._elapsed;
+                    numerator += lapTime / (double)SchedulerAlgorithmRunner._total;
+
+                    SchedulerAlgorithmRunner.Reset();
+                }
+
+                Console.WriteLine(numerator/3);
+            }
+        }
+
         public static void GenerateAllBaselines()
         {
             Parallel.For(1, 25, i =>

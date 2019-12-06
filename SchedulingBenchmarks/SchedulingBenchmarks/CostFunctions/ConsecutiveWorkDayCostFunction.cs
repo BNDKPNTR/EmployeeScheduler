@@ -22,6 +22,8 @@ namespace SchedulingBenchmarks.CostFunctions
 
         public override double CalculateCost(Person person, Demand demand, int day)
         {
+            if (WouldWorkLessThanMinConsecutiveDays(person, day) || WouldWorkMoreThanMaxConsecutiveDays(person, day)) return MaxCost;
+
             // If not working consecutively
             if (person.State.ConsecutiveWorkDayCount == 0) return CalculatePossibleWorkStartMultiplier(person);
 
@@ -37,6 +39,35 @@ namespace SchedulingBenchmarks.CostFunctions
             var ratio = person.State.PossibleFutureWorkDayCount / (double)person.WorkSchedule.MaxConsecutiveWorkDays;
 
             return DefaultCost + (1.0 - ratio) * _workStartMultiplier;
+        }
+
+        private bool WouldWorkLessThanMinConsecutiveDays(Person person, int day)
+        {
+            if (person.State.ConsecutiveWorkDayCount > 0) return false;
+            if (day == 0) return false; // We assume that the person worked infinite numbers of days before the schedule period
+
+            // TODO: check MaxTotalWorkTime
+
+            for (int i = day; i < day + person.WorkSchedule.MinConsecutiveWorkDays; i++)
+            {
+                if (i < person.Availabilities.Length && !person.Availabilities[i]) return true;
+                if (_calendar.IsWeekend(i) && person.State.WorkedWeekendCount >= person.WorkSchedule.MaxWorkingWeekendCount) return true;
+            }
+
+            return false;
+        }
+
+        private bool WouldWorkMoreThanMaxConsecutiveDays(Person person, int day)
+        {
+            var alreadyWorkedConsecutiveDays = person.State.ConsecutiveWorkDayCount;
+            var todaysPossibleWork = 1;
+            var consecutiveWorkDaysInFuture = 0;
+
+            // Count until has assignment AND consecutive work days DO NOT exceed max. consecutive workdays
+            var dayIndex = day + 1;
+            while (person.Assignments.AllRounds.ContainsKey(dayIndex++) && ++consecutiveWorkDaysInFuture < person.WorkSchedule.MaxConsecutiveWorkDays) { }
+
+            return alreadyWorkedConsecutiveDays + todaysPossibleWork + consecutiveWorkDaysInFuture > person.WorkSchedule.MaxConsecutiveWorkDays;
         }
     }
 }

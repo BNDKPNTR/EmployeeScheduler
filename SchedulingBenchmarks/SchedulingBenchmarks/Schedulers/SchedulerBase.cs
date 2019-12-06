@@ -11,7 +11,7 @@ namespace SchedulingBenchmarks.Schedulers
 {
     internal abstract class SchedulerBase
     {
-        public const bool UseJonkerVolgenant = false;
+        public const bool UseJonkerVolgenant = true;
 
         protected readonly SchedulerModel _model;
         protected readonly CostFunctionBase _costFunction;
@@ -78,9 +78,16 @@ namespace SchedulingBenchmarks.Schedulers
                 }
             });
 
+            SchedulerAlgorithmRunner._sw.Start();
+            
             var (copulationVerticesX, _) = UseJonkerVolgenant
                 ? JonkerVolgenantAlgorithmV2.RunAlgorithm(costMatrix)
                 : EgervaryAlgorithmV2.RunAlgorithm(costMatrix, _costFunction.MaxCost);
+
+            SchedulerAlgorithmRunner._sw.Stop();
+            SchedulerAlgorithmRunner._elapsed += SchedulerAlgorithmRunner._sw.ElapsedTicks;
+            SchedulerAlgorithmRunner._count++;
+            SchedulerAlgorithmRunner._sw.Reset();
 
             CreateAssignments(day, costMatrix, copulationVerticesX, people, demands);
         }

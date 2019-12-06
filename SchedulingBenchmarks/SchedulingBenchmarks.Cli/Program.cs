@@ -7,7 +7,7 @@ namespace SchedulingBenchmarks.Cli
     {
         static void Main(string[] args)
         {
-            AlgorithmRunner.ShowResults();
+            AlgorithmRunner.MeasureLAP();
         }
     }
 }
