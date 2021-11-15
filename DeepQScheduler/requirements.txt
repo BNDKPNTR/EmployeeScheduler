@@ -1,4 +1,4 @@
-pip==19.2
+pip==21.1
 setuptools==41.0.1
 pylint==2.3.1
 mypy==0.720
