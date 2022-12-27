@@ -1,5 +1,5 @@
 pip==19.2
-setuptools==41.0.1
+setuptools==65.5.1
 pylint==2.3.1
 mypy==0.720
 tensorflow==1.14.0
